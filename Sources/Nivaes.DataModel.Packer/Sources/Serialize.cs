@@ -6,7 +6,7 @@ namespace Nivaes.DataModel.Packer;
 
 public static partial class DataModelPacker
 {
-    public static byte[] Serializer<T>(in T value)
+    public static byte[] Serialize<T>(in T value)
         where T : IPackable<T>
     {
         var packable = (IPackable<T>)value;

@@ -1,10 +1,8 @@
-﻿using System.Text;
-using Nivaes.DataModel.Packer;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Nivaes.DataModel.Packer1.UnitTest;
-
-
-public class SimplePackUnitTest
+namespace Nivaes.Models.Test.Sources
 {
     public class SimpleModel : IPackable<SimpleModel>
     {
@@ -28,23 +26,5 @@ public class SimplePackUnitTest
 
             return value;
         }
-    }
-
-    [Fact]
-    public void SerializerTest()
-    {
-        var model = new SimpleModel
-        {
-            String1 = "test1",
-            String2 = "test2",
-        };
-
-        var cache = DataModelPacker.Serialize(model);
-
-        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
-
-        copyModel.ShouldNotBeNull();
-        copyModel.String1.ShouldBe(model.String1);
-        copyModel.String2.ShouldBe(model.String2);
     }
 }

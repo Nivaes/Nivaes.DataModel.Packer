@@ -7,13 +7,18 @@
 	  <IsPackable>false</IsPackable>
 
 	  <PublishAot>true</PublishAot>
-	  <IsBenchmarksProject/>
+	  <IsBenchmarksProject />
 
 	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" />
-    <PackageReference Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers"/>
+    <PackageReference Include="MemoryPack" />
+    <PackageReference Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nivaes.DataModel.Packer\Nivaes.DataModel.Packer.csproj" />
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ namespace Nivaes.DataModel.Packer;
 
 public static partial class DataModelPacker
 {
-    public static T? Deserializer<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(ReadOnlySpan<byte> buffer)
+    public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(byte[] buffer /*ReadOnlySpan<byte> buffer*/)
           where T : IPackable<T>
     {
         using var stream = new MemoryStream(buffer.ToArray(), writable: false);

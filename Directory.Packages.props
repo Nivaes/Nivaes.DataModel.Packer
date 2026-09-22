@@ -1,17 +1,17 @@
 <Project>
-	<ItemGroup>
-		<PackageVersion Include="coverlet.collector" Version="10.0.1" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
-		<PackageVersion Include="Shouldly" Version="4.3.0" />
-		<PackageVersion Include="xunit.v3" Version="4.0.1" />
-		<PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
-		<PackageVersion Include="Roslynator.Analyzers" Version="5.0.0" />
-		<PackageVersion Include="SonarAnalyzer.CSharp" Version="10.34.0.3385" />
-		<PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" />
-		<PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.401" />
-		<PackageVersion Include="AsyncFixer" Version="2.1.0" />
-
-		<PackageVersion Include="BenchmarkDotNet" Version="0.15.2" />
-		<PackageVersion Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers" Version="18.7.37220.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="MemoryPack" Version="1.21.4" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="Shouldly" Version="4.3.0" />
+    <PackageVersion Include="xunit.v3" Version="4.0.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="5.0.0" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.34.0.3385" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.401" />
+    <PackageVersion Include="AsyncFixer" Version="2.1.0" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.2" />
+    <PackageVersion Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers" Version="18.7.37220.1" />
+  </ItemGroup>
 </Project>
