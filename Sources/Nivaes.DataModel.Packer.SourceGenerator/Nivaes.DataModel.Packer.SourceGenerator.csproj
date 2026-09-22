@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\..\packages\microsoft.visualstudio.diagnosticshub.benchmarkdotnetdiagnosers\18.7.37220.1\contentFiles\cs\any\BenchmarkProfilerAgentConfig.g.cs" Link="BenchmarkProfilerAgentConfig.g.cs">
+      <Private>False</Private>
+      <NuGetPackageVersion>18.7.37220.1</NuGetPackageVersion>
+      <NuGetItemType>Compile</NuGetItemType>
+      <NuGetPackageId>Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers</NuGetPackageId>
+      <Pack>false</Pack>
+    </Compile>
+  </ItemGroup>
+
 </Project>

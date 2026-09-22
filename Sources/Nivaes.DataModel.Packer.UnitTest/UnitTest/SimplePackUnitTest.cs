@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Nivaes.DataModel.Packer;
 
 namespace Nivaes.DataModel.Packer1.UnitTest;
@@ -8,17 +9,16 @@ public class SimplePackUnitTest
 {
     public class SimpleModel : IPackable<SimpleModel>
     {
-        public string String1 { get; set; }
-        public string String2 { get; set; }
+        public required string String1 { get; set; }
+        public required string String2 { get; set; }
 
-
-        void IPackable<SimpleModel>.Serialize(BinaryWriter writer, scoped in SimpleModel? value)
+        void IPackable<SimpleModel>.Serialize(ref PackerWriter writer)
         {
             writer.Write(String1);
             writer.Write(String2);
         }
 
-        static SimpleModel? IPackable<SimpleModel>.Deserialize(BinaryReader reader)
+        static SimpleModel? IPackable<SimpleModel>.Deserialize(ref PackerReader reader)
         {
             var value = new SimpleModel
             {

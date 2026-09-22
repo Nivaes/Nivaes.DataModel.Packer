@@ -5,13 +5,13 @@ public class SimplePackerModel : IPackable<SimplePackerModel>
     public required string String1 { get; set; }
     public required string String2 { get; set; }
 
-    void IPackable<SimplePackerModel>.Serialize(BinaryWriter writer, scoped in SimplePackerModel? value)
+    void IPackable<SimplePackerModel>.Serialize(ref PackerWriter writer)
     {
         writer.Write(String1);
         writer.Write(String2);
     }
 
-    static SimplePackerModel? IPackable<SimplePackerModel>.Deserialize(BinaryReader reader)
+    static SimplePackerModel? IPackable<SimplePackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new SimplePackerModel
         {

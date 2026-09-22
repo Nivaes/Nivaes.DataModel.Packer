@@ -2,7 +2,7 @@
 
 public interface IPackable<T>
 {
-    void Serialize(BinaryWriter writer, scoped in T? value);
+    void Serialize(ref PackerWriter writer);
 
-    abstract static T? Deserialize(BinaryReader reader);
+    abstract static T? Deserialize(ref PackerReader reader);
 }
