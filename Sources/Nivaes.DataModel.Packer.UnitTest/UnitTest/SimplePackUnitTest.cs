@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using AutoFixture.Xunit3;
 using Nivaes.DataModel.Packer;
 
 namespace Nivaes.DataModel.Packer1.UnitTest;
@@ -76,6 +77,24 @@ public class SimplePackUnitTest
         {
             String1 = "test1",
             String2 = "test2",
+        };
+
+        var cache = DataModelPacker.Serialize(model);
+
+        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+    }
+
+    [Theory, AutoData]
+    public void SerializerAutoTest(string test1, string test2)
+    {
+        var model = new SimpleModel
+        {
+            String1 = test1,
+            String2 = test2,
         };
 
         var cache = DataModelPacker.Serialize(model);

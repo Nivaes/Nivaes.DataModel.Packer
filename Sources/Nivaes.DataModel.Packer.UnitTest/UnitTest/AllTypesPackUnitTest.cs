@@ -68,4 +68,32 @@ public class AllTypesPackUnitTest
         copyModel.String1.ShouldBe(model.String1);
         copyModel.String2.ShouldBe(model.String2);
     }
+
+    [Fact]
+    public void SerializerTest2()
+    {
+        var model = new AllTypesModel
+        {
+            Short1 = short.MaxValue,
+            Short2 = short.MinValue,
+            Int1 = int.MaxValue,
+            Int2 = int.MinValue,
+            String1 = "eeedkasñjdlfkajldk alksdjfañs añlsdjkfldkjñ de",
+            String2 = "dajsdfñlkjñea alkjañlkejdddas",
+        };
+
+        var cache = DataModelPacker.Serialize(model);
+
+        var copyModel = DataModelPacker.Deserialize<AllTypesModel>(cache);
+
+        copyModel.ShouldNotBeNull();
+        copyModel.Short1.ShouldBe(model.Short1);
+        copyModel.Short2.ShouldBe(model.Short2);
+
+        copyModel.Int1.ShouldBe(model.Int1);
+        copyModel.Int1.ShouldBe(model.Int1);
+
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+    }
 }
