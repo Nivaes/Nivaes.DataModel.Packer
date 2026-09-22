@@ -148,7 +148,9 @@ public ref struct PackerReader
     {
         int byteCount = ReadInt32();
 
-        if (byteCount < 0)
+        if (byteCount == -1)
+            return null!;
+        if (byteCount < -1)
             return string.Empty;
 
         var span = ReadSpan(byteCount);

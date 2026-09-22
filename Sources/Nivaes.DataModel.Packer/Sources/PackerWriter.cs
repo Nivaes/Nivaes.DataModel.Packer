@@ -182,6 +182,11 @@ public ref struct PackerWriter
             Write(-1);
             return;
         }
+        if(string.IsNullOrEmpty(value))
+        {
+            Write(-2);
+            return;
+        }
 
         int byteCount = Encoding.UTF8.GetByteCount(value);
 

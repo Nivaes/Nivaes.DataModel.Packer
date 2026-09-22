@@ -20,14 +20,53 @@ public class SimplePackUnitTest
 
         static SimpleModel? IPackable<SimpleModel>.Deserialize(ref PackerReader reader)
         {
+            var string1 = reader.ReadString();
+            var string2 = reader.ReadString();
+
             var value = new SimpleModel
             {
-                String1 = reader.ReadString(),
-                String2 = reader.ReadString()
+                String1 = string1,
+                String2 = string2
             };
 
             return value;
         }
+    }
+
+    [Fact]
+    public void SerializerVoidDataTest()
+    {
+        var model = new SimpleModel()
+        {
+            String1 = null!,
+            String2 = null!,
+        };
+
+        var cache = DataModelPacker.Serialize(model);
+
+        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+    }
+
+    [Fact]
+    public void SerializerEmptyDataTest()
+    {
+        var model = new SimpleModel()
+        {
+            String1 = string.Empty,
+            String2 = string.Empty,
+        };
+
+        var cache = DataModelPacker.Serialize(model);
+
+        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
     }
 
     [Fact]
