@@ -6,62 +6,42 @@ using System.Text;
 
 namespace Nivaes.DataModel.Packer;
 
-public ref struct PackerWriter //<TBufferWriter>
-    //where TBufferWriter : IBufferWriter<byte>
+public ref struct PackerWriter
 {
-    private byte[] _buffer;
-    private Span<byte> _span;
-    private int _position;
+    private readonly ArrayBufferWriter<byte> _writer;
+
+    public PackerWriter()
+    {
+        _writer = new ArrayBufferWriter<byte>(256);
+    }
 
     public PackerWriter(int initialCapacity = 256)
     {
-        _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
-        _span = _buffer;
-        _position = 0;
+        _writer = new ArrayBufferWriter<byte>(initialCapacity);
     }
 
-    public readonly int Position => _position;
+    public readonly int Position =>
+        _writer.WrittenCount;
 
-    public readonly int Length => _position;
+    public readonly int Length =>
+        _writer.WrittenCount;
 
     public readonly ReadOnlySpan<byte> WrittenSpan =>
-        _span[.._position];
+        _writer.WrittenSpan;
 
-    public readonly byte[] ToArray()
-    {
-        return _span[.._position].ToArray();
-    }
+    public readonly ReadOnlyMemory<byte> WrittenMemory =>
+        _writer.WrittenMemory;
 
-    private void Ensure(int size)
-    {
-        if ((uint)(_position + size) <= (uint)_span.Length)
-            return;
-
-        Grow(size);
-    }
-
-    private void Grow(int size)
-    {
-        int required = _position + size;
-
-        int newSize = Math.Max(
-            required,
-            Math.Max(_span.Length * 2, 256));
-
-        var newBuffer =
-            GC.AllocateUninitializedArray<byte>(newSize);
-
-        _span[.._position].CopyTo(newBuffer);
-
-        _buffer = newBuffer;
-        _span = newBuffer;
-    }
+    public readonly byte[] ToArray() =>
+        _writer.WrittenSpan.ToArray();
 
     public void Write(byte value)
     {
-        Ensure(1);
+        Span<byte> span = _writer.GetSpan(1);
 
-        _span[_position++] = value;
+        span[0] = value;
+
+        _writer.Advance(1);
     }
 
     public void Write(bool value)
@@ -71,68 +51,56 @@ public ref struct PackerWriter //<TBufferWriter>
 
     public void Write(short value)
     {
-        Ensure(2);
+        Span<byte> span = _writer.GetSpan(2);
 
-        BinaryPrimitives.WriteInt16LittleEndian(
-            _span[_position..],
-            value);
+        BinaryPrimitives.WriteInt16LittleEndian(span, value);
 
-        _position += 2;
+        _writer.Advance(2);
     }
 
     public void Write(ushort value)
     {
-        Ensure(2);
+        Span<byte> span = _writer.GetSpan(2);
 
-        BinaryPrimitives.WriteUInt16LittleEndian(
-            _span[_position..],
-            value);
+        BinaryPrimitives.WriteUInt16LittleEndian(span, value);
 
-        _position += 2;
+        _writer.Advance(2);
     }
 
     public void Write(int value)
     {
-        Ensure(4);
+        Span<byte> span = _writer.GetSpan(4);
 
-        BinaryPrimitives.WriteInt32LittleEndian(
-            _span[_position..],
-            value);
+        BinaryPrimitives.WriteInt32LittleEndian(span, value);
 
-        _position += 4;
+        _writer.Advance(4);
     }
 
     public void Write(uint value)
     {
-        Ensure(4);
+        Span<byte> span = _writer.GetSpan(4);
 
-        BinaryPrimitives.WriteUInt32LittleEndian(
-            _span[_position..],
-            value);
+        BinaryPrimitives.WriteUInt32LittleEndian(span, value);
 
-        _position += 4;
+        _writer.Advance(4);
     }
 
     public void Write(long value)
     {
-        Ensure(8);
+        Span<byte> span = _writer.GetSpan(8);
 
-        BinaryPrimitives.WriteInt64LittleEndian(
-            _span[_position..],
-            value);
+        BinaryPrimitives.WriteInt64LittleEndian(span, value);
 
-        _position += 8;
+        _writer.Advance(8);
     }
 
     public void Write(ulong value)
     {
-        Ensure(8);
+        Span<byte> span = _writer.GetSpan(8);
 
-        BinaryPrimitives.WriteUInt64LittleEndian(
-            _span[_position..],
-            value);
+        BinaryPrimitives.WriteUInt64LittleEndian(span, value);
 
-        _position += 8;
+        _writer.Advance(8);
     }
 
     public void Write(float value)
@@ -157,11 +125,11 @@ public ref struct PackerWriter //<TBufferWriter>
 
     public void Write(Guid value)
     {
-        Ensure(16);
+        Span<byte> span = _writer.GetSpan(16);
 
-        value.TryWriteBytes(_span[_position..]);
+        value.TryWriteBytes(span);
 
-        _position += 16;
+        _writer.Advance(16);
     }
 
     public void Write(DateTime value)
@@ -188,13 +156,11 @@ public ref struct PackerWriter //<TBufferWriter>
 
         Write(byteCount);
 
-        Ensure(byteCount);
+        Span<byte> span = _writer.GetSpan(byteCount);
 
-        int written = Encoding.UTF8.GetBytes(
-            value,
-            _span[_position..]);
+        int written = Encoding.UTF8.GetBytes(value, span);
 
-        _position += written;
+        _writer.Advance(written);
     }
 
     public void Write(byte[]? value)
@@ -205,23 +171,20 @@ public ref struct PackerWriter //<TBufferWriter>
             return;
         }
 
-        Write(value.Length);
-
-        Ensure(value.Length);
-
-        value.AsSpan().CopyTo(_span[_position..]);
-
-        _position += value.Length;
+        Write(value.AsSpan());
     }
 
     public void Write(ReadOnlySpan<byte> value)
     {
         Write(value.Length);
 
-        Ensure(value.Length);
+        if (value.IsEmpty)
+            return;
 
-        value.CopyTo(_span[_position..]);
+        Span<byte> span = _writer.GetSpan(value.Length);
 
-        _position += value.Length;
+        value.CopyTo(span);
+
+        _writer.Advance(value.Length);
     }
 }

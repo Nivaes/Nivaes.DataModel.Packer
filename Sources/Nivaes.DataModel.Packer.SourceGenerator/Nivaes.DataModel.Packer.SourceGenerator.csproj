@@ -1,19 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFrameworks>$(_CommonTargets)</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFrameworks>netstandard2.1</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-  <ItemGroup>
-    <Compile Include="..\..\..\packages\microsoft.visualstudio.diagnosticshub.benchmarkdotnetdiagnosers\18.7.37220.1\contentFiles\cs\any\BenchmarkProfilerAgentConfig.g.cs" Link="BenchmarkProfilerAgentConfig.g.cs">
-      <Private>False</Private>
-      <NuGetPackageVersion>18.7.37220.1</NuGetPackageVersion>
-      <NuGetItemType>Compile</NuGetItemType>
-      <NuGetPackageId>Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers</NuGetPackageId>
-      <Pack>false</Pack>
-    </Compile>
-  </ItemGroup>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+
 
 </Project>
