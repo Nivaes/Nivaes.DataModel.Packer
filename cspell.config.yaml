@@ -1,0 +1,11 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries:
+  - en
+  - es
+words:
+  - Nivaes
+  - Pailink
+ignoreWords: []
+import: []

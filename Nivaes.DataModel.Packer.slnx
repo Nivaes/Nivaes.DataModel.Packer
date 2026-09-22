@@ -1,0 +1,28 @@
+<Solution>
+  <Folder Name="/Docs/">
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/" />
+  <Folder Name="/Solution Items/.github/workflows/">
+    <File Path=".github/workflows/ci.yaml" />
+    <File Path=".github/workflows/CodeQL.yaml" />
+    <File Path=".github/workflows/delete-old-runs.yaml" />
+  </Folder>
+  <Folder Name="/Sources/">
+    <Project Path="Sources/Nivaes.DataModel.Packer.Benchmark/Nivaes.DataModel.Packer.Benchmark.csproj" Id="a2c79cc7-a303-4d12-aa2a-efb6fd0e5b22" />
+    <Project Path="Sources/Nivaes.DataModel.Packer.SourceGenerator.UnitTest/Nivaes.DataModel.Packer.SourceGenerator.UnitTest.csproj" />
+    <Project Path="Sources/Nivaes.DataModel.Packer.SourceGenerator/Nivaes.DataModel.Packer.SourceGenerator.csproj" Id="42ce9f25-a413-4781-873e-ebec8a96b4a2" />
+    <Project Path="Sources/Nivaes.DataModel.Packer.UnitTest/Nivaes.DataModel.Packer.UnitTest.csproj" Id="be6acb22-48e4-4f9a-a2dd-61916861d608" />
+    <Project Path="Sources/Nivaes.DataModel.Packer/Nivaes.DataModel.Packer.csproj" Id="eece0395-4134-4146-8795-96ebfc4fc8ca" />
+  </Folder>
+</Solution>

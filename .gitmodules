@@ -1,0 +1,6 @@
+[submodule "Cross"]
+	path = Cross
+	url = https://github.com/Nivaes/Nivaes.App.Cross
+[submodule "App"]
+	path = App
+	url = https://github.com/Nivaes/Nivaes.App

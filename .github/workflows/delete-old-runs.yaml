@@ -1,0 +1,15 @@
+name: Delete old workflow runs
+
+on:
+  schedule:
+    - cron: "10 3 * * 0"   # Todos los domingos a las 03:10 UTC
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    uses: Nivaes/Nivaes.Workflows/.github/workflows/delete-old-runs.yaml@develop  
+
