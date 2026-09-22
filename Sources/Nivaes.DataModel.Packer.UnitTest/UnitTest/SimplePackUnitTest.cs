@@ -89,7 +89,7 @@ public class SimplePackUnitTest
     }
 
     [Theory, AutoData]
-    public void SerializerAutoTest(string test1, string test2)
+    public void SerializerAutoDataTest(string test1, string test2)
     {
         var model = new SimpleModel
         {

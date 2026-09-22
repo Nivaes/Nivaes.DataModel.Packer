@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Nivaes.DataModel.Packer;
@@ -98,25 +99,15 @@ public ref struct PackerReader
 
     public decimal ReadDecimal()
     {
-        //return new decimal(
-        //    ReadInt32(),
-        //    ReadInt32(),
-        //    ReadInt32(),
-        //    ReadBoolean(),
-        //    ReadByte());
+        Span<int> bits = stackalloc int[4];
 
-        int lo = ReadInt32();
-        int mid = ReadInt32();
-        int hi = ReadInt32();
-        bool isNegative = ReadBoolean();
-        byte scale = ReadByte();
+        _span
+            .Slice(_position, 16)
+            .CopyTo(MemoryMarshal.AsBytes(bits));
 
-        return new decimal(
-            lo,
-            mid,
-            hi,
-            isNegative,
-            scale);
+        _position += 16;
+
+        return new decimal(bits);
     }
 
     public Guid ReadGuid()

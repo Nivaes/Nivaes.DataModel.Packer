@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Nivaes.DataModel.Packer;
@@ -146,12 +147,16 @@ public ref struct PackerWriter
 
     public void Write(decimal value)
     {
-        int[] bits = decimal.GetBits(value);
+        Ensure(16);
 
-        Write(bits[0]);
-        Write(bits[1]);
-        Write(bits[2]);
-        Write(bits[3]);
+        Span<int> bits = stackalloc int[4];
+
+        decimal.GetBits(value, bits);
+
+        MemoryMarshal.AsBytes(bits)
+            .CopyTo(_span[_position..]);
+
+        _position += 16;
     }
 
     public void Write(Guid value)
