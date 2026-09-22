@@ -26,8 +26,4 @@
 	  <Using Include="Shouldly" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UnitTest\" />
-  </ItemGroup>
-
 </Project>
