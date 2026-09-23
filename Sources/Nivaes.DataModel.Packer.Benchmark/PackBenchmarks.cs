@@ -11,7 +11,7 @@ namespace Nivaes.DataModel.Packer.Benchmark.SimplePack;
 public class PackBenchmarks
 {
     //[Params(100, 1_000, 10_000, 100_000, 1_000_000)]
-    [Params(100, 200)]
+    [Params(100, 10_000)]
     public int Length;
 
     private string _text1 = null!;
