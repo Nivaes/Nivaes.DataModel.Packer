@@ -172,4 +172,13 @@ public ref struct PackerReader
 
         return ReadSpan(length);
     }
+
+    public T? Reader<T>()
+        where T : IPackable<T>
+    {
+        var buffer = ReadBytesSpan();
+        var reader = new PackerReader(buffer);
+
+        return T.Deserialize(ref reader);       
+    }
 }

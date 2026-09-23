@@ -32,6 +32,11 @@ public ref struct PackerWriter
         return _span[.._position].ToArray();
     }
 
+    public readonly Span<byte> ToSpan()
+    {
+        return _span[.._position];
+    }
+
     private void Ensure(int size)
     {
         if ((uint)(_position + size) <= (uint)_span.Length)
@@ -232,5 +237,14 @@ public ref struct PackerWriter
         value.CopyTo(_span[_position..]);
 
         _position += value.Length;
+    }
+
+    public void Write<T>(T value)
+         where T : IPackable<T>
+    {
+        var writer = new PackerWriter();
+        value.Serialize(ref writer);
+
+        Write(writer.ToSpan());
     }
 }

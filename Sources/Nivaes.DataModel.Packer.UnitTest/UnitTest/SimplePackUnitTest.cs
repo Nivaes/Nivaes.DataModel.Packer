@@ -89,7 +89,7 @@ public class SimplePackUnitTest
     }
 
     [Theory, AutoData]
-    public void SerializerAutoDataTest(string test1, string test2)
+    public void SerializerAutoDataTest1(string test1, string test2)
     {
         var model = new SimpleModel
         {
@@ -97,6 +97,18 @@ public class SimplePackUnitTest
             String2 = test2,
         };
 
+        var cache = DataModelPacker.Serialize(model);
+
+        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+    }
+
+    [Theory, AutoData]
+    public void SerializerAutoDataTest2(SimpleModel model)
+    {
         var cache = DataModelPacker.Serialize(model);
 
         var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
