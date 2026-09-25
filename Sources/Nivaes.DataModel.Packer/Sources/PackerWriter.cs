@@ -251,9 +251,15 @@ public ref struct PackerWriter
         _position += value.Length;
     }
 
-    public void Write<T>(T value)
+    public void Write<T>(T? value)
          where T : IPackable<T>
     {
+        if (value is null)
+        {
+            Write(-1);
+            return;
+        }
+
         var writer = new PackerWriter();
         value.Serialize(ref writer);
 
