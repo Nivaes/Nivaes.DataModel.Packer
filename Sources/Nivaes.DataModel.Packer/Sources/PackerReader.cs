@@ -14,7 +14,7 @@ public ref struct PackerReader
     public PackerReader(ReadOnlySpan<byte> buffer)
     {
         _span = buffer;
-        _position = 0;
+        _position = 4; // Los 4 primeras posición indican el tamaño.
     }
 
     public readonly int Position => _position;
@@ -22,6 +22,7 @@ public ref struct PackerReader
     public readonly int Remaining =>
         _span.Length - _position;
 
+    #region Reads
     private ReadOnlySpan<byte> ReadSpan(int size)
     {
         if ((uint)(_position + size) > (uint)_span.Length)
@@ -181,4 +182,5 @@ public ref struct PackerReader
 
         return T.Deserialize(ref reader);       
     }
+    #endregion
 }

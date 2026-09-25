@@ -13,11 +13,15 @@ public ref struct PackerWriter
     private Span<byte> _span;
     private int _position;
 
+    public PackerWriter()
+        : this(256)
+    { }
+
     public PackerWriter(int initialCapacity = 256)
     {
         _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
         _span = _buffer;
-        _position = 0;
+        _position = 4; // Dejamos espacio para poner el tamaño.
     }
 
     public readonly int Position => _position;
@@ -62,6 +66,14 @@ public ref struct PackerWriter
         _span = newBuffer;
     }
 
+    internal void Close()
+    {
+        BinaryPrimitives.WriteInt32LittleEndian(
+           _span[0..],
+           _position);
+    }
+
+    #region Writers
     public void Write(byte value)
     {
         Ensure(1);
@@ -247,4 +259,5 @@ public ref struct PackerWriter
 
         Write(writer.ToSpan());
     }
+    #endregion
 }
