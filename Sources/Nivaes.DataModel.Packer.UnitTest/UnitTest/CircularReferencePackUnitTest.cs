@@ -29,7 +29,7 @@ public class CircularReferencePackUnitTest
             {
                 String1 = string1,
                 String2 = string2,
-                Reference = reader.Reader<ReferenceModel>()!
+                Reference = reader.Read<ReferenceModel>()!
             };
             return value;
         }
@@ -58,7 +58,7 @@ public class CircularReferencePackUnitTest
             {
                 String1 = string1,
                 String2 = string2,
-                RootReference = reader.Reader<RootModel>()
+                RootReference = reader.Read<RootModel>()
             };
 
             return value;

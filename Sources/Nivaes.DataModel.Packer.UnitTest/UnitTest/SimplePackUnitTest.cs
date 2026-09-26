@@ -70,24 +70,6 @@ public class SimplePackUnitTest
         copyModel.String2.ShouldBe(model.String2);
     }
 
-    [Fact]
-    public void SerializerTest()
-    {
-        var model = new SimpleModel
-        {
-            String1 = "test1",
-            String2 = "test2",
-        };
-
-        var cache = DataModelPacker.Serialize(model);
-
-        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
-
-        copyModel.ShouldNotBeNull();
-        copyModel.String1.ShouldBe(model.String1);
-        copyModel.String2.ShouldBe(model.String2);
-    }
-
     [Theory, AutoData]
     public void SerializerAutoDataTest1(string test1, string test2)
     {

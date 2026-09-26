@@ -1,7 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Buffers.Binary;
-using System.Collections.Generic;
+﻿using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -12,16 +9,21 @@ public ref struct PackerWriter
     private byte[] _buffer;
     private Span<byte> _span;
     private int _position;
+    private int _firstPosition;
+
+    private RecursiveWriter _recursiveWriter;
 
     public PackerWriter()
-        : this(256)
+        : this(512)
     { }
 
-    public PackerWriter(int initialCapacity = 256)
+    public PackerWriter(int initialCapacity = 512)
     {
         _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
         _span = _buffer;
+        _firstPosition = 0;
         _position = 4; // Dejamos espacio para poner el tamaño.
+        _recursiveWriter = new RecursiveWriter();
     }
 
     public readonly int Position => _position;
@@ -66,11 +68,20 @@ public ref struct PackerWriter
         _span = newBuffer;
     }
 
-    internal void Close()
+    internal void RecursiveWriter()
     {
+        _recursiveWriter.SerializePending(ref this);
+    }
+
+    internal void WriteSize()
+    {
+        var size = _position - _firstPosition;
         BinaryPrimitives.WriteInt32LittleEndian(
-           _span[0..],
-           _position);
+           _span[_firstPosition..],
+           size);
+
+        _firstPosition = _position;
+        //_position += 4;
     }
 
     #region Writers
@@ -251,7 +262,7 @@ public ref struct PackerWriter
         _position += value.Length;
     }
 
-    public void Write<T>(T? value)
+    public void Write<T>(in T? value)
          where T : IPackable<T>
     {
         if (value is null)
@@ -260,10 +271,11 @@ public ref struct PackerWriter
             return;
         }
 
-        var writer = new PackerWriter();
-        value.Serialize(ref writer);
-
-        Write(writer.ToSpan());
+        if(!_recursiveWriter.Exist(value))
+        {
+            var item = _recursiveWriter.Add(value);
+            Write(item);
+        }
     }
     #endregion
 }

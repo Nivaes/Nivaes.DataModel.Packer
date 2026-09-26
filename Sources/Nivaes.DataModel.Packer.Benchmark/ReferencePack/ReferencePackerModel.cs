@@ -43,7 +43,7 @@ public class RootPackerModel : IPackable<RootPackerModel>
         {
             String1 = reader.ReadString(),
             String2 = reader.ReadString(),
-            Reference = reader.Reader<ReferencePackerModel>()!
+            Reference = reader.Read<ReferencePackerModel>()!
         };
 
         return value;

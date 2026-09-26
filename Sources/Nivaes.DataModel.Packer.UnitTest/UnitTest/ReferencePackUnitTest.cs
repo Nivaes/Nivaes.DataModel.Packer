@@ -29,7 +29,7 @@ public class ReferencePackUnitTest
             {
                 String1 = string1,
                 String2 = string2,
-                Reference = reader.Reader<ReferenceModel>()!
+                Reference = reader.Read<ReferenceModel>()!
             };
             return value;
         }

@@ -8,7 +8,7 @@ public static partial class DataModelPacker
         var writer = new PackerWriter();
         value.Serialize(ref writer);
 
-        writer.Close();
+        writer.RecursiveWriter();
 
         return writer.ToSpan();
     }
