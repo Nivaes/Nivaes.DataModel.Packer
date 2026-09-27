@@ -21,6 +21,10 @@ public class ReferencePackerModel : IPackable<ReferencePackerModel>
 
         return value;
     }
+
+    public void DeserializeCircular(ref PackerReader reader)
+    {
+    }
 }
 
 public class RootPackerModel : IPackable<RootPackerModel>
@@ -47,5 +51,9 @@ public class RootPackerModel : IPackable<RootPackerModel>
         };
 
         return value;
+    }
+
+    void IPackable<RootPackerModel>.DeserializeCircular(ref PackerReader reader)
+    {
     }
 }

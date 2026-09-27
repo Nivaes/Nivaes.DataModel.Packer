@@ -1,4 +1,5 @@
 ﻿using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -22,7 +23,8 @@ public ref struct PackerWriter
         _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
         _span = _buffer;
         _firstPosition = 0;
-        _position = 4; // Dejamos espacio para poner el tamaño.
+        //_position = 4; // Dejamos espacio para poner el tamaño.
+        _position = 0;
         _recursiveWriter = new RecursiveWriter();
     }
 
@@ -73,6 +75,11 @@ public ref struct PackerWriter
         _recursiveWriter.SerializePending(ref this);
     }
 
+    internal void ReserveSize()
+    {
+        _position += 4;
+    }
+
     internal void WriteSize()
     {
         var size = _position - _firstPosition;
@@ -80,8 +87,7 @@ public ref struct PackerWriter
            _span[_firstPosition..],
            size);
 
-        _firstPosition = _position;
-        //_position += 4;
+        _firstPosition = _position + 1;
     }
 
     #region Writers
@@ -271,11 +277,10 @@ public ref struct PackerWriter
             return;
         }
 
-        if(!_recursiveWriter.Exist(value))
-        {
-            var item = _recursiveWriter.Add(value);
-            Write(item);
-        }
+        var id = _recursiveWriter.Add(value);
+
+        if(id > 0)
+            Write(id);
     }
     #endregion
 }

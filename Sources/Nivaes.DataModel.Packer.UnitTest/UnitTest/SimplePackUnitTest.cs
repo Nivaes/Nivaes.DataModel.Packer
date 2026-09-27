@@ -32,6 +32,10 @@ public class SimplePackUnitTest
 
             return value;
         }
+
+        void IPackable<SimpleModel>.DeserializeCircular(ref PackerReader reader)
+        {
+        }
     }
 
     [Fact]

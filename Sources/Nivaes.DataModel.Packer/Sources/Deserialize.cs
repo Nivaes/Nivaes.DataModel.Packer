@@ -7,19 +7,22 @@ namespace Nivaes.DataModel.Packer;
 
 public static partial class DataModelPacker
 {
-    //public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(byte[] buffer)
-    //      where T : IPackable<T>
-    //{
-    //    var reader = new PackerReader(buffer);
-
-    //    return T.Deserialize(ref reader);
-    //}
-
     public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(ReadOnlySpan<byte> buffer)
           where T : IPackable<T>
     {
         var reader = new PackerReader(buffer);
+        //reader.ReadItems();
 
-        return T.Deserialize(ref reader);
+
+        var value = reader.Read<T>();
+        //var value = T.Deserialize(ref reader);
+
+        //if (value != null)
+        //{
+        //    reader.Register(value);
+        //    value.DeserializeCircular(ref reader);
+        //}
+
+        return value;
     }
 }

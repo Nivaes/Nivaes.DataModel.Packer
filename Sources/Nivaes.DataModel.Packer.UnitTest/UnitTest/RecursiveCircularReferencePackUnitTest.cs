@@ -30,10 +30,15 @@ public class RecursiveCircularReferencePackUnitTest
             {
                 String1 = string1,
                 String2 = string2,
-                Reference1 = reader.Read<ReferenceModel>()
+                //Reference1 = reader.Read<ReferenceModel>()
             };
 
             return value;
+        }
+
+        public void DeserializeCircular(ref PackerReader reader)
+        {
+            Reference1 = reader.Read<ReferenceModel>();
         }
     }
 

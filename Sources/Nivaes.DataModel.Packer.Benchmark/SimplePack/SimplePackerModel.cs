@@ -21,4 +21,8 @@ public class SimplePackerModel : IPackable<SimplePackerModel>
 
         return value;
     }
+
+    void IPackable<SimplePackerModel>.DeserializeCircular(ref PackerReader reader)
+    {
+    }
 }

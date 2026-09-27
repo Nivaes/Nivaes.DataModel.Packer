@@ -145,6 +145,10 @@ public class AllTypesPackUnitTest
 
             return value;
         }
+
+        void IPackable<AllTypesModel>.DeserializeCircular(ref PackerReader reader)
+        {
+        }
     }
 
     [Fact]

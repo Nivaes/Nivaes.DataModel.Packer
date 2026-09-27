@@ -30,6 +30,17 @@ public ref struct PackerReader
         _position += 4;
     }
 
+    //internal void Register<T>(T item)
+    //    where T : IPackable<T>
+    //{
+    //    _recursiveReader.Register(item);
+    //}
+
+    //internal void ReadItems()
+    //{
+    //    _recursiveReader.ReadItems();
+    //}
+
     #region Reads
     private ReadOnlySpan<byte> ReadSpan(int size)
     {
@@ -189,12 +200,8 @@ public ref struct PackerReader
 
         if (id == -1)
             return default(T);
-        //var buffer = ReadBytesSpan();
-        //var reader = new PackerReader(buffer);
 
-        //return T.Deserialize(ref reader);
-
-        return _recursiveReader.Read<T>(id, ref this);
+        return _recursiveReader.Read<T>(ref this);
     }
     #endregion
 }

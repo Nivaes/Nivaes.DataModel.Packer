@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Xunit3;
 using Nivaes.DataModel.Packer;
+using static Nivaes.DataModel.Packer1.UnitTest.SimplePackUnitTest;
 
 namespace Nivaes.DataModel.Packer1.UnitTest;
 
@@ -33,6 +34,10 @@ public class ReferencePackUnitTest
             };
             return value;
         }
+
+        void IPackable<RootModel>.DeserializeCircular(ref PackerReader reader)
+        {
+        }
     }
 
     public class ReferenceModel : IPackable<ReferenceModel>
@@ -58,6 +63,10 @@ public class ReferencePackUnitTest
             };
 
             return value;
+        }
+
+        void IPackable<ReferenceModel>.DeserializeCircular(ref PackerReader reader)
+        {
         }
     }
 
