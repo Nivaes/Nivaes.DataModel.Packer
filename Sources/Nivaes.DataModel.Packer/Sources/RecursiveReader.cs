@@ -72,7 +72,7 @@ internal ref struct RecursiveReader
 
         var position = _initPositions[itemsRead++];
 
-        var packerReader = new PackerReader(_buffer[position..]);
+        var packerReader = new PackerReader(_buffer[position..], ref this);
 
         var item = T.Deserialize(ref packerReader);
         //if(item != null)

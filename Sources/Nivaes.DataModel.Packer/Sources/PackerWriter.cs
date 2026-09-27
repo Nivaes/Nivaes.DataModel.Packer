@@ -18,7 +18,7 @@ public ref struct PackerWriter
         : this(512)
     { }
 
-    public PackerWriter(int initialCapacity = 512)
+    internal PackerWriter(int initialCapacity = 512)
     {
         _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
         _span = _buffer;

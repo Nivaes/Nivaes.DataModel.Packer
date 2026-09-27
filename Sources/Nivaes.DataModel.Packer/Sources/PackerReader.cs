@@ -13,11 +13,18 @@ public ref struct PackerReader
 
     private RecursiveReader _recursiveReader;
 
-    public PackerReader(ReadOnlySpan<byte> buffer)
+    internal PackerReader(ReadOnlySpan<byte> buffer)
     {
         _span = buffer;
         _position = 4; // Los 4 primeras posición indican el tamaño.
         _recursiveReader = new RecursiveReader(buffer);
+    }
+
+    internal PackerReader(ReadOnlySpan<byte> buffer, ref RecursiveReader recursiveReader)
+    {
+        _span = buffer;
+        _position = 4; // Los 4 primeras posición indican el tamaño.
+        _recursiveReader = recursiveReader;
     }
 
     public readonly int Position => _position;
