@@ -1,5 +1,4 @@
 ﻿using System.Buffers.Binary;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -23,17 +22,16 @@ public ref struct PackerWriter
         _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
         _span = _buffer;
         _firstPosition = 0;
-        //_position = 4; // Dejamos espacio para poner el tamaño.
         _position = 0;
         _recursiveWriter = new RecursiveWriter();
     }
 
-    public readonly int Position => _position;
+    //public readonly int Position => _position;
 
-    public readonly int Length => _position;
+    //public readonly int Length => _position;
 
-    public readonly ReadOnlySpan<byte> WrittenSpan =>
-        _span[.._position];
+    //public readonly ReadOnlySpan<byte> WrittenSpan =>
+    //    _span[.._position];
 
     public readonly byte[] ToArray()
     {

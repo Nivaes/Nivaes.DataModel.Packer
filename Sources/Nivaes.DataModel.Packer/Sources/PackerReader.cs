@@ -27,15 +27,15 @@ public ref struct PackerReader
         _recursiveReader = recursiveReader;
     }
 
-    public readonly int Position => _position;
+    //public readonly int Position => _position;
 
-    public readonly int Remaining =>
-        _span.Length - _position;
+    //public readonly int Remaining =>
+    //    _span.Length - _position;
 
-    internal void ReaderSize()
-    {
-        _position += 4;
-    }
+    //internal void ReaderSize()
+    //{
+    //    _position += 4;
+    //}
 
     //internal void Register<T>(T item)
     //    where T : IPackable<T>
