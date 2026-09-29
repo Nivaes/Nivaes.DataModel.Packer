@@ -1,6 +1,4 @@
-﻿using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
+﻿using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -8,22 +6,22 @@ namespace Nivaes.DataModel.Packer;
 
 public ref struct PackerReader
 {
-    private readonly ReadOnlySpan<byte> _span;
+    private readonly ReadOnlySpan<byte> _spanBuffer;
     private int _position;
 
     private RecursiveReader _recursiveReader;
 
     internal PackerReader(ReadOnlySpan<byte> buffer)
     {
-        _span = buffer;
-        _position = 4; // Los 4 primeras posición indican el tamaño.
+        _spanBuffer = buffer;
+        //_position = 4; // Los 4 primeras posición indican el tamaño.
         _recursiveReader = new RecursiveReader(buffer);
     }
 
     internal PackerReader(ReadOnlySpan<byte> buffer, ref RecursiveReader recursiveReader)
     {
-        _span = buffer;
-        _position = 4; // Los 4 primeras posición indican el tamaño.
+        _spanBuffer = buffer;
+        //_position = 4; // Los 4 primeras posición indican el tamaño.
         _recursiveReader = recursiveReader;
     }
 
@@ -51,11 +49,11 @@ public ref struct PackerReader
     #region Reads
     private ReadOnlySpan<byte> ReadSpan(int size)
     {
-        if ((uint)(_position + size) > (uint)_span.Length)
+        if ((uint)(_position + size) > (uint)_spanBuffer.Length)
             throw new InvalidOperationException(
                 "Unexpected end of buffer.");
 
-        var result = _span.Slice(_position, size);
+        var result = _spanBuffer.Slice(_position, size);
 
         _position += size;
 
@@ -128,7 +126,7 @@ public ref struct PackerReader
     {
         Span<int> bits = stackalloc int[4];
 
-        _span
+        _spanBuffer
             .Slice(_position, 16)
             .CopyTo(MemoryMarshal.AsBytes(bits));
 
@@ -208,7 +206,7 @@ public ref struct PackerReader
         if (id == -1)
             return default(T);
 
-        return _recursiveReader.Read<T>(ref this);
+        return _recursiveReader.Read<T>(id/*, ref this*/);
     }
     #endregion
 }

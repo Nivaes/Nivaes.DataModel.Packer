@@ -39,6 +39,25 @@ public class SimplePackUnitTest
     }
 
     [Fact]
+    public void SerializerDataTest()
+    {
+        var model = new SimpleModel()
+        {
+            String1 = "String1",
+            String2 = "String2",
+        };
+
+        var cache = DataModelPacker.Serialize(model);
+
+        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+    }
+
+
+    [Fact]
     public void SerializerVoidDataTest()
     {
         var model = new SimpleModel()

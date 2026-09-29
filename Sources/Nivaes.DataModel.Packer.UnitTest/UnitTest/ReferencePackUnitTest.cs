@@ -25,12 +25,13 @@ public class ReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
+            var reference = reader.Read<ReferenceModel>()!;
 
             var value = new RootModel
             {
                 String1 = string1,
                 String2 = string2,
-                Reference = reader.Read<ReferenceModel>()!
+                Reference = reference
             };
             return value;
         }

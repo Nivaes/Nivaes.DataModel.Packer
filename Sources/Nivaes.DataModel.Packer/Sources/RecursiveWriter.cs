@@ -107,15 +107,14 @@ internal ref struct RecursiveWriter
     {
         while (_serializeCount < _count)
         {
-            for (int i = _serializeCount; i < _count; i++)
+            for (; _serializeCount < _count; _serializeCount++)
             {
-                ref Entry entry = ref _entries[i];
+                ref Entry entry = ref _entries[_serializeCount];
 
-                writer.ReserveSize();
-                writer.Write(i);
+                writer.ReserveSizeInt32();
+                //writer.Write(_serializeCount);
                 entry.Serialize(entry.Item, ref writer);
 
-                _serializeCount = i + 1;
                 writer.WriteSize();
             }
             writer.RecursiveWriter();

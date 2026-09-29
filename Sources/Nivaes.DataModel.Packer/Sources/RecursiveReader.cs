@@ -44,6 +44,14 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
+    //public PackerReader PackerReader(int id)
+    //{
+    //    var position = _initPositions[id];
+    //    var reader = new PackerReader(_buffer[position..], ref this);
+
+    //    return reader;
+    //}
+
     //internal void ReadItems(ref PackerReader reader)
     //{
     //    foreach(var position in _initPositions)
@@ -58,7 +66,7 @@ internal ref struct RecursiveReader
     //    _items[itemsRead++] = item;
     //}
 
-    public T? Read<T>(/*int id,*/ ref PackerReader reader)
+    public T? Read<T>(int id/*, ref PackerReader reader*/)
         where T : IPackable<T>
     {
         //var initPosition = _initPositions[id];
@@ -79,8 +87,8 @@ internal ref struct RecursiveReader
         //if(item != null)
         //    Register<T>(item!);
 
-        //if (item != null)
-        //    item.DeserializeCircular(ref reader);
+        if (item != null)
+            item.DeserializeCircular(ref packerReader);
 
         return item;
     }

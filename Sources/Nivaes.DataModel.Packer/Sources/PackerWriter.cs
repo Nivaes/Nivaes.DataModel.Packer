@@ -73,7 +73,7 @@ public ref struct PackerWriter
         _recursiveWriter.SerializePending(ref this);
     }
 
-    internal void ReserveSize()
+    internal void ReserveSizeInt32()
     {
         _position += 4;
     }
@@ -85,7 +85,7 @@ public ref struct PackerWriter
            _span[_firstPosition..],
            size);
 
-        _firstPosition = _position + 1;
+        _firstPosition = _position;
     }
 
     #region Writers
