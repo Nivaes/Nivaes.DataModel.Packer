@@ -6,6 +6,13 @@ namespace Nivaes.DataModel.Packer1.UnitTest;
 
 public class CircularReferencePackUnitTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public CircularReferencePackUnitTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     public class RootModel : IPackable<RootModel>
     {
         public required string String1 { get; set; }

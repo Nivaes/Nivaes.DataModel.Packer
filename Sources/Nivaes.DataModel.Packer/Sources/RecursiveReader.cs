@@ -9,16 +9,24 @@ namespace Nivaes.DataModel.Packer;
 
 internal ref struct RecursiveReader
 {
+    private delegate void DeserializeCircularDelegate(object item, ref PackerReader writer);
+
+    private struct Entry
+    {
+        public object Item;
+        public DeserializeCircularDelegate Deserializer;
+    }
+
     private readonly ReadOnlySpan<byte> _buffer;
     private readonly ReadOnlySpan<int> _initPositions;
-    private readonly object[] _items;
+    private readonly Entry[] _entries;
     private int itemsRead;
 
     public RecursiveReader(ReadOnlySpan<byte> buffer)
     {
         _buffer = buffer;
         _initPositions = GetOffsets(buffer);
-        _items = new object[_initPositions.Length];
+        _entries = new Entry[_initPositions.Length];
     }
 
     public static int[] GetOffsets(ReadOnlySpan<byte> buffer)
@@ -44,52 +52,37 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
-    //public PackerReader PackerReader(int id)
-    //{
-    //    var position = _initPositions[id];
-    //    var reader = new PackerReader(_buffer[position..], ref this);
-
-    //    return reader;
-    //}
-
-    //internal void ReadItems(ref PackerReader reader)
-    //{
-    //    foreach(var position in _initPositions)
-    //    {
-    //        var packerReader = new PackerReader(_buffer[position..]);
-    //    }
-    //}
-
-    //internal void Register<T>(T item)
-    //    where T : IPackable<T>
-    //{
-    //    _items[itemsRead++] = item;
-    //}
-
-    public T? Read<T>(int id/*, ref PackerReader reader*/)
+    public T? Read<T>(int id)
         where T : IPackable<T>
     {
-        //var initPosition = _initPositions[id];
-        //ReadOnlySpan<byte> remaining = _buffer.Slice(initPosition);
+        if (_entries[id].Item == null)
+        {
+            var position = _initPositions[id];
+            var packerReader = new PackerReader(_buffer[position..], ref this);
+            _entries[id] = new Entry {
+                Item = T.Deserialize(ref packerReader)!,
+                Deserializer = SerializeCircular<T>
+            };
+        }
+       return (T?)_entries[id].Item;
+    }
 
-        //if (_items[id] != null) 
-        //    return (T)_items[id];
+    public void DeserializeCircular()
+    {
+        int id = 0;
+        foreach(var entry in _entries)
+        {
+            var position = _initPositions[id++];
+            var packerReader = new PackerReader(_buffer[position..], ref this);
+            entry.Deserializer(entry.Item, ref packerReader);
+        }
+    }
 
-        //var positon = _initPositions[];
-        //var reader = new PackerReader(_buffer[]);
-
-        var position = _initPositions[itemsRead++];
-
-        var packerReader = new PackerReader(_buffer[position..], ref this);
-
-        var item = T.Deserialize(ref packerReader);
-
-        //if(item != null)
-        //    Register<T>(item!);
-
-        if (item != null)
-            item.DeserializeCircular(ref packerReader);
-
-        return item;
+    private static void SerializeCircular<T>(
+       object item, 
+       ref PackerReader reader)
+       where T : IPackable<T>
+    {
+        ((T)item).DeserializeCircular(ref reader);
     }
 }

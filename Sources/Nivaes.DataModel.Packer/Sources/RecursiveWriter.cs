@@ -103,7 +103,19 @@ internal ref struct RecursiveWriter
     //    entry.Serialize(entry.Item, ref writer);
     //}
 
-    public void SerializePending(ref PackerWriter writer)
+    public ReadOnlySpan<byte> WriteRoot<T>(in T? value)
+        where T : IPackable<T>
+    {
+        var writer = new PackerWriter(ref this);
+
+        var id = Add(value!);
+
+        SerializePending(ref writer);
+
+        return writer.ToSpan();
+    }
+
+    private void SerializePending(ref PackerWriter writer)
     {
         while (_serializeCount < _count)
         {
@@ -117,7 +129,8 @@ internal ref struct RecursiveWriter
 
                 writer.WriteSize();
             }
-            writer.RecursiveWriter();
+            //writer.RecursiveWriter();
+            SerializePending(ref writer);
         }
     }
 }

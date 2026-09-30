@@ -5,6 +5,13 @@ namespace Nivaes.DataModel.Packer1.UnitTest;
 
 public class RecursiveCircularReferencePackUnitTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public RecursiveCircularReferencePackUnitTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     public class ReferenceModel : IPackable<ReferenceModel>
     {
         public required string String1 { get; set; }
@@ -25,12 +32,13 @@ public class RecursiveCircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
+            var reference = reader.Read<ReferenceModel>();
 
             var value = new ReferenceModel
             {
                 String1 = string1,
                 String2 = string2,
-                //Reference1 = reader.Read<ReferenceModel>()
+                Reference1 = reference
             };
 
             return value;
@@ -38,7 +46,7 @@ public class RecursiveCircularReferencePackUnitTest
 
         public void DeserializeCircular(ref PackerReader reader)
         {
-            Reference1 = reader.Read<ReferenceModel>();
+            //Reference1 = reader.Read<ReferenceModel>();
         }
     }
 
@@ -89,6 +97,8 @@ public class RecursiveCircularReferencePackUnitTest
 
         var cache = DataModelPacker.Serialize(model);
 
+        _output.WriteLine(Convert.ToHexString(cache));
+
         var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
 
         copyModel.ShouldNotBeNull();
@@ -118,6 +128,10 @@ public class RecursiveCircularReferencePackUnitTest
         model.Reference1.Reference1 = model;
 
         var cache = DataModelPacker.Serialize(model);
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
 

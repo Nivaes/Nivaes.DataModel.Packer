@@ -13,6 +13,8 @@ public static partial class DataModelPacker
         var recursiveReader = new RecursiveReader(buffer);
         var value = recursiveReader.Read<T>(0);
 
+        //recursiveReader.DeserializeCircular();
+
         //var reader = new PackerReader(buffer);
         //reader.ReadItems();
 

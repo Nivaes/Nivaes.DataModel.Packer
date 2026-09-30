@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Nivaes.DataModel.Packer;
 
-public ref struct PackerWriter
+public ref struct  PackerWriter
 {
     private byte[] _buffer;
     private Span<byte> _span;
@@ -13,17 +13,18 @@ public ref struct PackerWriter
 
     private RecursiveWriter _recursiveWriter;
 
-    public PackerWriter()
-        : this(512)
+    public PackerWriter(/*ref RecursiveWriter recursiveWriter*/)
+        : this(/*ref recursiveWriter,*/ 512)
     { }
 
-    internal PackerWriter(int initialCapacity = 512)
+    internal PackerWriter(/*ref RecursiveWriter recursiveWriter,*/ int initialCapacity = 512)
     {
         _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
         _span = _buffer;
         _firstPosition = 0;
         _position = 0;
-        _recursiveWriter = new RecursiveWriter();
+        //_recursiveWriter = new RecursiveWriter();
+        _recursiveWriter = recursiveWriter;  // ToDo: Unificar PackerWriter y RecursiveWriter para evitar refernecias circulares con ref struct.
     }
 
     //public readonly int Position => _position;
@@ -68,10 +69,10 @@ public ref struct PackerWriter
         _span = newBuffer;
     }
 
-    internal void RecursiveWriter()
-    {
-        _recursiveWriter.SerializePending(ref this);
-    }
+    //internal void RecursiveWriter()
+    //{
+    //    _recursiveWriter.SerializePending(ref this);
+    //}
 
     internal void ReserveSizeInt32()
     {
@@ -277,8 +278,7 @@ public ref struct PackerWriter
 
         var id = _recursiveWriter.Add(value);
 
-        if(id > 0)
-            Write(id);
+        Write(id);
     }
     #endregion
 }

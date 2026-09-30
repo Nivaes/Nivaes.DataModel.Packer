@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Xunit3;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Nivaes.DataModel.Packer;
 using static Nivaes.DataModel.Packer1.UnitTest.SimplePackUnitTest;
 
@@ -7,6 +8,13 @@ namespace Nivaes.DataModel.Packer1.UnitTest;
 
 public class ReferencePackUnitTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ReferencePackUnitTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     public class RootModel : IPackable<RootModel>
     {
         public required string String1 { get; set; }
@@ -138,6 +146,10 @@ public class ReferencePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize(model);
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<RootModel>(cache);
 

@@ -11,12 +11,12 @@ public ref struct PackerReader
 
     private RecursiveReader _recursiveReader;
 
-    internal PackerReader(ReadOnlySpan<byte> buffer)
-    {
-        _spanBuffer = buffer;
-        //_position = 4; // Los 4 primeras posición indican el tamaño.
-        _recursiveReader = new RecursiveReader(buffer);
-    }
+    //internal PackerReader(ReadOnlySpan<byte> buffer)
+    //{
+    //    _spanBuffer = buffer;
+    //    //_position = 4; // Los 4 primeras posición indican el tamaño.
+    //    _recursiveReader = new RecursiveReader(buffer);
+    //}
 
     internal PackerReader(ReadOnlySpan<byte> buffer, ref RecursiveReader recursiveReader)
     {
@@ -206,7 +206,7 @@ public ref struct PackerReader
         if (id == -1)
             return default(T);
 
-        return _recursiveReader.Read<T>(id/*, ref this*/);
+        return _recursiveReader.Read<T>(id);
     }
     #endregion
 }
