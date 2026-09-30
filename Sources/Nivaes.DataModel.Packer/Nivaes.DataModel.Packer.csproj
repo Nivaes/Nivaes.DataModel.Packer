@@ -2,6 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>$(_CommonTargets)</TargetFrameworks>
+
+		<AssemblyName>NivaesNivaes.DataModel.Packer</AssemblyName>
+		<RootNamespace>Nivaes.DataModel.Packer</RootNamespace>
+		
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 

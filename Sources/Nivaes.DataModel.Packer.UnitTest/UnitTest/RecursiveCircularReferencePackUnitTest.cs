@@ -32,13 +32,13 @@ public class RecursiveCircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<ReferenceModel>();
+            //var reference = reader.Read<ReferenceModel>();
 
             var value = new ReferenceModel
             {
                 String1 = string1,
                 String2 = string2,
-                Reference1 = reference
+                //Reference1 = reference
             };
 
             return value;
@@ -46,7 +46,7 @@ public class RecursiveCircularReferencePackUnitTest
 
         public void DeserializeCircular(ref PackerReader reader)
         {
-            //Reference1 = reader.Read<ReferenceModel>();
+            Reference1 = reader.Read<ReferenceModel>();
         }
     }
 
@@ -66,6 +66,10 @@ public class RecursiveCircularReferencePackUnitTest
         model.Reference1.Reference1 = model;
 
         var cache = DataModelPacker.Serialize(model);
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
 
@@ -97,7 +101,9 @@ public class RecursiveCircularReferencePackUnitTest
 
         var cache = DataModelPacker.Serialize(model);
 
-        _output.WriteLine(Convert.ToHexString(cache));
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
 
@@ -162,6 +168,10 @@ public class RecursiveCircularReferencePackUnitTest
         model.Reference1.Reference1 = model;
 
         var cache = DataModelPacker.Serialize(model);
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
 

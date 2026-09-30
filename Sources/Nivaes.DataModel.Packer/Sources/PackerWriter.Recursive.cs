@@ -2,32 +2,8 @@
 
 namespace Nivaes.DataModel.Packer;
 
-internal ref struct RecursiveWriter
+public ref partial struct PackerWriter
 {
-    private delegate void SerializeDelegate(object item, ref PackerWriter writer);
-
-    private struct Entry
-    {
-        public int Hash;
-        public object Item;
-        public SerializeDelegate Serialize;
-    }
-
-    private Entry[] _entries;
-
-    private int _count;
-
-    private int _serializeCount;
-
-    public RecursiveWriter()
-        :this(5)
-    {
-    }
-
-    public RecursiveWriter(int capacity = 5)
-    {
-        _entries = new Entry[capacity];
-    }
 
     public int Add<T>(T item)
         where T : IPackable<T>
@@ -106,16 +82,16 @@ internal ref struct RecursiveWriter
     public ReadOnlySpan<byte> WriteRoot<T>(in T? value)
         where T : IPackable<T>
     {
-        var writer = new PackerWriter(ref this);
+        //var writer = new PackerWriter(ref this);
 
         var id = Add(value!);
 
-        SerializePending(ref writer);
+        SerializePending();
 
-        return writer.ToSpan();
+        return ToSpan();
     }
 
-    private void SerializePending(ref PackerWriter writer)
+    private void SerializePending()
     {
         while (_serializeCount < _count)
         {
@@ -123,14 +99,14 @@ internal ref struct RecursiveWriter
             {
                 ref Entry entry = ref _entries[_serializeCount];
 
-                writer.ReserveSizeInt32();
+                ReserveSizeInt32();
                 //writer.Write(_serializeCount);
-                entry.Serialize(entry.Item, ref writer);
+                entry.Serialize(entry.Item, ref this);
 
-                writer.WriteSize();
+                WriteSize();
             }
             //writer.RecursiveWriter();
-            SerializePending(ref writer);
+            SerializePending();
         }
     }
 }

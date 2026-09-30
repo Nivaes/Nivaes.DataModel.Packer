@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Nivaes.DataModel.Packer;
 
@@ -13,7 +10,7 @@ public static partial class DataModelPacker
         var recursiveReader = new RecursiveReader(buffer);
         var value = recursiveReader.Read<T>(0);
 
-        //recursiveReader.DeserializeCircular();
+        recursiveReader.DeserializeCircular();
 
         //var reader = new PackerReader(buffer);
         //reader.ReadItems();

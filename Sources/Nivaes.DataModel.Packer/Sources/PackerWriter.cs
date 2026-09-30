@@ -4,35 +4,47 @@ using System.Text;
 
 namespace Nivaes.DataModel.Packer;
 
-public ref struct  PackerWriter
+public ref partial struct PackerWriter
 {
+    private const int InitialCapacity = 512;
     private byte[] _buffer;
     private Span<byte> _span;
     private int _position;
     private int _firstPosition;
 
-    private RecursiveWriter _recursiveWriter;
+    #region Recursive
+    private delegate void SerializeDelegate(object item, ref PackerWriter writer);
+
+    private struct Entry
+    {
+        public int Hash;
+        public object Item;
+        public SerializeDelegate Serialize;
+    }
+
+
+    private const int EntriesCapacity = 5;
+
+    private Entry[] _entries;
+
+    private int _count;
+
+    private int _serializeCount;
+    #endregion
+
+    //private RecursiveWriter _recursiveWriter;
 
     public PackerWriter(/*ref RecursiveWriter recursiveWriter*/)
-        : this(/*ref recursiveWriter,*/ 512)
-    { }
-
-    internal PackerWriter(/*ref RecursiveWriter recursiveWriter,*/ int initialCapacity = 512)
-    {
-        _buffer = GC.AllocateUninitializedArray<byte>(initialCapacity);
+    { 
+        _buffer = GC.AllocateUninitializedArray<byte>(InitialCapacity);
         _span = _buffer;
         _firstPosition = 0;
         _position = 0;
         //_recursiveWriter = new RecursiveWriter();
-        _recursiveWriter = recursiveWriter;  // ToDo: Unificar PackerWriter y RecursiveWriter para evitar refernecias circulares con ref struct.
+        //_recursiveWriter = recursiveWriter;  // ToDo: Unificar PackerWriter y RecursiveWriter para evitar refernecias circulares con ref struct.
+
+        _entries = new Entry[EntriesCapacity];
     }
-
-    //public readonly int Position => _position;
-
-    //public readonly int Length => _position;
-
-    //public readonly ReadOnlySpan<byte> WrittenSpan =>
-    //    _span[.._position];
 
     public readonly byte[] ToArray()
     {
@@ -276,7 +288,7 @@ public ref struct  PackerWriter
             return;
         }
 
-        var id = _recursiveWriter.Add(value);
+        var id = Add(value);
 
         Write(id);
     }

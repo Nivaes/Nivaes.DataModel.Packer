@@ -8,8 +8,8 @@ public static partial class DataModelPacker
         if (value == null)
             return [];
 
-        var recursiveWrite = new RecursiveWriter();
+        var write = new PackerWriter();
 
-        return recursiveWrite.WriteRoot(value);
+        return write.WriteRoot(value);
     }
 }

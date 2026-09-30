@@ -13,6 +13,7 @@ internal ref struct RecursiveReader
 
     private struct Entry
     {
+        public bool Create;
         public object Item;
         public DeserializeCircularDelegate Deserializer;
     }
@@ -20,7 +21,6 @@ internal ref struct RecursiveReader
     private readonly ReadOnlySpan<byte> _buffer;
     private readonly ReadOnlySpan<int> _initPositions;
     private readonly Entry[] _entries;
-    private int itemsRead;
 
     public RecursiveReader(ReadOnlySpan<byte> buffer)
     {
@@ -55,14 +55,14 @@ internal ref struct RecursiveReader
     public T? Read<T>(int id)
         where T : IPackable<T>
     {
-        if (_entries[id].Item == null)
+        //if (_entries[id].Item == null)
+        if(!_entries[id].Create)
         {
             var position = _initPositions[id];
             var packerReader = new PackerReader(_buffer[position..], ref this);
-            _entries[id] = new Entry {
-                Item = T.Deserialize(ref packerReader)!,
-                Deserializer = SerializeCircular<T>
-            };
+            _entries[id].Create = true;
+            _entries[id].Item = T.Deserialize(ref packerReader)!;
+            _entries[id].Deserializer = SerializeCircular<T>;
         }
        return (T?)_entries[id].Item;
     }
