@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Xunit3;
 using Nivaes.DataModel.Packer;
+using static Nivaes.DataModel.Packer.UnitTest.AllTypesPackUnitTest;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
 
@@ -11,6 +12,12 @@ public class CircularReferencePackUnitTest
     public CircularReferencePackUnitTest(ITestOutputHelper output)
     {
         _output = output;
+
+        DataModelPacker.IdClassToType.TryAdd(10, typeof(RootModelSerializer));
+        DataModelPacker.ClassToSerializerType.TryAdd(typeof(RootModel), typeof(RootModelSerializer));
+
+        DataModelPacker.IdClassToType.TryAdd(20, typeof(ReferenceModelSerializer));
+        DataModelPacker.ClassToSerializerType.TryAdd(typeof(ReferenceModel), typeof(ReferenceModelSerializer));
     }
 
     public class RootModel
@@ -25,7 +32,7 @@ public class CircularReferencePackUnitTest
     {
         int IPackable<RootModel>.IdClass => 10;
 
-        void IPackable<RootModel>.Serialize(RootModel model, ref PackerWriter writer)
+        void IPackable<RootModel>.Serialize(scoped in RootModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
@@ -63,7 +70,7 @@ public class CircularReferencePackUnitTest
     {
         int IPackable<ReferenceModel>.IdClass => 20;
 
-        void IPackable<ReferenceModel>.Serialize(ReferenceModel model, ref PackerWriter writer)
+        void IPackable<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);

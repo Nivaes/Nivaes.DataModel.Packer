@@ -4,7 +4,7 @@ public interface IPackable<T>
 {
     int IdClass { get; }
 
-    void Serialize(T value, ref PackerWriter writer);
+    void Serialize(scoped in T value, ref PackerWriter writer);
 
     T? Deserialize(ref PackerReader reader);
 

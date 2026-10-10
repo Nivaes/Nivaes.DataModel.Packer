@@ -10,6 +10,9 @@ public class RecursiveCircularReferencePackUnitTest
     public RecursiveCircularReferencePackUnitTest(ITestOutputHelper output)
     {
         _output = output;
+
+        DataModelPacker.IdClassToType.TryAdd(30, typeof(ReferenceModelSerializer));
+        DataModelPacker.ClassToSerializerType.TryAdd(typeof(ReferenceModel), typeof(ReferenceModelSerializer));
     }
 
     public class ReferenceModel
@@ -24,9 +27,9 @@ public class RecursiveCircularReferencePackUnitTest
 
     public class ReferenceModelSerializer : IPackable<ReferenceModel>
     {
-        public int IdClass => 20;
+        public int IdClass => 30;
 
-        void IPackable<ReferenceModel>.Serialize(scoped in ReferenceModel model, scoped in PackerWriter writer)
+        void IPackable<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);

@@ -11,10 +11,10 @@ public class ReferencePackUnitTest
     {
         _output = output;
 
-        DataModelPacker.IdClassToType.Add(5, typeof(RootModel));
-        DataModelPacker.IdClassToType.Add(6, typeof(ReferenceModel));
-        DataModelPacker.ClassToSerializerType.Add(typeof(RootModel), typeof(RootModelSerializer));
-        DataModelPacker.ClassToSerializerType.Add(typeof(ReferenceModel), typeof(ReferenceModelSerializer));
+        DataModelPacker.IdClassToType.TryAdd(5, typeof(RootModel));
+        DataModelPacker.IdClassToType.TryAdd(6, typeof(ReferenceModel));
+        DataModelPacker.ClassToSerializerType.TryAdd(typeof(RootModel), typeof(RootModelSerializer));
+        DataModelPacker.ClassToSerializerType.TryAdd(typeof(ReferenceModel), typeof(ReferenceModelSerializer));
     }
 
     public class RootModel
@@ -28,7 +28,7 @@ public class ReferencePackUnitTest
     {
         int IPackable<RootModel>.IdClass => 5;
 
-        void IPackable<RootModel>.Serialize(RootModel value, ref PackerWriter writer)
+        void IPackable<RootModel>.Serialize(scoped in RootModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
@@ -64,7 +64,7 @@ public class ReferencePackUnitTest
     public class ReferenceModelSerializer : IPackable<ReferenceModel>
     {
         int IPackable<ReferenceModel>.IdClass => 6;
-        void IPackable<ReferenceModel>.Serialize(ReferenceModel value, ref PackerWriter writer)
+        void IPackable<ReferenceModel>.Serialize(scoped in ReferenceModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);

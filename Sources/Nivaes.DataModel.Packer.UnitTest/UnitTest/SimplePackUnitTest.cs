@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Xunit3;
+using static Nivaes.DataModel.Packer.UnitTest.SimplePackUnitTest;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
 
@@ -11,8 +12,8 @@ public class SimplePackUnitTest
     {
         _output = output;
 
-        DataModelPacker.IdClassToType.Add(1, typeof(SimpleModelSerializer));
-        DataModelPacker.ClassToSerializerType.Add(typeof(SimpleModel), typeof(SimpleModelSerializer));
+        DataModelPacker.IdClassToType.TryAdd(1, typeof(SimpleModelSerializer));
+        DataModelPacker.ClassToSerializerType.TryAdd(typeof(SimpleModel), typeof(SimpleModelSerializer));
     }
 
     public class SimpleModel 
@@ -25,7 +26,7 @@ public class SimplePackUnitTest
     {
         int IPackable<SimpleModel>.IdClass => 1;
 
-        void IPackable<SimpleModel>.Serialize(SimpleModel value, ref PackerWriter writer)
+        void IPackable<SimpleModel>.Serialize(scoped in SimpleModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);

@@ -4,13 +4,11 @@ namespace Nivaes.DataModel.Packer;
 
 public ref partial struct PackerWriter
 {
-
-    public int Add<T>(T item)
-        where T : IPackable<T>
+    public int Add<T>(T item, in IPackable<T> serializer)
     {
         var hash = RuntimeHelpers.GetHashCode(item);
 
-        if(Exist<T>(hash, out var index))
+        if(Exist(hash, out var index))
         {
             return index;
         }
@@ -22,7 +20,9 @@ public ref partial struct PackerWriter
 
         _entries[index] = new Entry
         {
-            Hash = RuntimeHelpers.GetHashCode(item),
+            Hash = hash,
+            IdClass = serializer.IdClass,
+            Serializer = serializer,
             Item = item!,
             Serialize = Serialize<T>
         };
@@ -30,8 +30,7 @@ public ref partial struct PackerWriter
         return index;
     }
 
-    public bool Exist<T>(int hash, out int index)
-        where T : IPackable<T>
+    public bool Exist(int hash, out int index)
     {
         for (int i = 0; i < _count; i++)
         {
@@ -65,26 +64,15 @@ public ref partial struct PackerWriter
         Array.Resize(ref _entries, newSize);
     }
 
-    private static void Serialize<T>(
-       object item,
-       ref PackerWriter writer)
-       where T : IPackable<T>
+    private static void Serialize<T>(scoped in object item, scoped in object serializer, ref PackerWriter writer)
+
     {
-        //((T)item).Serialize(ref writer);
+        ((IPackable<T>)serializer).Serialize((T)item, ref writer);
     }
 
-    //public void Serialize(int index, ref PackerWriter writer)
-    //{
-    //    var entry = _entries[index];
-    //    entry.Serialize(entry.Item, ref writer);
-    //}
-
-    public ReadOnlySpan<byte> WriteRoot<T>(in T? value)
-        where T : IPackable<T>
+    public ReadOnlySpan<byte> WriteRoot<T>(in T? value, scoped in IPackable<T> serializer)
     {
-        //var writer = new PackerWriter(ref this);
-
-        var id = Add(value!);
+        var id = Add<T>(value!, serializer);
 
         SerializePending();
 
@@ -100,8 +88,10 @@ public ref partial struct PackerWriter
                 ref Entry entry = ref _entries[_serializeCount];
 
                 ReserveSizeInt32();
-                //writer.Write(_serializeCount);
-                entry.Serialize(entry.Item, ref this);
+                Write(_serializeCount);
+                Write(entry.IdClass);
+                
+                entry.Serialize(entry.Item, entry.Serializer, ref this);
 
                 WriteSize();
             }

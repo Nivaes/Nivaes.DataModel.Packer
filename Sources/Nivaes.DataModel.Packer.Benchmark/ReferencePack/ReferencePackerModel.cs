@@ -10,7 +10,7 @@ public class ReferencePackerModelSerializer : IPackable<ReferencePackerModel>
 {
     int IPackable<ReferencePackerModel>.IdClass => 1;
 
-    void IPackable<ReferencePackerModel>.Serialize(ReferencePackerModel value, ref PackerWriter writer)
+    void IPackable<ReferencePackerModel>.Serialize(scoped in ReferencePackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
@@ -43,7 +43,7 @@ public class RootPackerModelSerializer : IPackable<RootPackerModel>
 {
     int IPackable<RootPackerModel>.IdClass => 102;
 
-    void IPackable<RootPackerModel>.Serialize(RootPackerModel value, ref PackerWriter writer)
+    void IPackable<RootPackerModel>.Serialize(scoped in RootPackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);

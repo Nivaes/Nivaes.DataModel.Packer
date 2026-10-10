@@ -10,7 +10,7 @@ public class SimplePackerModelSerializer : IPackable<SimplePackerModel>
 {
     int IPackable<SimplePackerModel>.IdClass => 100;
 
-    void IPackable<SimplePackerModel>.Serialize(SimplePackerModel value, ref PackerWriter writer)
+    void IPackable<SimplePackerModel>.Serialize(scoped in SimplePackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);

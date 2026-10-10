@@ -13,15 +13,16 @@ public ref partial struct PackerWriter
     private int _firstPosition;
 
     #region Recursive
-    private delegate void SerializeDelegate(object item, ref PackerWriter writer);
+    private delegate void SerializeDelegate(scoped in object item, scoped in object serializer, ref PackerWriter writer);
 
     private struct Entry
     {
         public int Hash;
+        public int IdClass;
+        public object Serializer;
         public object Item;
         public SerializeDelegate Serialize;
     }
-
 
     private const int EntriesCapacity = 5;
 
@@ -280,7 +281,6 @@ public ref partial struct PackerWriter
     }
 
     public void Write<T>(in T? value)
-         where T : IPackable<T>
     {
         if (value is null)
         {
@@ -288,7 +288,7 @@ public ref partial struct PackerWriter
             return;
         }
 
-        var id = Add(value);
+        var id = Add<T>(value, null! /*serializer*/);
 
         Write(id);
     }

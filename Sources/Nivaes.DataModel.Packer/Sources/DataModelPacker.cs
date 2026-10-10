@@ -19,9 +19,9 @@ public static partial class DataModelPacker
             return [];
 
         var write = new PackerWriter();
+        var serializer = new TSerializer();
 
-        //return write.WriteRoot(value);
-        return null;
+        return write.WriteRoot(value, serializer);
     }
 
     //public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(ReadOnlySpan<byte> buffer)
