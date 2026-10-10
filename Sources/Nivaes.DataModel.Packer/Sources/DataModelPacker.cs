@@ -4,6 +4,9 @@ namespace Nivaes.DataModel.Packer;
 
 public static partial class DataModelPacker
 {
+    static public Dictionary<int, Type> IdClassToType { get; } = new Dictionary<int, Type>();
+    static public Dictionary<Type, Type> ClassToSerializerType { get; } = new Dictionary<Type, Type>();
+
     //public static ReadOnlySpan<byte> Serialize<T>(in T value)
     //{
     //    throw new NotImplementedException();

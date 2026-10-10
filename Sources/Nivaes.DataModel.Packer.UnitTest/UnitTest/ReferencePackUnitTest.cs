@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Xunit3;
+using static Nivaes.DataModel.Packer.UnitTest.SimplePackUnitTest;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
 
@@ -9,6 +10,11 @@ public class ReferencePackUnitTest
     public ReferencePackUnitTest(ITestOutputHelper output)
     {
         _output = output;
+
+        DataModelPacker.IdClassToType.Add(5, typeof(RootModel));
+        DataModelPacker.IdClassToType.Add(6, typeof(ReferenceModel));
+        DataModelPacker.ClassToSerializerType.Add(typeof(RootModel), typeof(RootModelSerializer));
+        DataModelPacker.ClassToSerializerType.Add(typeof(ReferenceModel), typeof(ReferenceModelSerializer));
     }
 
     public class RootModel
@@ -98,6 +104,7 @@ public class ReferencePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
@@ -128,6 +135,7 @@ public class ReferencePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
@@ -158,6 +166,7 @@ public class ReferencePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
@@ -188,6 +197,7 @@ public class ReferencePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
@@ -207,6 +217,7 @@ public class ReferencePackUnitTest
     public void SerializerAutoDataTest2(RootModel model)
     {
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))

@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Xunit3;
+using static Nivaes.DataModel.Packer.UnitTest.SimplePackUnitTest;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
 
@@ -9,6 +10,9 @@ public class AllTypesPackUnitTest
     public AllTypesPackUnitTest(ITestOutputHelper output)
     {
         _output = output;
+
+        DataModelPacker.IdClassToType.Add(2, typeof(AllTypesModelSerializer));
+        DataModelPacker.ClassToSerializerType.Add(typeof(AllTypesModel), typeof(AllTypesModelSerializer));  
     }
 
     public class AllTypesModel
@@ -211,6 +215,7 @@ public class AllTypesPackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
@@ -312,6 +317,7 @@ public class AllTypesPackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
@@ -367,6 +373,7 @@ public class AllTypesPackUnitTest
     public void SerializerAllDataTest2(AllTypesModel model)
     {
         var cache = DataModelPacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelSerializer>(cache);
 

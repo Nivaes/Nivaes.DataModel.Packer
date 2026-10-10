@@ -5,6 +5,16 @@ namespace Nivaes.DataModel.Packer.UnitTest;
 
 public class SimplePackUnitTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SimplePackUnitTest(ITestOutputHelper output)
+    {
+        _output = output;
+
+        DataModelPacker.IdClassToType.Add(1, typeof(SimpleModelSerializer));
+        DataModelPacker.ClassToSerializerType.Add(typeof(SimpleModel), typeof(SimpleModelSerializer));
+    }
+
     public class SimpleModel 
     {
         public required string String1 { get; set; }
@@ -50,6 +60,11 @@ public class SimplePackUnitTest
         };
         
         var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
@@ -69,6 +84,11 @@ public class SimplePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
@@ -87,6 +107,11 @@ public class SimplePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
@@ -105,6 +130,7 @@ public class SimplePackUnitTest
         };
 
         var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
@@ -117,6 +143,11 @@ public class SimplePackUnitTest
     public void SerializerAutoDataTest2(SimpleModel model)
     {
         var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
+
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
         var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 

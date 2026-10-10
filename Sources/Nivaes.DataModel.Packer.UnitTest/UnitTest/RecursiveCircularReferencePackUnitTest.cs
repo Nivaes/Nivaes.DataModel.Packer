@@ -1,188 +1,197 @@
-﻿//using AutoFixture.Xunit3;
-//using Nivaes.DataModel.Packer;
+﻿using AutoFixture.Xunit3;
+using Nivaes.DataModel.Packer;
 
-//namespace Nivaes.DataModel.Packer.UnitTest;
+namespace Nivaes.DataModel.Packer.UnitTest;
 
-//public class RecursiveCircularReferencePackUnitTest
-//{
-//    private readonly ITestOutputHelper _output;
+public class RecursiveCircularReferencePackUnitTest
+{
+    private readonly ITestOutputHelper _output;
 
-//    public RecursiveCircularReferencePackUnitTest(ITestOutputHelper output)
-//    {
-//        _output = output;
-//    }
+    public RecursiveCircularReferencePackUnitTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
-//    public class ReferenceModel : IPackable<ReferenceModel>
-//    {
-//        public required string String1 { get; set; }
-//        public required string String2 { get; set; }
+    public class ReferenceModel
+    {
+        public required string String1 { get; set; }
+        public required string String2 { get; set; }
 
-//        public ReferenceModel? Reference1 { get; set; }
+        public ReferenceModel? Reference1 { get; set; }
 
-//        public ReferenceModel? Reference2 { get; set; }
+        public ReferenceModel? Reference2 { get; set; }
+    }
 
-//        void IPackable<ReferenceModel>.Serialize(ref PackerWriter writer)
-//        {
-//            writer.Write(String1);
-//            writer.Write(String2);
-//            writer.Write(Reference1);
-//        }
+    public class ReferenceModelSerializer : IPackable<ReferenceModel>
+    {
+        public int IdClass => 20;
 
-//        static ReferenceModel? IPackable<ReferenceModel>.Deserialize(ref PackerReader reader)
-//        {
-//            var string1 = reader.ReadString();
-//            var string2 = reader.ReadString();
-//            //var reference = reader.Read<ReferenceModel>();
+        void IPackable<ReferenceModel>.Serialize(ReferenceModel model, ref PackerWriter writer)
+        {
+            writer.Write(model.String1);
+            writer.Write(model.String2);
+            //writer.Write(model.Reference1);
+        }
 
-//            var value = new ReferenceModel
-//            {
-//                String1 = string1,
-//                String2 = string2,
-//                //Reference1 = reference
-//            };
+        ReferenceModel? IPackable<ReferenceModel>.Deserialize(ref PackerReader reader)
+        {
+            var string1 = reader.ReadString();
+            var string2 = reader.ReadString();
+            //var reference = reader.Read<ReferenceModel>();
 
-//            return value;
-//        }
+            var value = new ReferenceModel
+            {
+                String1 = string1,
+                String2 = string2,
+                //Reference1 = reference
+            };
 
-//        public void DeserializeCircular(ref PackerReader reader)
-//        {
-//            Reference1 = reader.Read<ReferenceModel>();
-//        }
-//    }
+            return value;
+        }
 
-//    [Fact]
-//    public void SerializerVoidDataTest()
-//    {
-//        var model = new ReferenceModel()
-//        {
-//            String1 = null!,
-//            String2 = null!,
-//            Reference1 = new ReferenceModel
-//            {
-//                String1 = null!,
-//                String2 = null!,
-//            }
-//        };
-//        model.Reference1.Reference1 = model;
+        public void DeserializeCircular(ref PackerReader reader)
+        {
+            //Reference1 = reader.Read<ReferenceModel>();
+        }
+    }
 
-//        var cache = DataModelPacker.Serialize(model);
+    [Fact]
+    public void SerializerVoidDataTest()
+    {
+        var model = new ReferenceModel()
+        {
+            String1 = null!,
+            String2 = null!,
+            Reference1 = new ReferenceModel
+            {
+                String1 = null!,
+                String2 = null!,
+            }
+        };
+        model.Reference1.Reference1 = model;
 
-//        _output.WriteLine(
-//            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
-//        );
+        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
-//        var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
-//        copyModel.ShouldNotBeNull();
-//        copyModel.String1.ShouldBe(model.String1);
-//        copyModel.String2.ShouldBe(model.String2);
-//        copyModel.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
-//        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
+        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelSerializer>(cache);
 
-//        copyModel.Reference1.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.Reference1.ShouldBe(copyModel);
-//    }
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-//    [Fact]
-//    public void SerializerEmptyDataTest()
-//    {
-//        var model = new ReferenceModel()
-//        {
-//            String1 = string.Empty,
-//            String2 = string.Empty,
-//            Reference1 = new ReferenceModel
-//            {
-//                String1 = string.Empty,
-//                String2 = string.Empty,
-//            }
-//        };
-//        model.Reference1.Reference1 = model;
+        copyModel.Reference1.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.Reference1.ShouldBe(copyModel);
+    }
 
-//        var cache = DataModelPacker.Serialize(model);
+    [Fact]
+    public void SerializerEmptyDataTest()
+    {
+        var model = new ReferenceModel()
+        {
+            String1 = string.Empty,
+            String2 = string.Empty,
+            Reference1 = new ReferenceModel
+            {
+                String1 = string.Empty,
+                String2 = string.Empty,
+            }
+        };
+        model.Reference1.Reference1 = model;
 
-//        _output.WriteLine(
-//            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
-//        );
+        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
-//        var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
-//        copyModel.ShouldNotBeNull();
-//        copyModel.String1.ShouldBe(model.String1);
-//        copyModel.String2.ShouldBe(model.String2);
-//        copyModel.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
-//        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
+        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelSerializer>(cache);
 
-//        copyModel.Reference1.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.Reference1.ShouldBe(copyModel);
-//    }
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-//    [Fact]
-//    public void SerializerTest()
-//    {
-//        var model = new ReferenceModel
-//        {
-//            String1 = "test1",
-//            String2 = "test2",
-//            Reference1 = new ReferenceModel
-//            {
-//                String1 = "test3",
-//                String2 = "test4",
-//            }
-//        };
-//        model.Reference1.Reference1 = model;
+        copyModel.Reference1.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.Reference1.ShouldBe(copyModel);
+    }
 
-//        var cache = DataModelPacker.Serialize(model);
+    [Fact]
+    public void SerializerTest()
+    {
+        var model = new ReferenceModel
+        {
+            String1 = "test1",
+            String2 = "test2",
+            Reference1 = new ReferenceModel
+            {
+                String1 = "test3",
+                String2 = "test4",
+            }
+        };
+        model.Reference1.Reference1 = model;
 
-//        _output.WriteLine(
-//            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
-//        );
+        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
-//        var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
-//        copyModel.ShouldNotBeNull();
-//        copyModel.String1.ShouldBe(model.String1);
-//        copyModel.String2.ShouldBe(model.String2);
-//        copyModel.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
-//        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
+        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelSerializer>(cache);
 
-//        copyModel.Reference1.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.Reference1.ShouldBe(copyModel);
-//    }
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-//    [Theory, AutoData]
-//    public void SerializerAutoDataTest1(string test1, string test2, string test3, string test4)
-//    {
-//        var model = new ReferenceModel
-//        {
-//            String1 = test1,
-//            String2 = test2,
-//            Reference1 = new ReferenceModel
-//            {
-//                String1 = test3,
-//                String2 = test4,
-//            }
-//        };
-//        model.Reference1.Reference1 = model;
+        copyModel.Reference1.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.Reference1.ShouldBe(copyModel);
+    }
 
-//        var cache = DataModelPacker.Serialize(model);
+    [Theory, AutoData]
+    public void SerializerAutoDataTest1(string test1, string test2, string test3, string test4)
+    {
+        var model = new ReferenceModel
+        {
+            String1 = test1,
+            String2 = test2,
+            Reference1 = new ReferenceModel
+            {
+                String1 = test3,
+                String2 = test4,
+            }
+        };
+        model.Reference1.Reference1 = model;
 
-//        _output.WriteLine(
-//            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
-//        );
+        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
-//        var copyModel = DataModelPacker.Deserialize<ReferenceModel>(cache);
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
 
-//        copyModel.ShouldNotBeNull();
-//        copyModel.String1.ShouldBe(model.String1);
-//        copyModel.String2.ShouldBe(model.String2);
-//        copyModel.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
-//        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
+        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelSerializer>(cache);
 
-//        copyModel.Reference1.Reference1.ShouldNotBeNull();
-//        copyModel.Reference1.Reference1.ShouldBe(copyModel);
-//    }
-//}
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
+
+        copyModel.Reference1.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.Reference1.ShouldBe(copyModel);
+    }
+}
