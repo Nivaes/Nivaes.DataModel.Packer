@@ -26,7 +26,7 @@ public class RecursiveCircularReferencePackUnitTest
     {
         public int IdClass => 20;
 
-        void IPackable<ReferenceModel>.Serialize(ReferenceModel model, ref PackerWriter writer)
+        void IPackable<ReferenceModel>.Serialize(scoped in ReferenceModel model, scoped in PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
