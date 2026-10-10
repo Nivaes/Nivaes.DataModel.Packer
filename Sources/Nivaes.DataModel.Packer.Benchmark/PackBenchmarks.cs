@@ -46,7 +46,7 @@ public class PackBenchmarks
             String2 = _text2,
         };
 
-        return DataModelPacker.Serialize(model).ToArray();
+        return DataModelPacker.Serialize<SimplePackerModel, SimplePackerModelSerializer>(model).ToArray();
     }
 
     [Benchmark]
@@ -58,7 +58,7 @@ public class PackBenchmarks
     [Benchmark]
     public void PackDeserialize()
     {
-        var copyModel = DataModelPacker.Deserialize<SimplePackerModel>(_packReferenceSerialize);
+        var copyModel = DataModelPacker.Deserialize<SimplePackerModel, SimplePackerModelSerializer>(_packReferenceSerialize);
     }
 
     private byte[] PrepareMemoryPackSerialize()
@@ -98,7 +98,7 @@ public class PackBenchmarks
             }
         };
 
-        return DataModelPacker.Serialize(model).ToArray();
+        return DataModelPacker.Serialize<RootPackerModel, RootPackerModelSerializer>(model).ToArray();
     }
 
     [Benchmark]
@@ -110,7 +110,7 @@ public class PackBenchmarks
     [Benchmark]
     public void PackReferenceDeserialize()
     {
-        var copyModel = DataModelPacker.Deserialize<ReferencePackerModel>(_packSerialize);
+        var copyModel = DataModelPacker.Deserialize<ReferencePackerModel, ReferencePackerModelSerializer>(_packReferenceSerialize);
     }
 
     private byte[] PrepareReferenceMemoryPackSerialize()

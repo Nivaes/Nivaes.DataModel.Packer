@@ -97,15 +97,13 @@ public class ReferencePackUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel>(model);
-        //var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel>(cache);
-        //var copyModel = DataModelPacker.Deserialize<RootModel, RootModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -159,8 +157,7 @@ public class ReferencePackUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize(model);
-        //var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))

@@ -48,11 +48,10 @@ public class SimplePackUnitTest
             String1 = "String1",
             String2 = "String2",
         };
-
         
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -69,9 +68,9 @@ public class SimplePackUnitTest
             String2 = null!,
         };
 
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -87,9 +86,9 @@ public class SimplePackUnitTest
             String2 = string.Empty,
         };
 
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -105,9 +104,9 @@ public class SimplePackUnitTest
             String2 = test2,
         };
 
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -117,9 +116,9 @@ public class SimplePackUnitTest
     [Theory, AutoData]
     public void SerializerAutoDataTest2(SimpleModel model)
     {
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);

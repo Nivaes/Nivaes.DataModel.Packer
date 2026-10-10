@@ -4,10 +4,27 @@ namespace Nivaes.DataModel.Packer;
 
 public static partial class DataModelPacker
 {
-    public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(ReadOnlySpan<byte> buffer)
+    //public static ReadOnlySpan<byte> Serialize<T>(in T value)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    public static ReadOnlySpan<byte> Serialize<T, TSerializer>(in T value)
+        where TSerializer : IPackable<T>, new()
     {
-        throw new NotImplementedException();
+        if (value == null)
+            return [];
+
+        var write = new PackerWriter();
+
+        //return write.WriteRoot(value);
+        return null;
     }
+
+    //public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(ReadOnlySpan<byte> buffer)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TSerializer>(ReadOnlySpan<byte> buffer)
            where TSerializer : IPackable<T>, new()
