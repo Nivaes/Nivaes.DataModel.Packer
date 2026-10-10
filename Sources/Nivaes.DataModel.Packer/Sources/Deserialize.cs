@@ -5,10 +5,15 @@ namespace Nivaes.DataModel.Packer;
 public static partial class DataModelPacker
 {
     public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(ReadOnlySpan<byte> buffer)
-          where T : IPackable<T>
+    {
+        throw new NotImplementedException();
+    }
+
+    public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TSerializer>(ReadOnlySpan<byte> buffer)
+           where TSerializer : IPackable<T>, new()
     {
         var recursiveReader = new RecursiveReader(buffer);
-        var value = recursiveReader.Read<T>(0);
+        var value = recursiveReader.Read<T,TSerializer>(0);
 
         recursiveReader.DeserializeCircular();
 

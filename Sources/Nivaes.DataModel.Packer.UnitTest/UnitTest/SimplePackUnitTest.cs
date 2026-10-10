@@ -1,25 +1,27 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using AutoFixture.Xunit3;
-using Nivaes.DataModel.Packer;
+﻿using AutoFixture.Xunit3;
 
-namespace Nivaes.DataModel.Packer1.UnitTest;
+namespace Nivaes.DataModel.Packer.UnitTest;
 
 
 public class SimplePackUnitTest
 {
-    public class SimpleModel : IPackable<SimpleModel>
+    public class SimpleModel 
     {
         public required string String1 { get; set; }
         public required string String2 { get; set; }
+    }
 
-        void IPackable<SimpleModel>.Serialize(ref PackerWriter writer)
+    public class SimpleModelSerializer : IPackable<SimpleModel>
+    {
+        int IPackable<SimpleModel>.IdClass => 1;
+
+        void IPackable<SimpleModel>.Serialize(SimpleModel value, ref PackerWriter writer)
         {
-            writer.Write(String1);
-            writer.Write(String2);
+            writer.Write(value.String1);
+            writer.Write(value.String2);
         }
 
-        static SimpleModel? IPackable<SimpleModel>.Deserialize(ref PackerReader reader)
+        SimpleModel? IPackable<SimpleModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
@@ -38,7 +40,7 @@ public class SimplePackUnitTest
         }
     }
 
-    [Fact]
+    [Fact]   
     public void SerializerDataTest()
     {
         var model = new SimpleModel()
@@ -47,6 +49,7 @@ public class SimplePackUnitTest
             String2 = "String2",
         };
 
+        
         var cache = DataModelPacker.Serialize(model);
 
         var copyModel = DataModelPacker.Deserialize<SimpleModel>(cache);

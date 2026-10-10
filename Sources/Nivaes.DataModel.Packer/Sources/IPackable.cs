@@ -2,9 +2,11 @@
 
 public interface IPackable<T>
 {
-    void Serialize(ref PackerWriter writer);
+    int IdClass { get; }
 
-    abstract static T? Deserialize(ref PackerReader reader);
+    void Serialize(T value, ref PackerWriter writer);
+
+    T? Deserialize(ref PackerReader reader);
 
     void DeserializeCircular(ref PackerReader reader); 
 }

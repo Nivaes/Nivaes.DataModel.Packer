@@ -25,11 +25,48 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Nivaes.DataModel.Packer\Nivaes.DataModel.Packer.csproj" />
+
+		<ProjectReference Include="..\Nivaes.DataModel.Packer.SourceGenerator\Nivaes.DataModel.Packer.SourceGenerator.csproj" >
+			<PrivateAssets>all</PrivateAssets>
+			<OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<ExcludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</ExcludeAssets>
+		</ProjectReference>
 	</ItemGroup>
+
+	<PropertyGroup>
+		<InterceptorsNamespaces>$(InterceptorsNamespaces);Nivaes.DataModel.Packer.SourceGenerator</InterceptorsNamespaces>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<Using Include="Xunit" />
 		<Using Include="Shouldly" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="coverlet.collector">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="SonarAnalyzer.CSharp">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="Roslynator.Analyzers">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+	</PropertyGroup>
+	
 </Project>

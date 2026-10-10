@@ -1,11 +1,17 @@
 ﻿using AutoFixture.Xunit3;
-using Nivaes.DataModel.Packer;
 
-namespace Nivaes.DataModel.Packer1.UnitTest;
+namespace Nivaes.DataModel.Packer.UnitTest;
 
 public class AllTypesPackUnitTest
 {
-    public class AllTypesModel : IPackable<AllTypesModel>
+    private readonly ITestOutputHelper _output;
+
+    public AllTypesPackUnitTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    public class AllTypesModel
     {
         public required Guid Guid { get; set; }
 
@@ -14,7 +20,7 @@ public class AllTypesPackUnitTest
         public required bool Bool1 { get; set; }
         public required bool Bool2 { get; set; }
 
-        public required byte[] Bytes1 {get; set; }
+        public required byte[] Bytes1 { get; set; }
         public required byte[] Bytes2 { get; set; }
 
         public required short Short1 { get; set; }
@@ -23,14 +29,14 @@ public class AllTypesPackUnitTest
         public required int Int2 { get; set; }
         public required long Long1 { get; set; }
         public required long Long2 { get; set; }
-        
+
         public required ushort UShort1 { get; set; }
         public required ushort UShort2 { get; set; }
         public required uint UInt1 { get; set; }
         public required uint UInt2 { get; set; }
         public required ulong ULong1 { get; set; }
         public required ulong ULong2 { get; set; }
-        
+
         public required string String1 { get; set; }
         public required string String2 { get; set; }
 
@@ -48,61 +54,65 @@ public class AllTypesPackUnitTest
 
         public required DateTimeOffset DateTimeOffset1 { get; set; }
         public required DateTimeOffset DateTimeOffset2 { get; set; }
+    }
+    public class AllTypesModelSerializer : IPackable<AllTypesModel>
+    {
+        int IPackable<AllTypesModel>.IdClass => 2;
 
-        void IPackable<AllTypesModel>.Serialize(ref PackerWriter writer)
+        void IPackable<AllTypesModel>.Serialize(AllTypesModel item, ref PackerWriter writer)
         {
-            writer.Write(Guid);
+            writer.Write(item.Guid);
 
-            writer.Write(Byte1);
-            writer.Write(Byte2);
+            writer.Write(item.Byte1);
+            writer.Write(item.Byte2);
 
-            writer.Write(Bytes1);
-            writer.Write(Bytes2);
+            writer.Write(item.Bytes1);
+            writer.Write(item.Bytes2);
 
-            writer.Write(Bool1);
-            writer.Write(Bool2);
+            writer.Write(item.Bool1);
+            writer.Write(item.Bool2);
 
-            writer.Write(Short1);
-            writer.Write(Short2);
-            writer.Write(Int1);
-            writer.Write(Int2);
-            writer.Write(Long1);
-            writer.Write(Long2);
+            writer.Write(item.Short1);
+            writer.Write(item.Short2);
+            writer.Write(item.Int1);
+            writer.Write(item.Int2);
+            writer.Write(item.Long1);
+            writer.Write(item.Long2);
 
-            writer.Write(UShort1);
-            writer.Write(UShort2);
-            writer.Write(UInt1);
-            writer.Write(UInt2);
-            writer.Write(ULong1);
-            writer.Write(ULong2);
+            writer.Write(item.UShort1);
+            writer.Write(item.UShort2);
+            writer.Write(item.UInt1);
+            writer.Write(item.UInt2);
+            writer.Write(item.ULong1);
+            writer.Write(item.ULong2);
 
-            writer.Write(String1);
-            writer.Write(String2);
+            writer.Write(item.String1);
+            writer.Write(item.String2);
 
-            writer.Write(Float1);
-            writer.Write(Float2);
+            writer.Write(item.Float1);
+            writer.Write(item.Float2);
 
-            writer.Write(Decimal1);
-            writer.Write(Decimal2);
+            writer.Write(item.Decimal1);
+            writer.Write(item.Decimal2);
 
-            writer.Write(Double1);
-            writer.Write(Double2);
+            writer.Write(item.Double1);
+            writer.Write(item.Double2);
 
-            writer.Write(DateTime1);
-            writer.Write(DateTime2);
+            writer.Write(item.DateTime1);
+            writer.Write(item.DateTime2);
 
-            writer.Write(DateTimeOffset1);
-            writer.Write(DateTimeOffset2);
+            writer.Write(item.DateTimeOffset1);
+            writer.Write(item.DateTimeOffset2);
         }
 
-        static AllTypesModel? IPackable<AllTypesModel>.Deserialize(ref PackerReader reader)
+        AllTypesModel? IPackable<AllTypesModel>.Deserialize(ref PackerReader reader)
         {
             var value = new AllTypesModel
             {
                 Guid = reader.ReadGuid(),
 
                 Byte1 = reader.ReadByte(),
-                Byte2= reader.ReadByte(),
+                Byte2 = reader.ReadByte(),
 
                 Bytes1 = reader.ReadBytes()!,
                 Bytes2 = reader.ReadBytes()!,
@@ -161,8 +171,8 @@ public class AllTypesPackUnitTest
             Byte1 = 223,
             Byte2 = 21,
 
-            Bytes1 = [223, 232, 12, 32, 33,01, 22,36, 93],
-            Bytes2 = [032, 9, 43, 241, 23,53, 55],
+            Bytes1 = [223, 232, 12, 32, 33, 01, 22, 36, 93],
+            Bytes2 = [032, 9, 43, 241, 23, 53, 55],
 
             Bool1 = true,
             Bool2 = false,
@@ -200,9 +210,13 @@ public class AllTypesPackUnitTest
             DateTimeOffset2 = DateTimeOffset.Now.AddSeconds(223934),
         };
 
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<AllTypesModel>(cache);
+        _output.WriteLine(
+            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+        );
+
+        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
 
@@ -259,7 +273,7 @@ public class AllTypesPackUnitTest
             Byte2 = Byte.MaxValue,
 
             Bytes1 = [32, 23, 32, 63, 3, 126, 122],
-            Bytes2 = [3,2, 56, 33, 22, 52, 0, 255, 0, 255],
+            Bytes2 = [3, 2, 56, 33, 22, 52, 0, 255, 0, 255],
 
             Bool1 = false,
             Bool2 = true,
@@ -297,9 +311,13 @@ public class AllTypesPackUnitTest
             DateTimeOffset2 = DateTimeOffset.MaxValue,
         };
 
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<AllTypesModel>(cache);
+        _output.WriteLine(
+           string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
+       );
+
+        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
 
@@ -348,9 +366,9 @@ public class AllTypesPackUnitTest
     [Theory, AutoData]
     public void SerializerAllDataTest2(AllTypesModel model)
     {
-        var cache = DataModelPacker.Serialize(model);
+        var cache = DataModelPacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
 
-        var copyModel = DataModelPacker.Deserialize<AllTypesModel>(cache);
+        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelSerializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.Byte1.ShouldBe(model.Byte1);

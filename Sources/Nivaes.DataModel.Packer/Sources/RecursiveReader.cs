@@ -52,8 +52,8 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
-    public T? Read<T>(int id)
-        where T : IPackable<T>
+    public T? Read<T, TSerializer>(int id)
+        where TSerializer : IPackable<T>
     {
         //if (_entries[id].Item == null)
         if(!_entries[id].Create)
@@ -61,8 +61,8 @@ internal ref struct RecursiveReader
             var position = _initPositions[id];
             var packerReader = new PackerReader(_buffer[position..], ref this);
             _entries[id].Create = true;
-            _entries[id].Item = T.Deserialize(ref packerReader)!;
-            _entries[id].Deserializer = SerializeCircular<T>;
+            //_entries[id].Item = T.Deserialize(ref packerReader)!;
+            //_entries[id].Deserializer = SerializeCircular<T>;
         }
        return (T?)_entries[id].Item;
     }

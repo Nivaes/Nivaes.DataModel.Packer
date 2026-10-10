@@ -1,17 +1,22 @@
 ﻿namespace Nivaes.DataModel.Packer.Benchmark.SimplePack;
 
-public class ReferencePackerModel : IPackable<ReferencePackerModel>
+public class ReferencePackerModel
 {
     public required string String1 { get; set; }
     public required string String2 { get; set; }
+}
 
-    void IPackable<ReferencePackerModel>.Serialize(ref PackerWriter writer)
+public class ReferencePackerModelSerializer : IPackable<ReferencePackerModel>
+{
+    int IPackable<ReferencePackerModel>.IdClass => 1;
+
+    void IPackable<ReferencePackerModel>.Serialize(ReferencePackerModel value, ref PackerWriter writer)
     {
-        writer.Write(String1);
-        writer.Write(String2);
+        writer.Write(value.String1);
+        writer.Write(value.String2);
     }
 
-    static ReferencePackerModel? IPackable<ReferencePackerModel>.Deserialize(ref PackerReader reader)
+    ReferencePackerModel? IPackable<ReferencePackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new ReferencePackerModel
         {
@@ -27,27 +32,32 @@ public class ReferencePackerModel : IPackable<ReferencePackerModel>
     }
 }
 
-public class RootPackerModel : IPackable<RootPackerModel>
+public class RootPackerModel
 {
     public required string String1 { get; set; }
     public required string String2 { get; set; }
-
     public required ReferencePackerModel Reference { get; set; }
+}
 
-    void IPackable<RootPackerModel>.Serialize(ref PackerWriter writer)
+public class RootPackerModelSerializer : IPackable<RootPackerModel>
+{
+    int IPackable<RootPackerModel>.IdClass => 102;
+
+    void IPackable<RootPackerModel>.Serialize(RootPackerModel value, ref PackerWriter writer)
     {
-        writer.Write(String1);
-        writer.Write(String2);
-        writer.Write(Reference);
+        writer.Write(value.String1);
+        writer.Write(value.String2);
+        //writer.Write(value.Reference);
     }
 
-    static RootPackerModel? IPackable<RootPackerModel>.Deserialize(ref PackerReader reader)
+    RootPackerModel? IPackable<RootPackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new RootPackerModel
         {
             String1 = reader.ReadString(),
             String2 = reader.ReadString(),
-            Reference = reader.Read<ReferencePackerModel>()!
+            //Reference = reader.Read<ReferencePackerModel>()!
+            Reference = (ReferencePackerModel?)null!
         };
 
         return value;

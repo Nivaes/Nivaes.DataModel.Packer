@@ -70,7 +70,7 @@ public ref partial struct PackerWriter
        ref PackerWriter writer)
        where T : IPackable<T>
     {
-        ((T)item).Serialize(ref writer);
+        //((T)item).Serialize(ref writer);
     }
 
     //public void Serialize(int index, ref PackerWriter writer)

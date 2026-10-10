@@ -206,7 +206,8 @@ public ref struct PackerReader
         if (id == -1)
             return default(T);
 
-        return _recursiveReader.Read<T>(id);
+        throw new NotImplementedException();
+        //return _recursiveReader.Read<T>(id);
     }
     #endregion
 }
