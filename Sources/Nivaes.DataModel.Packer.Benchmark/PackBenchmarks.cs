@@ -8,6 +8,7 @@ namespace Nivaes.DataModel.Packer.Benchmark.SimplePack;
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 //[SimpleJob(RunStrategy.Throughput)]
+//[SimpleJob(launchCount: 1, warmupCount: 0, iterationCount: 1)]
 public class PackBenchmarks
 {
     //[Params(100, 1_000, 10_000, 100_000, 1_000_000)]
@@ -136,7 +137,7 @@ public class PackBenchmarks
     } 
 
     [Benchmark]
-    public void MemoryReferencePackDeserialize()
+    public void MemoryPackReferenceDeserialize()
     {
         var copyModel = MemoryPackSerializer.Deserialize<RootMemoryPackModel>(_memoryPackReferenceSerialize);
     }

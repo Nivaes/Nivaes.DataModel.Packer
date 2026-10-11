@@ -8,7 +8,7 @@ public class ReferencePackerModel
 
 public class ReferencePackerModelSerializer : IPacker<ReferencePackerModel>
 {
-    int IPacker<ReferencePackerModel>.IdClassType => 1;
+    int IPacker<ReferencePackerModel>.IdClassType => 101;
 
     void IPacker<ReferencePackerModel>.Serialize(scoped in ReferencePackerModel value, ref PackerWriter writer)
     {
@@ -47,7 +47,7 @@ public class RootPackerModelSerializer : IPacker<RootPackerModel>
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
-        //writer.Write(value.Reference);
+        writer.Write<ReferencePackerModel, ReferencePackerModelSerializer>(value.Reference);
     }
 
     RootPackerModel? IPacker<RootPackerModel>.Deserialize(ref PackerReader reader)
@@ -56,8 +56,7 @@ public class RootPackerModelSerializer : IPacker<RootPackerModel>
         {
             String1 = reader.ReadString(),
             String2 = reader.ReadString(),
-            //Reference = reader.Read<ReferencePackerModel>()!
-            Reference = (ReferencePackerModel?)null!
+            Reference = reader.Read<ReferencePackerModel, ReferencePackerModelSerializer>()!
         };
 
         return value;
