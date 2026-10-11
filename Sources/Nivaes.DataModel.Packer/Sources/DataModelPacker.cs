@@ -13,7 +13,7 @@ public static partial class DataModelPacker
     //}
 
     public static ReadOnlySpan<byte> Serialize<T, TSerializer>(in T value)
-        where TSerializer : IPackable<T>, new()
+        where TSerializer : IPacker<T>, new()
     {
         if (value == null)
             return [];
@@ -30,9 +30,11 @@ public static partial class DataModelPacker
     //}
 
     public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TSerializer>(ReadOnlySpan<byte> buffer)
-           where TSerializer : IPackable<T>, new()
+           where TSerializer : IPacker<T>, new()
     {
         var recursiveReader = new RecursiveReader(buffer);
+        var serializer = new TSerializer();
+
         var value = recursiveReader.Read<T,TSerializer>(0);
 
         recursiveReader.DeserializeCircular();

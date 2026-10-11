@@ -28,18 +28,18 @@ public class CircularReferencePackUnitTest
         public required ReferenceModel Reference { get; set; }
     }
 
-    public class RootModelSerializer : IPackable<RootModel>
+    public class RootModelSerializer : IPacker<RootModel>
     {
-        int IPackable<RootModel>.IdClass => 10;
+        int IPacker<RootModel>.IdClassType => 10;
 
-        void IPackable<RootModel>.Serialize(scoped in RootModel model, ref PackerWriter writer)
+        void IPacker<RootModel>.Serialize(scoped in RootModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            //writer.Write(model.Reference);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference);
         }
 
-        RootModel? IPackable<RootModel>.Deserialize(ref PackerReader reader)
+        RootModel? IPacker<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
@@ -66,18 +66,18 @@ public class CircularReferencePackUnitTest
         public RootModel? RootReference { get; set; }
     }
 
-    public class ReferenceModelSerializer : IPackable<ReferenceModel>
+    public class ReferenceModelSerializer : IPacker<ReferenceModel>
     {
-        int IPackable<ReferenceModel>.IdClass => 20;
+        int IPacker<ReferenceModel>.IdClassType => 20;
 
-        void IPackable<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
+        void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
             //writer.Write(model.RootReference);
         }
 
-        ReferenceModel? IPackable<ReferenceModel>.Deserialize(ref PackerReader reader)
+        ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();

@@ -25,22 +25,22 @@ public class RecursiveCircularReferencePackUnitTest
         public ReferenceModel? Reference2 { get; set; }
     }
 
-    public class ReferenceModelSerializer : IPackable<ReferenceModel>
+    public class ReferenceModelSerializer : IPacker<ReferenceModel>
     {
-        public int IdClass => 30;
+        public int IdClassType => 30;
 
-        void IPackable<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
+        void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            //writer.Write(model.Reference1);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference1);
         }
 
-        ReferenceModel? IPackable<ReferenceModel>.Deserialize(ref PackerReader reader)
+        ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            //var reference = reader.Read<ReferenceModel>();
+            //var reference = reader.Read<ReferenceModel, ReferenceModelSerializer>();
 
             var value = new ReferenceModel
             {

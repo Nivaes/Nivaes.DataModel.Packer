@@ -22,17 +22,17 @@ public class SimplePackUnitTest
         public required string String2 { get; set; }
     }
 
-    public class SimpleModelSerializer : IPackable<SimpleModel>
+    public class SimpleModelSerializer : IPacker<SimpleModel>
     {
-        int IPackable<SimpleModel>.IdClass => 1;
+        int IPacker<SimpleModel>.IdClassType => 1;
 
-        void IPackable<SimpleModel>.Serialize(scoped in SimpleModel value, ref PackerWriter writer)
+        void IPacker<SimpleModel>.Serialize(scoped in SimpleModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
         }
 
-        SimpleModel? IPackable<SimpleModel>.Deserialize(ref PackerReader reader)
+        SimpleModel? IPacker<SimpleModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
@@ -46,7 +46,7 @@ public class SimplePackUnitTest
             return value;
         }
 
-        void IPackable<SimpleModel>.DeserializeCircular(ref PackerReader reader)
+        void IPacker<SimpleModel>.DeserializeCircular(ref PackerReader reader)
         {
         }
     }

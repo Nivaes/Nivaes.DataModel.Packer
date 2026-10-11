@@ -6,17 +6,17 @@ public class ReferencePackerModel
     public required string String2 { get; set; }
 }
 
-public class ReferencePackerModelSerializer : IPackable<ReferencePackerModel>
+public class ReferencePackerModelSerializer : IPacker<ReferencePackerModel>
 {
-    int IPackable<ReferencePackerModel>.IdClass => 1;
+    int IPacker<ReferencePackerModel>.IdClassType => 1;
 
-    void IPackable<ReferencePackerModel>.Serialize(scoped in ReferencePackerModel value, ref PackerWriter writer)
+    void IPacker<ReferencePackerModel>.Serialize(scoped in ReferencePackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
     }
 
-    ReferencePackerModel? IPackable<ReferencePackerModel>.Deserialize(ref PackerReader reader)
+    ReferencePackerModel? IPacker<ReferencePackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new ReferencePackerModel
         {
@@ -39,18 +39,18 @@ public class RootPackerModel
     public required ReferencePackerModel Reference { get; set; }
 }
 
-public class RootPackerModelSerializer : IPackable<RootPackerModel>
+public class RootPackerModelSerializer : IPacker<RootPackerModel>
 {
-    int IPackable<RootPackerModel>.IdClass => 102;
+    int IPacker<RootPackerModel>.IdClassType => 102;
 
-    void IPackable<RootPackerModel>.Serialize(scoped in RootPackerModel value, ref PackerWriter writer)
+    void IPacker<RootPackerModel>.Serialize(scoped in RootPackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
         //writer.Write(value.Reference);
     }
 
-    RootPackerModel? IPackable<RootPackerModel>.Deserialize(ref PackerReader reader)
+    RootPackerModel? IPacker<RootPackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new RootPackerModel
         {
@@ -63,7 +63,7 @@ public class RootPackerModelSerializer : IPackable<RootPackerModel>
         return value;
     }
 
-    void IPackable<RootPackerModel>.DeserializeCircular(ref PackerReader reader)
+    void IPacker<RootPackerModel>.DeserializeCircular(ref PackerReader reader)
     {
     }
 }

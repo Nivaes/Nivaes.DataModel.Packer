@@ -53,15 +53,27 @@ internal ref struct RecursiveReader
     }
 
     public T? Read<T, TSerializer>(int id)
-        where TSerializer : IPackable<T>
+        where TSerializer : IPacker<T>, new()
     {
+        var serializer = new TSerializer();
         //if (_entries[id].Item == null)
         if(!_entries[id].Create)
         {
             var position = _initPositions[id];
             var packerReader = new PackerReader(_buffer[position..], ref this);
+            var idClassType = packerReader.ReadInt32(); 
+            if(idClassType != serializer.IdClassType)
+            {
+                throw new Exception("No coinciden las clase");
+            }
+            var idObject = packerReader.ReadInt32();
+            if (idObject!= id) 
+            {
+                throw new Exception("No coinciden el id objet.");
+            }
+
             _entries[id].Create = true;
-            //_entries[id].Item = T.Deserialize(ref packerReader)!;
+            _entries[id].Item = serializer.Deserialize(ref packerReader)!;
             //_entries[id].Deserializer = SerializeCircular<T>;
         }
        return (T?)_entries[id].Item;
@@ -74,14 +86,14 @@ internal ref struct RecursiveReader
         {
             var position = _initPositions[id++];
             var packerReader = new PackerReader(_buffer[position..], ref this);
-            entry.Deserializer(entry.Item, ref packerReader);
+            //entry.Deserializer(entry.Item, ref packerReader);
         }
     }
 
     private static void SerializeCircular<T>(
        object item, 
        ref PackerReader reader)
-       where T : IPackable<T>
+       where T : IPacker<T>
     {
         ((T)item).DeserializeCircular(ref reader);
     }

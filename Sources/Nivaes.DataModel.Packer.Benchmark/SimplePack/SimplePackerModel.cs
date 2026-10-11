@@ -6,17 +6,17 @@ public class SimplePackerModel
     public required string String2 { get; set; }
 }
 
-public class SimplePackerModelSerializer : IPackable<SimplePackerModel>
+public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
 {
-    int IPackable<SimplePackerModel>.IdClass => 100;
+    int IPacker<SimplePackerModel>.IdClassType => 100;
 
-    void IPackable<SimplePackerModel>.Serialize(scoped in SimplePackerModel value, ref PackerWriter writer)
+    void IPacker<SimplePackerModel>.Serialize(scoped in SimplePackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
     }
 
-    SimplePackerModel? IPackable<SimplePackerModel>.Deserialize(ref PackerReader reader)
+    SimplePackerModel? IPacker<SimplePackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new SimplePackerModel
         {
@@ -27,7 +27,7 @@ public class SimplePackerModelSerializer : IPackable<SimplePackerModel>
         return value;
     }
 
-    void IPackable<SimplePackerModel>.DeserializeCircular(ref PackerReader reader)
+    void IPacker<SimplePackerModel>.DeserializeCircular(ref PackerReader reader)
     {
     }
 }

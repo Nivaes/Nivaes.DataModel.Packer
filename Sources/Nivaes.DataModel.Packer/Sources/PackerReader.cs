@@ -198,16 +198,15 @@ public ref struct PackerReader
         return ReadSpan(length);
     }
 
-    public T? Read<T>()
-        where T : IPackable<T>
+    public T? Read<T, TSerializer>()
+        where TSerializer : IPacker<T>, new()
     {
         int id = ReadInt32();
 
         if (id == -1)
             return default(T);
 
-        throw new NotImplementedException();
-        //return _recursiveReader.Read<T>(id);
+        return _recursiveReader.Read<T, TSerializer>(id);
     }
     #endregion
 }

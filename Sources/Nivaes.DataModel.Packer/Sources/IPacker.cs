@@ -1,8 +1,8 @@
 ﻿namespace Nivaes.DataModel.Packer;
 
-public interface IPackable<T>
+public interface IPacker<T>
 {
-    int IdClass { get; }
+    int IdClassType { get; }
 
     void Serialize(scoped in T value, ref PackerWriter writer);
 
