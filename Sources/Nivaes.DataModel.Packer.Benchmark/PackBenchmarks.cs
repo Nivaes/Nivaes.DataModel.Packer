@@ -35,7 +35,7 @@ public class PackBenchmarks
 
         _packSerialize = PreparePackSerialize();
         _memoryPackSerialize = PrepareMemoryPackSerialize();
-        _packReferenceSerialize = PrivatePackReferenceSerialize();
+        _packReferenceSerialize = PreparePackReferenceSerialize();
         _memoryPackReferenceSerialize = PrepareReferenceMemoryPackSerialize();
     }
 
@@ -45,6 +45,7 @@ public class PackBenchmarks
         {
             String1 = _text1,
             String2 = _text2,
+            Int1 = 42
         };
 
         return DataModelPacker.Serialize<SimplePackerModel, SimplePackerModelSerializer>(model).ToArray();
@@ -59,7 +60,7 @@ public class PackBenchmarks
     [Benchmark]
     public void PackDeserialize()
     {
-        var copyModel = DataModelPacker.Deserialize<SimplePackerModel, SimplePackerModelSerializer>(_packReferenceSerialize);
+        var copyModel = DataModelPacker.Deserialize<SimplePackerModel, SimplePackerModelSerializer>(_packSerialize);
     }
 
     private byte[] PrepareMemoryPackSerialize()
@@ -68,6 +69,7 @@ public class PackBenchmarks
         {
             String1 = _text1,
             String2 = _text2,
+            Int1 = 42
         };
 
         return MemoryPackSerializer.Serialize(model);
@@ -85,7 +87,7 @@ public class PackBenchmarks
         var copyModel = MemoryPackSerializer.Deserialize<SimpleMemoryPackModel>(_memoryPackSerialize);
     }
 
-    private byte[] PrivatePackReferenceSerialize()
+    private byte[] PreparePackReferenceSerialize()
     {
         var model = new RootPackerModel
         {
@@ -105,13 +107,13 @@ public class PackBenchmarks
     [Benchmark]
     public void PackReferenceSerialize()
     {
-        var model = PrivatePackReferenceSerialize();
+        var model = PreparePackReferenceSerialize();
     }
 
     [Benchmark]
     public void PackReferenceDeserialize()
     {
-        var copyModel = DataModelPacker.Deserialize<ReferencePackerModel, ReferencePackerModelSerializer>(_packReferenceSerialize);
+        var copyModel = DataModelPacker.Deserialize<RootPackerModel, RootPackerModelSerializer>(_packReferenceSerialize);
     }
 
     private byte[] PrepareReferenceMemoryPackSerialize()

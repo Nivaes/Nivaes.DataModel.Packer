@@ -8,10 +8,10 @@ public class ReferencePackUnitTest
     {
         _output = output;
 
-        DataModelPacker.IdClassToType.TryAdd(5, typeof(RootModel));
-        DataModelPacker.IdClassToType.TryAdd(6, typeof(ReferenceModel));
-        DataModelPacker.ClassToSerializerType.TryAdd(typeof(RootModel), typeof(RootModelPacker));
-        DataModelPacker.ClassToSerializerType.TryAdd(typeof(ReferenceModel), typeof(ReferenceModelPacker));
+        ////DataModelPacker.IdClassToType.TryAdd(5, typeof(RootModel));
+        ////DataModelPacker.IdClassToType.TryAdd(6, typeof(ReferenceModel));
+        ////DataModelPacker.ClassToSerializerType.TryAdd(typeof(RootModel), typeof(RootModelPacker));
+        ////DataModelPacker.ClassToSerializerType.TryAdd(typeof(ReferenceModel), typeof(ReferenceModelPacker));
     }
 
     public class RootModel

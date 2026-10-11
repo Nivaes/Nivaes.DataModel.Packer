@@ -64,12 +64,12 @@ internal ref struct RecursiveReader
             var idClassType = packerReader.ReadInt32(); 
             if(idClassType != serializer.IdClassType)
             {
-                throw new Exception("No coinciden las clase");
+                throw new Exception($"No coinciden las clase: {idClassType} != {serializer.IdClassType}");
             }
             var idObject = packerReader.ReadInt32();
             if (idObject!= id) 
             {
-                throw new Exception("No coinciden el id objet.");
+                throw new Exception($"No coinciden el id objet: {idObject} != {id}");
             }
 
             _entries[id].Create = true;

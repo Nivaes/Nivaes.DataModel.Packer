@@ -4,6 +4,8 @@ public class SimplePackerModel
 {
     public required string String1 { get; set; }
     public required string String2 { get; set; }
+
+    public required int Int1 { get; set; }
 }
 
 public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
@@ -14,6 +16,7 @@ public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
+        writer.Write(value.Int1);
     }
 
     SimplePackerModel? IPacker<SimplePackerModel>.Deserialize(ref PackerReader reader)
@@ -21,7 +24,8 @@ public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
         var value = new SimplePackerModel
         {
             String1 = reader.ReadString(),
-            String2 = reader.ReadString()
+            String2 = reader.ReadString(),
+            Int1 = reader.ReadInt32()
         };
 
         return value;
