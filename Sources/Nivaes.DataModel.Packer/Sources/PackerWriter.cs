@@ -33,16 +33,12 @@ public ref partial struct PackerWriter
     private int _serializeCount;
     #endregion
 
-    //private RecursiveWriter _recursiveWriter;
-
     public PackerWriter(/*ref RecursiveWriter recursiveWriter*/)
     { 
         _buffer = GC.AllocateUninitializedArray<byte>(InitialCapacity);
         _span = _buffer;
         _firstPosition = 0;
         _position = 0;
-        //_recursiveWriter = new RecursiveWriter();
-        //_recursiveWriter = recursiveWriter;  // ToDo: Unificar PackerWriter y RecursiveWriter para evitar refernecias circulares con ref struct.
 
         _entries = new Entry[EntriesCapacity];
     }

@@ -31,7 +31,7 @@ public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
         return value;
     }
 
-    void IPacker<SimplePackerModel>.DeserializeCircular(ref PackerReader reader)
+    void IPacker<SimplePackerModel>.DeserializeCircular(SimplePackerModel value, ref PackerReader reader)
     {
     }
 }

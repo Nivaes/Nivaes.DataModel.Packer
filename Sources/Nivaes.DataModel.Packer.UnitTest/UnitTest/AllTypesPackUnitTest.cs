@@ -161,7 +161,7 @@ public class AllTypesPackUnitTest
             return value;
         }
 
-        void IPacker<AllTypesModel>.DeserializeCircular(ref PackerReader reader)
+        void IPacker<AllTypesModel>.DeserializeCircular(AllTypesModel value, ref PackerReader reader)
         {
         }
     }

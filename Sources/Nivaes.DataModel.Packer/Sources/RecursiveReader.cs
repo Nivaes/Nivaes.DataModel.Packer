@@ -1,21 +1,16 @@
-﻿using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Win32;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.Buffers.Binary;
 
 namespace Nivaes.DataModel.Packer;
 
 internal ref struct RecursiveReader
 {
-    private delegate void DeserializeCircularDelegate(object item, ref PackerReader writer);
+    private delegate void DeserializeCircularDelegate(object item, scoped in object serializer, ref PackerReader reader);
 
     private struct Entry
     {
         public bool Create;
         public object Item;
-        public DeserializeCircularDelegate Deserializer;
+        public DeserializeCircularDelegate DeserializerCircular;
     }
 
     private readonly ReadOnlySpan<byte> _buffer;
@@ -56,7 +51,6 @@ internal ref struct RecursiveReader
         where TSerializer : IPacker<T>, new()
     {
         var serializer = new TSerializer();
-        //if (_entries[id].Item == null)
         if(!_entries[id].Create)
         {
             var position = _initPositions[id];
@@ -74,27 +68,27 @@ internal ref struct RecursiveReader
 
             _entries[id].Create = true;
             _entries[id].Item = serializer.Deserialize(ref packerReader)!;
-            //_entries[id].Deserializer = SerializeCircular<T>;
+            _entries[id].DeserializerCircular = SerializeCircular<T>;
         }
        return (T?)_entries[id].Item;
     }
 
-    public void DeserializeCircular()
+    public void DeserializeCircular<T>(IPacker<T> serializer)
     {
         int id = 0;
         foreach(var entry in _entries)
         {
             var position = _initPositions[id++];
             var packerReader = new PackerReader(_buffer[position..], ref this);
-            //entry.Deserializer(entry.Item, ref packerReader);
+            entry.DeserializerCircular(entry.Item, serializer, ref packerReader);
         }
     }
 
     private static void SerializeCircular<T>(
-       object item, 
+       object item,
+       scoped in object serializer,
        ref PackerReader reader)
-       where T : IPacker<T>
     {
-        ((T)item).DeserializeCircular(ref reader);
+        ((IPacker<T>)serializer).DeserializeCircular((T)item, ref reader);
     }
 }

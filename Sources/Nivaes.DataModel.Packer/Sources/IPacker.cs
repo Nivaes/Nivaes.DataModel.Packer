@@ -8,5 +8,5 @@ public interface IPacker<T>
 
     T? Deserialize(ref PackerReader reader);
 
-    void DeserializeCircular(ref PackerReader reader); 
+    void DeserializeCircular(T value,ref PackerReader reader); 
 }

@@ -48,12 +48,12 @@ public class CircularReferencePackUnitTest
             {
                 String1 = string1,
                 String2 = string2,
-                Reference = null! // reader.Read<ReferenceModel>()!
+                Reference = reader.Read<ReferenceModel, ReferenceModelSerializer>()!
             };
             return value;
         }
 
-        public void DeserializeCircular(ref PackerReader reader)
+        public void DeserializeCircular(RootModel value, ref PackerReader reader)
         {
         }
     }
@@ -91,7 +91,7 @@ public class CircularReferencePackUnitTest
             return value;
         }
 
-        public void DeserializeCircular(ref PackerReader reader)
+        public void DeserializeCircular(ReferenceModel value, ref PackerReader reader)
         {
             //RootReference = reader.Read<RootModel>();
         }

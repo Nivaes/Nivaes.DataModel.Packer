@@ -37,7 +37,7 @@ public static partial class DataModelPacker
 
         var value = recursiveReader.Read<T,TSerializer>(0);
 
-        recursiveReader.DeserializeCircular();
+        recursiveReader.DeserializeCircular(serializer);
 
         //var reader = new PackerReader(buffer);
         //reader.ReadItems();

@@ -47,7 +47,7 @@ public class ReferencePackUnitTest
             return value;
         }
 
-        void IPacker<RootModel>.DeserializeCircular(ref PackerReader reader)
+        void IPacker<RootModel>.DeserializeCircular(RootModel value, ref PackerReader reader)
         {
         }
     }
@@ -87,7 +87,7 @@ public class ReferencePackUnitTest
             return value;
         }
 
-        void IPacker<ReferenceModel>.DeserializeCircular(ref PackerReader reader)
+        void IPacker<ReferenceModel>.DeserializeCircular(ReferenceModel value, ref PackerReader reader)
         {
         }
     }

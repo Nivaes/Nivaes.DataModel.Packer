@@ -46,7 +46,7 @@ public class SimplePackUnitTest
             return value;
         }
 
-        void IPacker<SimpleModel>.DeserializeCircular(ref PackerReader reader)
+        void IPacker<SimpleModel>.DeserializeCircular(SimpleModel value, ref PackerReader reader)
         {
         }
     }

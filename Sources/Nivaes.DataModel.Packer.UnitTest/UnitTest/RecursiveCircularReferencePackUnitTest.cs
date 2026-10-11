@@ -20,7 +20,7 @@ public class RecursiveCircularReferencePackUnitTest
         public required string String1 { get; set; }
         public required string String2 { get; set; }
 
-        public ReferenceModel? Reference1 { get; set; }
+        public required ReferenceModel Reference1 { get; set; }
 
         public ReferenceModel? Reference2 { get; set; }
     }
@@ -34,27 +34,28 @@ public class RecursiveCircularReferencePackUnitTest
             writer.Write(model.String1);
             writer.Write(model.String2);
             writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference1);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference2);
         }
 
         ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            //var reference = reader.Read<ReferenceModel, ReferenceModelSerializer>();
+            var reference = reader.Read<ReferenceModel, ReferenceModelSerializer>();
 
             var value = new ReferenceModel
             {
                 String1 = string1,
                 String2 = string2,
-                //Reference1 = reference
+                Reference1 = reference!
             };
 
             return value;
         }
 
-        public void DeserializeCircular(ref PackerReader reader)
+        public void DeserializeCircular(ReferenceModel value, ref PackerReader reader)
         {
-            //Reference1 = reader.Read<ReferenceModel>();
+            value.Reference2 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
         }
     }
 
@@ -69,6 +70,7 @@ public class RecursiveCircularReferencePackUnitTest
             {
                 String1 = null!,
                 String2 = null!,
+                Reference1 = null!
             }
         };
         model.Reference1.Reference1 = model;
@@ -104,6 +106,7 @@ public class RecursiveCircularReferencePackUnitTest
             {
                 String1 = string.Empty,
                 String2 = string.Empty,
+                Reference1 = null!
             }
         };
         model.Reference1.Reference1 = model;
@@ -139,6 +142,7 @@ public class RecursiveCircularReferencePackUnitTest
             {
                 String1 = "test3",
                 String2 = "test4",
+                Reference1 = null!
             }
         };
         model.Reference1.Reference1 = model;
@@ -174,6 +178,7 @@ public class RecursiveCircularReferencePackUnitTest
             {
                 String1 = test3,
                 String2 = test4,
+                Reference1 = null!
             }
         };
         model.Reference1.Reference1 = model;

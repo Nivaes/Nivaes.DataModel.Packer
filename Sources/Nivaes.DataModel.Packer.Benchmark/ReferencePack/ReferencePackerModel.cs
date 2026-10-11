@@ -27,7 +27,7 @@ public class ReferencePackerModelSerializer : IPacker<ReferencePackerModel>
         return value;
     }
 
-    public void DeserializeCircular(ref PackerReader reader)
+    public void DeserializeCircular(ReferencePackerModel value, ref PackerReader reader)
     {
     }
 }
@@ -62,7 +62,7 @@ public class RootPackerModelSerializer : IPacker<RootPackerModel>
         return value;
     }
 
-    void IPacker<RootPackerModel>.DeserializeCircular(ref PackerReader reader)
+    void IPacker<RootPackerModel>.DeserializeCircular(RootPackerModel value, ref PackerReader reader)
     {
     }
 }
