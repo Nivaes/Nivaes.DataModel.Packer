@@ -41,13 +41,14 @@ public class RecursiveCircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<ReferenceModel, ReferenceModelSerializer>();
+            var reference1 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
+            var reference2 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
 
             var value = new ReferenceModel
             {
                 String1 = string1,
                 String2 = string2,
-                Reference1 = reference!
+                Reference1 = reference1!
             };
 
             return value;
@@ -55,7 +56,7 @@ public class RecursiveCircularReferencePackUnitTest
 
         public void DeserializeCircular(ReferenceModel value, ref PackerReader reader)
         {
-            value.Reference2 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
+            //value.Reference2 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
         }
     }
 

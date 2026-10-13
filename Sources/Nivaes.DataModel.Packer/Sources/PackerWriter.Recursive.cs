@@ -65,7 +65,6 @@ public ref partial struct PackerWriter
     }
 
     private static void Serialize<T>(scoped in object item, scoped in object serializer, ref PackerWriter writer)
-
     {
         ((IPacker<T>)serializer).Serialize((T)item, ref writer);
     }
