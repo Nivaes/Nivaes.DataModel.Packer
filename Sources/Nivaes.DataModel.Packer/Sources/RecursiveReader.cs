@@ -10,6 +10,7 @@ internal ref struct RecursiveReader
     {
         public bool Create;
         public object Item;
+        public object Serializer;
         public DeserializeCircularDelegate DeserializerCircular;
     }
 
@@ -68,19 +69,20 @@ internal ref struct RecursiveReader
 
             _entries[id].Create = true;
             _entries[id].Item = serializer.Deserialize(ref packerReader)!;
+            _entries[id].Serializer = serializer;
             _entries[id].DeserializerCircular = SerializeCircular<T>;
         }
        return (T?)_entries[id].Item;
     }
 
-    public void DeserializeCircular<T>(IPacker<T> serializer)
+    public void DeserializeCircular<T>(/*IPacker<T> serializer*/)
     {
         int id = 0;
         foreach(var entry in _entries)
         {
             var position = _initPositions[id++];
             var packerReader = new PackerReader(_buffer[position..], ref this);
-            entry.DeserializerCircular(entry.Item, serializer, ref packerReader);
+            entry.DeserializerCircular(entry.Item, entry.Serializer, ref packerReader);
         }
     }
 
