@@ -64,6 +64,8 @@ public class AllTypesPackUnitTest
     {
         int IPacker<AllTypesModel>.IdClassType => 2;
 
+        UnpackerReferences[] IPacker<AllTypesModel>.UpackerReferences => new UnpackerReferences[1];
+
         void IPacker<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
         {
             writer.Write(item.Guid);
@@ -161,9 +163,11 @@ public class AllTypesPackUnitTest
             return value;
         }
 
-        void IPacker<AllTypesModel>.DeserializeCircular(AllTypesModel value, ref PackerReader reader)
-        {
-        }
+        //// Implement the required UpackerReferences property
+        //IPacker<AllTypesModel>.UnpackerReferences[] IPacker<AllTypesModel>.UpackerReferences { get; set; }
+
+        //// Implement the required DeserializeCircular method (no-op if not needed)
+        //void IPacker<AllTypesModel>.DeserializeCircular(AllTypesModel value) { }
     }
 
     [Fact]

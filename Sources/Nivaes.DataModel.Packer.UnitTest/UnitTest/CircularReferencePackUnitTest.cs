@@ -32,6 +32,10 @@ public class CircularReferencePackUnitTest
     {
         int IPacker<RootModel>.IdClassType => 10;
 
+        UnpackerReferences[] IPacker<RootModel>.UpackerReferences => new UnpackerReferences[2];
+
+        ReferenceSetter[] IPacker<RootModel>.ReferenceSetters => null!;
+
         void IPacker<RootModel>.Serialize(scoped in RootModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
@@ -70,11 +74,15 @@ public class CircularReferencePackUnitTest
     {
         int IPacker<ReferenceModel>.IdClassType => 20;
 
+        UnpackerReferences[] IPacker<ReferenceModel>.UpackerReferences => new UnpackerReferences[1];
+
+        ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => null!;
+
         void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            //writer.Write(model.RootReference);
+            writer.Write<RootModel, RootModelSerializer>(model.RootReference);
         }
 
         ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)

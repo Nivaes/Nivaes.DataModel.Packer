@@ -29,6 +29,18 @@ public class RecursiveCircularReferencePackUnitTest
     {
         public int IdClassType => 30;
 
+        UnpackerReferences[] IPacker<ReferenceModel>.UpackerReferences => new UnpackerReferences[2];
+
+        public int[] IdClassTypes => new int[] { 30 };
+        public int[] IdReferenceTypes => new int[] { 30, 30 };
+        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
+        {
+            new ReferenceSetter { IdReference = 0, Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { IdReference = 1, Setter = ReferenceReference2!, Reference = null }
+        };
+
+        ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => _referenceSetters;
+
         void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
@@ -41,8 +53,8 @@ public class RecursiveCircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
-            var reference2 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
+            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(0, ReferenceReference1);
+            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(1, ReferenceReference2);
 
             var value = new ReferenceModel
             {
@@ -55,9 +67,14 @@ public class RecursiveCircularReferencePackUnitTest
             return value;
         }
 
-        public void DeserializeCircular(ReferenceModel value, ref PackerReader reader)
+        public static void ReferenceReference1(object value, object reference)
         {
-            //value.Reference2 = reader.Read<ReferenceModel, ReferenceModelSerializer>();
+            ((ReferenceModel)value).Reference1 = (ReferenceModel)reference;
+        }
+
+        public static void ReferenceReference2(object value, object reference)
+        {
+            ((ReferenceModel)value).Reference2 = (ReferenceModel)reference;
         }
     }
 

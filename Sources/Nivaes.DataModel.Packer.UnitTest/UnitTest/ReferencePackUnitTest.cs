@@ -25,6 +25,10 @@ public class ReferencePackUnitTest
     {
         int IPacker<RootModel>.IdClassType => 5;
 
+        UnpackerReferences[] IPacker<RootModel>.UpackerReferences => new UnpackerReferences[1];
+
+        ReferenceSetter[] IPacker<RootModel>.ReferenceSetters => null!;
+
         void IPacker<RootModel>.Serialize(scoped in RootModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
@@ -47,9 +51,9 @@ public class ReferencePackUnitTest
             return value;
         }
 
-        void IPacker<RootModel>.DeserializeCircular(RootModel value, ref PackerReader reader)
-        {
-        }
+        //void IPacker<RootModel>.DeserializeCircular(RootModel value, ref PackerReader reader)
+        //{
+        //}
     }
 
     public class ReferenceModel
@@ -61,6 +65,10 @@ public class ReferencePackUnitTest
     public class ReferenceModelPacker : IPacker<ReferenceModel>
     {
         int IPacker<ReferenceModel>.IdClassType => 6;
+
+        UnpackerReferences[] IPacker<ReferenceModel>.UpackerReferences => new UnpackerReferences[1];
+
+        ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => null!;
 
         void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel value, ref PackerWriter writer)
         {
@@ -87,9 +95,9 @@ public class ReferencePackUnitTest
             return value;
         }
 
-        void IPacker<ReferenceModel>.DeserializeCircular(ReferenceModel value, ref PackerReader reader)
-        {
-        }
+        //void IPacker<ReferenceModel>.DeserializeCircular(ReferenceModel value, ref PackerReader reader)
+        //{
+        //}
     }
 
     [Fact]

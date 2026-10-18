@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Text;
+using static Nivaes.DataModel.Packer.PackerReader;
 
 namespace Nivaes.DataModel.Packer;
 
@@ -10,6 +11,8 @@ public ref struct PackerReader
     private int _position;
 
     private RecursiveReader _recursiveReader;
+
+    public delegate void ReferenceSetterDelegate<T, TReference>(T value, TReference reference);
 
     //internal PackerReader(ReadOnlySpan<byte> buffer)
     //{
@@ -207,6 +210,17 @@ public ref struct PackerReader
             return default(T);
 
         return _recursiveReader.Read<T, TSerializer>(id);
+    }
+
+    public T? Read<T, TReference, TSerializer>(int idReference, ReferenceSetterDelegate<T, TReference> setter)
+        where TSerializer : IPacker<T>, new()
+    {
+        int idObject = ReadInt32();
+
+        if (idObject == -1)
+            return default(T);
+
+        return _recursiveReader.Read<T, TReference, TSerializer>(idObject, idReference, setter);
     }
     #endregion
 }
