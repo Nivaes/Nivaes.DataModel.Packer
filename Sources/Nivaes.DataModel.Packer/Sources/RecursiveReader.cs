@@ -76,12 +76,12 @@ internal ref struct RecursiveReader
         return (TReference?)_entries[id].Item;
     }
 
-    public TReference? Read<TReference, TDeserializer>(int id)
+    public TReference? Read<TReference, TDeserializer>(int idObject)
         where TDeserializer : IDeserializer<TReference>, new()
     {
         var deserializer = new TDeserializer();
 
-        return Read<TReference, TDeserializer>(id, deserializer);
+        return Read<TReference, TDeserializer>(idObject, deserializer);
     }
 
     public TReference? Read<TReference, TDeserializer>(int id, int idReference, ReferenceSetterDelegate<TReference> setter)

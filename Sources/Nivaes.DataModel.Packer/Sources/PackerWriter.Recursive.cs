@@ -75,13 +75,16 @@ public ref partial struct PackerWriter
             {
                 ref Entry entry = ref _entries[_serializeCount];
 
-                ReserveSizeInt32();
-                Write(entry.IdClass);
-                Write(_serializeCount);
-                
-                entry.Serialize(entry.Item, entry.Serializer, ref this);
+                if (entry.Item is not null)
+                {
+                    ReserveSizeInt32();
+                    Write(entry.IdClass);
+                    Write(_serializeCount);
 
-                WriteSize();
+                    entry.Serialize(entry.Item, entry.Serializer, ref this);
+
+                    WriteSize();
+                }
             }
             //writer.RecursiveWriter();
             SerializePending();
