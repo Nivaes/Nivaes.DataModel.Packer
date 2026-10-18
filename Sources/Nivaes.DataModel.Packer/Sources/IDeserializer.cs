@@ -7,22 +7,21 @@ public struct ReferenceSetter
     public object? Reference;
 }
 
-public interface IPacker<T>
+public interface IDeserializer<T>
 {
-    ReferenceSetter[]? ReferenceSetters { get => null; }
-
     int IdClassType { get; }
 
-    void Serialize(scoped in T value, ref PackerWriter writer);
+    ReferenceSetter[]? ReferenceSetters { get => null; }
 
     T? Deserialize(ref PackerReader reader);
+
 
     void DeserializeCircular(T value)
     {
         if (ReferenceSetters is null)
             return;
 
-        foreach(var setters in ReferenceSetters)
+        foreach (var setters in ReferenceSetters)
         {
             setters.Setter(value!, setters.Reference);
         }

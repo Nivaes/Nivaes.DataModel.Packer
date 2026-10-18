@@ -60,11 +60,11 @@ public class AllTypesPackUnitTest
         public required DateTimeOffset DateTimeOffset1 { get; set; }
         public required DateTimeOffset DateTimeOffset2 { get; set; }
     }
-    public class AllTypesModelSerializer : IPacker<AllTypesModel>
-    {
-        int IPacker<AllTypesModel>.IdClassType => 2;
+    public class AllTypesModelSerializer : ISerialicer<AllTypesModel>
+    {   
+        int ISerialicer<AllTypesModel>.IdClassType => 2;
 
-        void IPacker<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
+        void ISerialicer<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
         {
             writer.Write(item.Guid);
 
@@ -110,7 +110,7 @@ public class AllTypesPackUnitTest
             writer.Write(item.DateTimeOffset2);
         }
 
-        AllTypesModel? IPacker<AllTypesModel>.Deserialize(ref PackerReader reader)
+        AllTypesModel? ISerialicer<AllTypesModel>.Deserialize(ref PackerReader reader)
         {
             var value = new AllTypesModel
             {

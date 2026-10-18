@@ -60,7 +60,7 @@ public class PackBenchmarks
     [Benchmark]
     public void PackDeserialize()
     {
-        var copyModel = DataModelPacker.Deserialize<SimplePackerModel, SimplePackerModelSerializer>(_packSerialize);
+        var copyModel = DataModelPacker.Deserialize<SimplePackerModel, SimplePackerModelDeserializer>(_packSerialize);
     }
 
     private byte[] PrepareMemoryPackSerialize()
@@ -113,7 +113,7 @@ public class PackBenchmarks
     [Benchmark]
     public void PackReferenceDeserialize()
     {
-        var copyModel = DataModelPacker.Deserialize<RootPackerModel, RootPackerModelSerializer>(_packReferenceSerialize);
+        var copyModel = DataModelPacker.Deserialize<RootPackerModel, RootPackerModelDeserializer>(_packReferenceSerialize);
     }
 
     private byte[] PrepareReferenceMemoryPackSerialize()

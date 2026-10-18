@@ -49,8 +49,8 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
-    private TReference? Read<T, TReference, TSerializer>(int id, TSerializer deserializer)
-       where TSerializer : IPacker<T>, new()
+    private TReference? Read<T, TReference, TDeserializer>(int id, TDeserializer deserializer)
+       where TDeserializer : IDeserializer<T>, new()
     {
         if (!_entries[id].IsCreate)
         {
@@ -76,20 +76,20 @@ internal ref struct RecursiveReader
         return (TReference?)_entries[id].Item;
     }
 
-    public TReference? Read<T, TReference, TSerializer>(int id)
-        where TSerializer : IPacker<T>, new()
+    public TReference? Read<T, TReference, TDeserializer>(int id)
+        where TDeserializer : IDeserializer<T>, new()
     {
-        var deserializer = new TSerializer();
+        var deserializer = new TDeserializer();
 
-        return Read<T, TReference, TSerializer>(id, deserializer);
+        return Read<T, TReference, TDeserializer>(id, deserializer);
     }
 
-    public TReference? Read<T, TReference, TSerializer>(int id, int idReference, ReferenceSetterDelegate<T, TReference> setter)
-       where TSerializer : IPacker<T>, new()
+    public TReference? Read<T, TReference, TDeserializer>(int id, int idReference, ReferenceSetterDelegate<T, TReference> setter)
+       where TDeserializer : IDeserializer<T>, new()
     {
-        var deserializer = new TSerializer();
+        var deserializer = new TDeserializer();
 
-        var value = Read<T, TReference, TSerializer>(id, deserializer);
+        var value = Read<T, TReference, TDeserializer>(id, deserializer);
 
         deserializer.ReferenceSetters?[idReference].Reference = value;
 
@@ -109,7 +109,7 @@ internal ref struct RecursiveReader
        object item,
        in object serializer)
     {
-        var serializerPacker = (IPacker<T>)serializer;
+        var serializerPacker = (IDeserializer<T>)serializer;
         if (serializerPacker.ReferenceSetters is not null)
         {
             for (int i = 0; i < serializerPacker.ReferenceSetters.Length; i++)

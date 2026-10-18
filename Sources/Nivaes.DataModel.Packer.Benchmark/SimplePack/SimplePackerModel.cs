@@ -8,18 +8,23 @@ public class SimplePackerModel
     public required int Int1 { get; set; }
 }
 
-public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
+public class SimplePackerModelSerializer : ISerializer<SimplePackerModel>
 {
-    int IPacker<SimplePackerModel>.IdClassType => 100;
+    int ISerializer<SimplePackerModel>.IdClassType => 100;
 
-    void IPacker<SimplePackerModel>.Serialize(scoped in SimplePackerModel value, ref PackerWriter writer)
+    void ISerializer<SimplePackerModel>.Serialize(scoped in SimplePackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
         writer.Write(value.Int1);
     }
+}
 
-    SimplePackerModel? IPacker<SimplePackerModel>.Deserialize(ref PackerReader reader)
+public class SimplePackerModelDeserializer : IDeserializer<SimplePackerModel>
+{
+    int IDeserializer<SimplePackerModel>.IdClassType => 100;
+
+    SimplePackerModel? IDeserializer<SimplePackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new SimplePackerModel
         {
@@ -30,8 +35,4 @@ public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
 
         return value;
     }
-
-    //void IPacker<SimplePackerModel>.DeserializeCircular(SimplePackerModel value, ref PackerReader reader)
-    //{
-    //}
 }

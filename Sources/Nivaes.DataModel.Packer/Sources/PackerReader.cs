@@ -202,7 +202,7 @@ public ref struct PackerReader
     }
 
     public TReference? Read<T, TReference, TSerializer>()
-        where TSerializer : IPacker<T>, new()
+        where TSerializer : IDeserializer<T>, new()
     {
         int idObject = ReadInt32();
 
@@ -213,7 +213,7 @@ public ref struct PackerReader
     }
 
     public TReference? Read<T, TReference, TSerializer>(int idReference, ReferenceSetterDelegate<T, TReference> setter)
-        where TSerializer : IPacker<T>, new()
+        where TSerializer : IDeserializer<T>, new()
     {
         int idObject = ReadInt32();
 

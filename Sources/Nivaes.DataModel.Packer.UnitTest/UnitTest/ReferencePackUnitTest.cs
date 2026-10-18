@@ -21,24 +21,27 @@ public class ReferencePackUnitTest
         public required ReferenceModel Reference { get; set; }
     }
 
-    public class RootModelPacker : IPacker<RootModel>
+    public class RootModelSerializer : ISerializer<RootModel>
     {
-        int IPacker<RootModel>.IdClassType => 5;
+        int ISerializer<RootModel>.IdClassType => 5;
 
-        ReferenceSetter[] IPacker<RootModel>.ReferenceSetters => null!;
-
-        void IPacker<RootModel>.Serialize(scoped in RootModel value, ref PackerWriter writer)
+        void ISerializer<RootModel>.Serialize(scoped in RootModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
-            writer.Write<ReferenceModel, ReferenceModelPacker>(1, value.Reference);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, value.Reference);
         }
-  
-        RootModel? IPacker<RootModel>.Deserialize(ref PackerReader reader)
+    }
+
+    public class RootModelDeserializer : IDeserializer<RootModel>
+    {
+        int IDeserializer<RootModel>.IdClassType => 5;
+
+        RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelPacker>()!;
+            var reference = reader.Read<RootModel, ReferenceModel, RootModelDeserializer>()!;
 
             var value = new RootModel
             {
@@ -56,19 +59,22 @@ public class ReferencePackUnitTest
         public required string String2 { get; set; }
     }
 
-    public class ReferenceModelPacker : IPacker<ReferenceModel>
+    public class ReferenceModelSerializer : ISerializer<ReferenceModel>
     {
-        int IPacker<ReferenceModel>.IdClassType => 6;
+        int ISerializer<ReferenceModel>.IdClassType => 6;
 
-        ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => null!;
-
-        void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel value, ref PackerWriter writer)
+        void ISerializer<ReferenceModel>.Serialize(scoped in ReferenceModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
         }
-    
-        ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
+    }
+
+    public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
+    {
+        int IDeserializer<ReferenceModel>.IdClassType => 6;
+
+        ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
@@ -97,14 +103,14 @@ public class ReferencePackUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelPacker>(model);
+        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelPacker>(cache);
+        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -128,14 +134,14 @@ public class ReferencePackUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelPacker>(model);
+        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelPacker>(cache);
+        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -159,14 +165,14 @@ public class ReferencePackUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelPacker>(model);
+        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelPacker>(cache);
+        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -190,14 +196,14 @@ public class ReferencePackUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelPacker>(model);
+        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelPacker>(cache);
+        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -210,14 +216,14 @@ public class ReferencePackUnitTest
     [Theory, AutoData]
     public void SerializerAutoDataTest2(RootModel model)
     {
-        var cache = DataModelPacker.Serialize<RootModel, RootModelPacker>(model);
+        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelPacker>(cache);
+        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);

@@ -4,16 +4,8 @@ namespace Nivaes.DataModel.Packer;
 
 public static partial class DataModelPacker
 {
-    static public Dictionary<int, Type> IdClassToType { get; } = new Dictionary<int, Type>();
-    static public Dictionary<Type, Type> ClassToSerializerType { get; } = new Dictionary<Type, Type>();
-
-    //public static ReadOnlySpan<byte> Serialize<T>(in T value)
-    //{
-    //    throw new NotImplementedException();
-    //}
-
     public static ReadOnlySpan<byte> Serialize<T, TSerializer>(in T value)
-        where TSerializer : IPacker<T>, new()
+        where TSerializer : ISerializer<T>, new()
     {
         if (value == null)
             return [];
@@ -24,13 +16,13 @@ public static partial class DataModelPacker
         return write.WriteRoot(value, serializer);
     }
 
-    public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TSerializer>(ReadOnlySpan<byte> buffer)
-           where TSerializer : IPacker<T>, new()
+    public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TDeserializer>(ReadOnlySpan<byte> buffer)
+           where TDeserializer : IDeserializer<T>, new()
     {
         var recursiveReader = new RecursiveReader(buffer);
-        var serializer = new TSerializer();
+        var serializer = new TDeserializer();
 
-        var value = recursiveReader.Read<T, T, TSerializer>(0);
+        var value = recursiveReader.Read<T, T, TDeserializer>(0);
 
         recursiveReader.DeserializeCircular<T>();
 

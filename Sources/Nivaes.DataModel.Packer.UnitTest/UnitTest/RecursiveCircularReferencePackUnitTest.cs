@@ -10,9 +10,6 @@ public class RecursiveCircularReferencePackUnitTest
     public RecursiveCircularReferencePackUnitTest(ITestOutputHelper output)
     {
         _output = output;
-
-        DataModelPacker.IdClassToType.TryAdd(30, typeof(ReferenceModelSerializer));
-        DataModelPacker.ClassToSerializerType.TryAdd(typeof(ReferenceModel), typeof(ReferenceModelSerializer));
     }
 
     public class ReferenceModel
@@ -25,34 +22,39 @@ public class RecursiveCircularReferencePackUnitTest
         public ReferenceModel? Reference2 { get; set; }
     }
 
-    public class ReferenceModelSerializer : IPacker<ReferenceModel>
+    public class ReferenceModelSerializer : ISerializer<ReferenceModel>
     {
         public int IdClassType => 30;
+       
+        
 
-        public int[] IdClassTypes => new int[] { 30 };
-        public int[] IdReferenceTypes => new int[] { 30, 30 };
-        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
-        {
-            new ReferenceSetter { IdReference = 0, Setter = ReferenceReference1!, Reference = null },
-            new ReferenceSetter { IdReference = 1, Setter = ReferenceReference2!, Reference = null }
-        };
-
-        ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => _referenceSetters;
-
-        void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
+        void ISerializer<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
             writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference1);
             writer.Write<ReferenceModel, ReferenceModelSerializer>(2, model.Reference2);
         }
+    }
 
-        ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
+    public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
+    {
+        public int IdClassType => 30;
+
+        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
+        {
+            new ReferenceSetter { IdReference = 0, Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { IdReference = 1, Setter = ReferenceReference2!, Reference = null }
+        };
+
+        ReferenceSetter[] IDeserializer<ReferenceModel>.ReferenceSetters => _referenceSetters;
+
+        ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(1, ReferenceReference1);
-            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(2, ReferenceReference2);
+            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1);
+            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(2, ReferenceReference2);
 
             var value = new ReferenceModel
             {
@@ -64,7 +66,7 @@ public class RecursiveCircularReferencePackUnitTest
 
             return value;
         }
-
+   
         public static void ReferenceReference1(object value, object reference)
         {
             ((ReferenceModel)value).Reference1 = (ReferenceModel)reference;
