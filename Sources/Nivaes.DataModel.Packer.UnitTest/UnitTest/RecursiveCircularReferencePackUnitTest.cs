@@ -25,15 +25,13 @@ public class RecursiveCircularReferencePackUnitTest
     public class ReferenceModelSerializer : ISerializer<ReferenceModel>
     {
         public int IdClassType => 30;
-       
-        
 
         void ISerializer<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference1);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(2, model.Reference2);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(0, model.Reference1);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference2);
         }
     }
 
@@ -53,8 +51,8 @@ public class RecursiveCircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1);
-            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(2, ReferenceReference2);
+            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(0, ReferenceReference1);
+            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference2);
 
             var value = new ReferenceModel
             {
