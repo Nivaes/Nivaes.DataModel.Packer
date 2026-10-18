@@ -50,7 +50,7 @@ internal ref struct RecursiveReader
     }
 
     private TReference? Read<T, TReference, TDeserializer>(int id, TDeserializer deserializer)
-       where TDeserializer : IDeserializer<T>, new()
+       where TDeserializer : IDeserializer<TReference>, new()
     {
         if (!_entries[id].IsCreate)
         {
@@ -77,7 +77,7 @@ internal ref struct RecursiveReader
     }
 
     public TReference? Read<T, TReference, TDeserializer>(int id)
-        where TDeserializer : IDeserializer<T>, new()
+        where TDeserializer : IDeserializer<TReference>, new()
     {
         var deserializer = new TDeserializer();
 
@@ -85,7 +85,7 @@ internal ref struct RecursiveReader
     }
 
     public TReference? Read<T, TReference, TDeserializer>(int id, int idReference, ReferenceSetterDelegate<T, TReference> setter)
-       where TDeserializer : IDeserializer<T>, new()
+       where TDeserializer : IDeserializer<TReference>, new()
     {
         var deserializer = new TDeserializer();
 
@@ -107,9 +107,9 @@ internal ref struct RecursiveReader
     private static void SerializeCircular<T>(
        ref RecursiveReader recursiveReader,
        object item,
-       in object serializer)
+       in object deserializer)
     {
-        var serializerPacker = (IDeserializer<T>)serializer;
+        var serializerPacker = (IDeserializer<T>)deserializer;
         if (serializerPacker.ReferenceSetters is not null)
         {
             for (int i = 0; i < serializerPacker.ReferenceSetters.Length; i++)

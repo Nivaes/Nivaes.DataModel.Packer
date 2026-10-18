@@ -61,7 +61,7 @@ public class RootPackerModelDeserializer : IDeserializer<RootPackerModel>
         {
             String1 = reader.ReadString(),
             String2 = reader.ReadString(),
-            Reference = reader.Read<RootPackerModel, ReferencePackerModel, RootPackerModelDeserializer>()!
+            Reference = reader.Read<RootPackerModel, ReferencePackerModel, ReferencePackerModelDeserializer>()!
         };
 
         return value;

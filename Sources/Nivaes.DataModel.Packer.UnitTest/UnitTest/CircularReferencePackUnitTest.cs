@@ -50,7 +50,7 @@ public class CircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, RootModelDeserializer>(1, ReferenceReference1);
+            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1);
 
             var value = new RootModel
             {
@@ -105,7 +105,7 @@ public class CircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var rootReference = reader.Read<ReferenceModel, RootModel, ReferenceModelDeserializer>(1, ReferenceReference1);
+            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(1, ReferenceReference1);
 
             var value = new ReferenceModel
             {

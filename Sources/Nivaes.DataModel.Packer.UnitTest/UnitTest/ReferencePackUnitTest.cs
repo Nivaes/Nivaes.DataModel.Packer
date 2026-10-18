@@ -41,7 +41,7 @@ public class ReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, RootModelDeserializer>()!;
+            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>()!;
 
             var value = new RootModel
             {
