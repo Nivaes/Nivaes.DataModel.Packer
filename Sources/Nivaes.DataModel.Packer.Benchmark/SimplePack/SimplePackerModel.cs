@@ -12,8 +12,6 @@ public class SimplePackerModelSerializer : IPacker<SimplePackerModel>
 {
     int IPacker<SimplePackerModel>.IdClassType => 100;
 
-    UnpackerReferences[] IPacker<SimplePackerModel>.UpackerReferences => new UnpackerReferences[1];
-
     void IPacker<SimplePackerModel>.Serialize(scoped in SimplePackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);

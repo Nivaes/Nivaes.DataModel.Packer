@@ -10,9 +10,6 @@ public class ReferencePackerModelSerializer : IPacker<ReferencePackerModel>
 {
     int IPacker<ReferencePackerModel>.IdClassType => 101;
 
-    UnpackerReferences[] IPacker<ReferencePackerModel>.UpackerReferences => new UnpackerReferences[1];
-
-
     void IPacker<ReferencePackerModel>.Serialize(scoped in ReferencePackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
@@ -29,10 +26,6 @@ public class ReferencePackerModelSerializer : IPacker<ReferencePackerModel>
 
         return value;
     }
-
-    //public void DeserializeCircular(ReferencePackerModel value, ref PackerReader reader)
-    //{
-    //}
 }
 
 public class RootPackerModel
@@ -46,13 +39,11 @@ public class RootPackerModelSerializer : IPacker<RootPackerModel>
 {
     int IPacker<RootPackerModel>.IdClassType => 102;
 
-    UnpackerReferences[] IPacker<RootPackerModel>.UpackerReferences => new UnpackerReferences[1];
-
     void IPacker<RootPackerModel>.Serialize(scoped in RootPackerModel value, ref PackerWriter writer)
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
-        writer.Write<ReferencePackerModel, ReferencePackerModelSerializer>(value.Reference);
+        writer.Write<ReferencePackerModel, ReferencePackerModelSerializer>(1, value.Reference);
     }
 
     RootPackerModel? IPacker<RootPackerModel>.Deserialize(ref PackerReader reader)
@@ -61,13 +52,9 @@ public class RootPackerModelSerializer : IPacker<RootPackerModel>
         {
             String1 = reader.ReadString(),
             String2 = reader.ReadString(),
-            Reference = reader.Read<ReferencePackerModel, ReferencePackerModelSerializer>()!
+            Reference = reader.Read<RootPackerModel, ReferencePackerModel, RootPackerModelSerializer>()!
         };
 
         return value;
     }
-
-    //void IPacker<RootPackerModel>.DeserializeCircular(RootPackerModel value, ref PackerReader reader)
-    //{
-    //}
 }

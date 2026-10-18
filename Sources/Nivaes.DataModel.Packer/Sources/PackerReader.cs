@@ -201,24 +201,24 @@ public ref struct PackerReader
         return ReadSpan(length);
     }
 
-    public T? Read<T, TSerializer>()
-        where TSerializer : IPacker<T>, new()
-    {
-        int id = ReadInt32();
-
-        if (id == -1)
-            return default(T);
-
-        return _recursiveReader.Read<T, TSerializer>(id);
-    }
-
-    public T? Read<T, TReference, TSerializer>(int idReference, ReferenceSetterDelegate<T, TReference> setter)
+    public TReference? Read<T, TReference, TSerializer>()
         where TSerializer : IPacker<T>, new()
     {
         int idObject = ReadInt32();
 
         if (idObject == -1)
-            return default(T);
+            return default(TReference);
+
+        return _recursiveReader.Read<T, TReference, TSerializer>(idObject);
+    }
+
+    public TReference? Read<T, TReference, TSerializer>(int idReference, ReferenceSetterDelegate<T, TReference> setter)
+        where TSerializer : IPacker<T>, new()
+    {
+        int idObject = ReadInt32();
+
+        if (idObject == -1)
+            return default(TReference);
 
         return _recursiveReader.Read<T, TReference, TSerializer>(idObject, idReference, setter);
     }

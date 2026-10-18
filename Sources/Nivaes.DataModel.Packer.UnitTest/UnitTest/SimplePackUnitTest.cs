@@ -26,8 +26,6 @@ public class SimplePackUnitTest
     {
         int IPacker<SimpleModel>.IdClassType => 1;
 
-        UnpackerReferences[] IPacker<SimpleModel>.UpackerReferences => new UnpackerReferences[1];
-
         void IPacker<SimpleModel>.Serialize(scoped in SimpleModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
@@ -47,10 +45,6 @@ public class SimplePackUnitTest
 
             return value;
         }
-
-        //void IPacker<SimpleModel>.DeserializeCircular(SimpleModel value, ref PackerReader reader)
-        //{
-        //}
     }
 
     [Fact]   

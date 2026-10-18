@@ -25,22 +25,20 @@ public class ReferencePackUnitTest
     {
         int IPacker<RootModel>.IdClassType => 5;
 
-        UnpackerReferences[] IPacker<RootModel>.UpackerReferences => new UnpackerReferences[1];
-
         ReferenceSetter[] IPacker<RootModel>.ReferenceSetters => null!;
 
         void IPacker<RootModel>.Serialize(scoped in RootModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
-            writer.Write<ReferenceModel, ReferenceModelPacker>(value.Reference);
+            writer.Write<ReferenceModel, ReferenceModelPacker>(1, value.Reference);
         }
   
         RootModel? IPacker<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<ReferenceModel, ReferenceModelPacker>()!;
+            var reference = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelPacker>()!;
 
             var value = new RootModel
             {
@@ -50,10 +48,6 @@ public class ReferencePackUnitTest
             };
             return value;
         }
-
-        //void IPacker<RootModel>.DeserializeCircular(RootModel value, ref PackerReader reader)
-        //{
-        //}
     }
 
     public class ReferenceModel
@@ -66,8 +60,6 @@ public class ReferencePackUnitTest
     {
         int IPacker<ReferenceModel>.IdClassType => 6;
 
-        UnpackerReferences[] IPacker<ReferenceModel>.UpackerReferences => new UnpackerReferences[1];
-
         ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => null!;
 
         void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel value, ref PackerWriter writer)
@@ -76,11 +68,6 @@ public class ReferencePackUnitTest
             writer.Write(value.String2);
         }
     
-        //void IPacker<ReferenceModel>.DeserializeRegister()
-        //{
-
-        //}
-
         ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
@@ -94,10 +81,6 @@ public class ReferencePackUnitTest
 
             return value;
         }
-
-        //void IPacker<ReferenceModel>.DeserializeCircular(ReferenceModel value, ref PackerReader reader)
-        //{
-        //}
     }
 
     [Fact]

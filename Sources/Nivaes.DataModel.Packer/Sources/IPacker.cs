@@ -1,14 +1,5 @@
 ﻿namespace Nivaes.DataModel.Packer;
 
-[Obsolete]
-public struct UnpackerReferences
-{
-    public int IdClassTypes;
-    public int IdReferenceTypes;
-    public object Reference;
-    public Action<object, object> ReferenceSetters;
-}
-
 public struct ReferenceSetter
 {
     public int IdReference;
@@ -18,9 +9,6 @@ public struct ReferenceSetter
 
 public interface IPacker<T>
 {
-    [Obsolete]
-    UnpackerReferences[] UpackerReferences { get; }
-
     ReferenceSetter[]? ReferenceSetters { get => null; }
 
     int IdClassType { get; }

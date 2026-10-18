@@ -29,8 +29,6 @@ public class RecursiveCircularReferencePackUnitTest
     {
         public int IdClassType => 30;
 
-        UnpackerReferences[] IPacker<ReferenceModel>.UpackerReferences => new UnpackerReferences[2];
-
         public int[] IdClassTypes => new int[] { 30 };
         public int[] IdReferenceTypes => new int[] { 30, 30 };
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
@@ -45,16 +43,16 @@ public class RecursiveCircularReferencePackUnitTest
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference1);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference2);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference1);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(2, model.Reference2);
         }
 
         ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(0, ReferenceReference1);
-            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(1, ReferenceReference2);
+            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(1, ReferenceReference1);
+            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelSerializer>(2, ReferenceReference2);
 
             var value = new ReferenceModel
             {

@@ -64,8 +64,6 @@ public class AllTypesPackUnitTest
     {
         int IPacker<AllTypesModel>.IdClassType => 2;
 
-        UnpackerReferences[] IPacker<AllTypesModel>.UpackerReferences => new UnpackerReferences[1];
-
         void IPacker<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
         {
             writer.Write(item.Guid);

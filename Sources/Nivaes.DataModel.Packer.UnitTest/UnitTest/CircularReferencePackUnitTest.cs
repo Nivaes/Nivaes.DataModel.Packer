@@ -32,34 +32,40 @@ public class CircularReferencePackUnitTest
     {
         int IPacker<RootModel>.IdClassType => 10;
 
-        UnpackerReferences[] IPacker<RootModel>.UpackerReferences => new UnpackerReferences[2];
+        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
+        {
+            new ReferenceSetter { IdReference = 1, Setter = ReferenceReference1!, Reference = null },
+        };
 
-        ReferenceSetter[] IPacker<RootModel>.ReferenceSetters => null!;
+        ReferenceSetter[] IPacker<RootModel>.ReferenceSetters => _referenceSetters;
 
         void IPacker<RootModel>.Serialize(scoped in RootModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference);
         }
 
         RootModel? IPacker<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
+            var reference = reader.Read<RootModel, ReferenceModel, RootModelSerializer>(1, ReferenceReference1);
 
             var value = new RootModel
             {
                 String1 = string1,
                 String2 = string2,
-                Reference = reader.Read<ReferenceModel, ReferenceModelSerializer>()!
+                Reference = reference!
             };
             return value;
         }
 
-        public void DeserializeCircular(RootModel value, ref PackerReader reader)
+        public static void ReferenceReference1(object value, object reference)
         {
+            ((RootModel)value).Reference = (ReferenceModel)reference;
         }
+
     }
 
     public class ReferenceModel
@@ -74,34 +80,39 @@ public class CircularReferencePackUnitTest
     {
         int IPacker<ReferenceModel>.IdClassType => 20;
 
-        UnpackerReferences[] IPacker<ReferenceModel>.UpackerReferences => new UnpackerReferences[1];
+        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
+        {
+            new ReferenceSetter { IdReference = 0, Setter = ReferenceReference1!, Reference = null },
+        };
 
-        ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => null!;
+        ReferenceSetter[] IPacker<ReferenceModel>.ReferenceSetters => _referenceSetters;
 
         void IPacker<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<RootModel, RootModelSerializer>(model.RootReference);
+            writer.Write<RootModel, RootModelSerializer>(1, model.RootReference);
         }
 
         ReferenceModel? IPacker<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
+            var rootReference = reader.Read<ReferenceModel, RootModel, ReferenceModelSerializer>(1, ReferenceReference1);
 
             var value = new ReferenceModel
             {
                 String1 = string1,
                 String2 = string2,
+                RootReference = rootReference
             };
 
             return value;
         }
 
-        public void DeserializeCircular(ReferenceModel value, ref PackerReader reader)
+        public static void ReferenceReference1(object value, object reference)
         {
-            //RootReference = reader.Read<RootModel>();
+            ((ReferenceModel)value).RootReference = (RootModel)reference;
         }
     }
 

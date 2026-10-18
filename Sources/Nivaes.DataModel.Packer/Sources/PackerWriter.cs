@@ -276,7 +276,7 @@ public ref partial struct PackerWriter
         _position += value.Length;
     }
 
-    public void Write<T, TSerializer>(in T? value)
+    public void Write<T, TSerializer>(int idReference, in T? value)
         where TSerializer : IPacker<T>, new()
     {
         if (value is null)
@@ -285,9 +285,9 @@ public ref partial struct PackerWriter
             return;
         }
 
-        var id = Add<T>(value, new TSerializer());
+        Add<T>(value, new TSerializer(), idReference);
 
-        Write(id);
+        Write(idReference);
     }
     #endregion
 }

@@ -49,7 +49,7 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
-    private T? Read<T, TSerializer>(int id, TSerializer deserializer)
+    private TReference? Read<T, TReference, TSerializer>(int id, TSerializer deserializer)
        where TSerializer : IPacker<T>, new()
     {
         if (!_entries[id].IsCreate)
@@ -73,23 +73,23 @@ internal ref struct RecursiveReader
             _entries[id].DeserializerCircular = SerializeCircular<T>;
         }
 
-        return (T?)_entries[id].Item;
+        return (TReference?)_entries[id].Item;
     }
 
-    public T? Read<T, TSerializer>(int id)
+    public TReference? Read<T, TReference, TSerializer>(int id)
         where TSerializer : IPacker<T>, new()
     {
         var deserializer = new TSerializer();
 
-        return Read<T, TSerializer>(id, deserializer);
+        return Read<T, TReference, TSerializer>(id, deserializer);
     }
 
-    public T? Read<T, TReference, TSerializer>(int id, int idReference, ReferenceSetterDelegate<T, TReference> setter)
+    public TReference? Read<T, TReference, TSerializer>(int id, int idReference, ReferenceSetterDelegate<T, TReference> setter)
        where TSerializer : IPacker<T>, new()
     {
         var deserializer = new TSerializer();
 
-        var value = Read<T, TSerializer>(id, deserializer);
+        var value = Read<T, TReference, TSerializer>(id, deserializer);
 
         deserializer.ReferenceSetters?[idReference].Reference = value;
 

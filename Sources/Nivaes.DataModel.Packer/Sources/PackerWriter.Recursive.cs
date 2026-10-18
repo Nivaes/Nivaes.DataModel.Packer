@@ -4,21 +4,21 @@ namespace Nivaes.DataModel.Packer;
 
 public ref partial struct PackerWriter
 {
-    public int Add<T>(T item, in IPacker<T> serializer)
+    public void Add<T>(T item, in IPacker<T> serializer, int idReference)
     {
         var hash = RuntimeHelpers.GetHashCode(item);
 
-        if(Exist(hash, out var index))
-        {
-            return index;
-        }
+        //if(Exist(hash, out var index))
+        //{
+        //    return index;
+        //}
         
-        if (_count == _entries.Length)
+        if (_count++ == _entries.Length)
             Grow();
 
-        index = _count++;
+        //index = _count++;
 
-        _entries[index] = new Entry
+        _entries[idReference] = new Entry
         {
             Hash = hash,
             IdClass = serializer.IdClassType,
@@ -27,7 +27,7 @@ public ref partial struct PackerWriter
             Serialize = Serialize<T>
         };
 
-        return index;
+        //return index;
     }
 
     public bool Exist(int hash, out int index)
@@ -43,17 +43,6 @@ public ref partial struct PackerWriter
         index = -1;
         return false;
     }
-
-    //public int TryGet(int hash)
-    //{
-    //    for (int i = 0; i < _count; i++)
-    //    {
-    //        if (_entries[i].Hash == hash)
-    //            return i;
-    //    }
-
-    //    throw new IndexOutOfRangeException("Item not found");
-    //}
 
     private void Grow()
     {
@@ -71,7 +60,7 @@ public ref partial struct PackerWriter
 
     public ReadOnlySpan<byte> WriteRoot<T>(in T? value, scoped in IPacker<T> serializer)
     {
-        var id = Add<T>(value!, serializer);
+        /*var id =*/ Add<T>(value!, serializer, 0);
 
         SerializePending();
 
