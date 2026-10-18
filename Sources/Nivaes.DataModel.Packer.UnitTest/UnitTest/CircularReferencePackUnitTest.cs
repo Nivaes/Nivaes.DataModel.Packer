@@ -24,7 +24,7 @@ public class CircularReferencePackUnitTest
 
     public class RootModelSerializer : ISerializer<RootModel>
     {
-        int ISerializer<RootModel>.IdClassType => 10;
+        int ISerializer.IdClassType => 10;
 
         void ISerializer<RootModel>.Serialize(scoped in RootModel model, ref PackerWriter writer)
         {
@@ -36,14 +36,14 @@ public class CircularReferencePackUnitTest
 
     public class RootModelDeserializer : IDeserializer<RootModel>
     {
-        int IDeserializer<RootModel>.IdClassType => 10;
+        int IDeserializer.IdClassType => 10;
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
             new ReferenceSetter { IdReference = 1, Setter = ReferenceReference1!, Reference = null },
         };
 
-        ReferenceSetter[] IDeserializer<RootModel>.ReferenceSetters => _referenceSetters;
+        ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
 
 
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
@@ -78,7 +78,7 @@ public class CircularReferencePackUnitTest
 
     public class ReferenceModelSerializer : ISerializer<ReferenceModel>
     {
-        int ISerializer<ReferenceModel>.IdClassType => 20;
+        int ISerializer.IdClassType => 20;
 
         void ISerializer<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
@@ -90,16 +90,14 @@ public class CircularReferencePackUnitTest
 
     public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
     {
-        int IDeserializer<ReferenceModel>.IdClassType => 20;
+        int IDeserializer.IdClassType => 20;
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
             new ReferenceSetter { IdReference = 0, Setter = ReferenceReference1!, Reference = null },
         };
 
-        ReferenceSetter[] IDeserializer<ReferenceModel>.ReferenceSetters => _referenceSetters;
-
-        
+        ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
 
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {

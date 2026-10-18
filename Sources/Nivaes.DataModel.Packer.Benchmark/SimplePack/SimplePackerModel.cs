@@ -10,7 +10,7 @@ public class SimplePackerModel
 
 public class SimplePackerModelSerializer : ISerializer<SimplePackerModel>
 {
-    int ISerializer<SimplePackerModel>.IdClassType => 100;
+    int ISerializer.IdClassType => 100;
 
     void ISerializer<SimplePackerModel>.Serialize(scoped in SimplePackerModel value, ref PackerWriter writer)
     {
@@ -22,7 +22,7 @@ public class SimplePackerModelSerializer : ISerializer<SimplePackerModel>
 
 public class SimplePackerModelDeserializer : IDeserializer<SimplePackerModel>
 {
-    int IDeserializer<SimplePackerModel>.IdClassType => 100;
+    int IDeserializer.IdClassType => 100;
 
     SimplePackerModel? IDeserializer<SimplePackerModel>.Deserialize(ref PackerReader reader)
     {

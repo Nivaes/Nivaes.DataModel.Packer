@@ -23,7 +23,7 @@ public class ReferencePackUnitTest
 
     public class RootModelSerializer : ISerializer<RootModel>
     {
-        int ISerializer<RootModel>.IdClassType => 5;
+        int ISerializer.IdClassType => 5;
 
         void ISerializer<RootModel>.Serialize(scoped in RootModel value, ref PackerWriter writer)
         {
@@ -35,7 +35,7 @@ public class ReferencePackUnitTest
 
     public class RootModelDeserializer : IDeserializer<RootModel>
     {
-        int IDeserializer<RootModel>.IdClassType => 5;
+        int IDeserializer.IdClassType => 5;
 
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
         {
@@ -61,7 +61,7 @@ public class ReferencePackUnitTest
 
     public class ReferenceModelSerializer : ISerializer<ReferenceModel>
     {
-        int ISerializer<ReferenceModel>.IdClassType => 6;
+        int ISerializer.IdClassType => 6;
 
         void ISerializer<ReferenceModel>.Serialize(scoped in ReferenceModel value, ref PackerWriter writer)
         {
@@ -72,7 +72,7 @@ public class ReferencePackUnitTest
 
     public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
     {
-        int IDeserializer<ReferenceModel>.IdClassType => 6;
+        int IDeserializer.IdClassType => 6;
 
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {

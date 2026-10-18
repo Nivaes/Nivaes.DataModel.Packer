@@ -7,16 +7,13 @@ public struct ReferenceSetter
     public object? Reference;
 }
 
-public interface IDeserializer<T>
+public interface IDeserializer
 {
     int IdClassType { get; }
 
     ReferenceSetter[]? ReferenceSetters { get => null; }
 
-    T? Deserialize(ref PackerReader reader);
-
-
-    void DeserializeCircular(T value)
+    void DeserializeCircular(object value)
     {
         if (ReferenceSetters is null)
             return;
@@ -26,4 +23,9 @@ public interface IDeserializer<T>
             setters.Setter(value!, setters.Reference);
         }
     }
+}
+
+public interface IDeserializer<T> : IDeserializer
+{
+    T? Deserialize(ref PackerReader reader);
 }

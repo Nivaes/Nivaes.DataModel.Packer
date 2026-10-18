@@ -12,7 +12,7 @@ public ref struct PackerReader
 
     private RecursiveReader _recursiveReader;
 
-    public delegate void ReferenceSetterDelegate<T, TReference>(T value, TReference reference);
+    public delegate void ReferenceSetterDelegate<TReference>(object value, TReference reference);
 
     //internal PackerReader(ReadOnlySpan<byte> buffer)
     //{
@@ -209,10 +209,10 @@ public ref struct PackerReader
         if (idObject == -1)
             return default(TReference);
 
-        return _recursiveReader.Read<T, TReference, TSerializer>(idObject);
+        return _recursiveReader.Read<TReference, TSerializer>(idObject);
     }
 
-    public TReference? Read<T, TReference, TSerializer>(int idReference, ReferenceSetterDelegate<T, TReference> setter)
+    public TReference? Read<T, TReference, TSerializer>(int idReference, ReferenceSetterDelegate<TReference> setter)
         where TSerializer : IDeserializer<TReference>, new()
     {
         int idObject = ReadInt32();
@@ -220,7 +220,7 @@ public ref struct PackerReader
         if (idObject == -1)
             return default(TReference);
 
-        return _recursiveReader.Read<T, TReference, TSerializer>(idObject, idReference, setter);
+        return _recursiveReader.Read<TReference, TSerializer>(idObject, idReference, setter);
     }
     #endregion
 }

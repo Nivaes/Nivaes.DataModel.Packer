@@ -21,7 +21,7 @@ public class SimplePackUnitTest
 
     public class SimpleModelSerializer : ISerializer<SimpleModel>
     {
-        int ISerializer<SimpleModel>.IdClassType => 1;
+        int ISerializer.IdClassType => 1;
 
         void ISerializer<SimpleModel>.Serialize(scoped in SimpleModel value, ref PackerWriter writer)
         {
@@ -32,7 +32,7 @@ public class SimplePackUnitTest
 
     public class SimpleModelDeserializer : IDeserializer<SimpleModel>
     {
-        int IDeserializer<SimpleModel>.IdClassType => 1;
+        int IDeserializer.IdClassType => 1;
 
         SimpleModel? IDeserializer<SimpleModel>.Deserialize(ref PackerReader reader)
         {

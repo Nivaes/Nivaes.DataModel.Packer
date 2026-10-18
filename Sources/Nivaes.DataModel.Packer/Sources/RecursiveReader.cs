@@ -49,7 +49,7 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
-    private TReference? Read<T, TReference, TDeserializer>(int id, TDeserializer deserializer)
+    private TReference? Read<TReference, TDeserializer>(int id, TDeserializer deserializer)
        where TDeserializer : IDeserializer<TReference>, new()
     {
         if (!_entries[id].IsCreate)
@@ -70,26 +70,26 @@ internal ref struct RecursiveReader
             _entries[id].IsCreate = true;
             _entries[id].Item = deserializer.Deserialize(ref packerReader)!;
             _entries[id].Deserializer = deserializer;
-            _entries[id].DeserializerCircular = SerializeCircular<T>;
+            _entries[id].DeserializerCircular = SerializeCircular;
         }
 
         return (TReference?)_entries[id].Item;
     }
 
-    public TReference? Read<T, TReference, TDeserializer>(int id)
+    public TReference? Read<TReference, TDeserializer>(int id)
         where TDeserializer : IDeserializer<TReference>, new()
     {
         var deserializer = new TDeserializer();
 
-        return Read<T, TReference, TDeserializer>(id, deserializer);
+        return Read<TReference, TDeserializer>(id, deserializer);
     }
 
-    public TReference? Read<T, TReference, TDeserializer>(int id, int idReference, ReferenceSetterDelegate<T, TReference> setter)
+    public TReference? Read<TReference, TDeserializer>(int id, int idReference, ReferenceSetterDelegate<TReference> setter)
        where TDeserializer : IDeserializer<TReference>, new()
     {
         var deserializer = new TDeserializer();
 
-        var value = Read<T, TReference, TDeserializer>(id, deserializer);
+        var value = Read<TReference, TDeserializer>(id, deserializer);
 
         deserializer.ReferenceSetters?[idReference].Reference = value;
 
@@ -104,12 +104,12 @@ internal ref struct RecursiveReader
         }
     }
 
-    private static void SerializeCircular<T>(
+    private static void SerializeCircular(
        ref RecursiveReader recursiveReader,
        object item,
        in object deserializer)
     {
-        var serializerPacker = (IDeserializer<T>)deserializer;
+        var serializerPacker = (IDeserializer)deserializer;
         if (serializerPacker.ReferenceSetters is not null)
         {
             for (int i = 0; i < serializerPacker.ReferenceSetters.Length; i++)
@@ -119,6 +119,6 @@ internal ref struct RecursiveReader
             }
         }
 
-        serializerPacker.DeserializeCircular((T)item);
+        serializerPacker.DeserializeCircular(item);
     }
 }
