@@ -285,9 +285,9 @@ public ref partial struct PackerWriter
             return;
         }
 
-        Add<T>(value, new TSerializer(), idReference);
+        var id = Add<T>(value, new TSerializer(), idReference);
 
-        Write(idReference);
+        Write(id);
     }
     #endregion
 }

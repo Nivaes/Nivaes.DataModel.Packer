@@ -1,5 +1,7 @@
-﻿using AutoFixture.Xunit3;
+﻿using System.Text;
+using AutoFixture.Xunit3;
 using Nivaes.DataModel.Packer;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
 
@@ -30,8 +32,8 @@ public class RecursiveCircularReferencePackUnitTest
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(0, model.Reference1);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference2);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference1);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(2, model.Reference2);
         }
     }
 
@@ -41,8 +43,8 @@ public class RecursiveCircularReferencePackUnitTest
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
-            new ReferenceSetter { IdReference = 0, Setter = ReferenceReference1!, Reference = null },
-            new ReferenceSetter { IdReference = 1, Setter = ReferenceReference2!, Reference = null }
+            new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { Setter = ReferenceReference2!, Reference = null }
         };
 
         ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
@@ -51,8 +53,8 @@ public class RecursiveCircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(0, ReferenceReference1);
-            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference2);
+            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1);
+            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(2, ReferenceReference2);
 
             var value = new ReferenceModel
             {
@@ -170,6 +172,11 @@ public class RecursiveCircularReferencePackUnitTest
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
+
+        _output.WriteLine(
+            string.Join(":", cache.ToArray().Select((b, i) => $"{b}"))
+        );
+
 
         var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
 

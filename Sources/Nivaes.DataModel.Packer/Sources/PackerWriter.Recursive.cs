@@ -4,21 +4,21 @@ namespace Nivaes.DataModel.Packer;
 
 public ref partial struct PackerWriter
 {
-    public void Add<T>(T item, in ISerializer<T> serializer, int idReference)
+    public int Add<T>(T item, in ISerializer<T> serializer, int idReference)
     {
         var hash = RuntimeHelpers.GetHashCode(item);
 
-        //if(Exist(hash, out var index))
-        //{
-        //    return index;
-        //}
-        
-        if (_count++ == _entries.Length)
+        if (Exist(hash, out var index))
+        {
+            return index;
+        }
+
+        if (_count == _entries.Length)
             Grow();
 
-        //index = _count++;
+        index = _count++;
 
-        _entries[idReference] = new Entry
+        _entries[index] = new Entry
         {
             Hash = hash,
             IdClass = serializer.IdClassType,
@@ -27,7 +27,7 @@ public ref partial struct PackerWriter
             Serialize = Serialize<T>
         };
 
-        //return index;
+        return index;
     }
 
     public bool Exist(int hash, out int index)
@@ -60,7 +60,7 @@ public ref partial struct PackerWriter
 
     public ReadOnlySpan<byte> WriteRoot<T>(in T? value, scoped in ISerializer<T> serializer)
     {
-        Add<T>(value!, serializer, 0);
+        _ = Add<T>(value!, serializer, 0);
 
         SerializePending();
 

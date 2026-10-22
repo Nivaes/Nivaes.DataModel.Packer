@@ -2,7 +2,7 @@
 
 public struct ReferenceSetter
 {
-    public int IdReference;
+    //public int IdReference;
     public Action<object, object?> Setter;
     public object? Reference;
 }

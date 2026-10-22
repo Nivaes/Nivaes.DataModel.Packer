@@ -40,7 +40,7 @@ public class CircularReferencePackUnitTest
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
-            new ReferenceSetter { IdReference = 1, Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
         };
 
         ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
@@ -50,7 +50,7 @@ public class CircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(0, ReferenceReference1);
+            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1);
 
             var value = new RootModel
             {
@@ -94,7 +94,7 @@ public class CircularReferencePackUnitTest
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
-            new ReferenceSetter { IdReference = 0, Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
         };
 
         ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
@@ -103,7 +103,7 @@ public class CircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(0, ReferenceReference1);
+            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(1, ReferenceReference1);
 
             var value = new ReferenceModel
             {

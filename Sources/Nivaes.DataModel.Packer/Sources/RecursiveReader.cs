@@ -49,31 +49,31 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
-    private TReference? Read<TReference, TDeserializer>(int id, TDeserializer deserializer)
-       where TDeserializer : IDeserializer<TReference>, new()
+    private TReference? Read<TReference, TReferenceDeserializer>(int idObject, TReferenceDeserializer deserializer)
+       where TReferenceDeserializer : IDeserializer<TReference>, new()
     {
-        if (!_entries[id].IsCreate)
+        if (!_entries[idObject].IsCreate)
         {
-            var position = _initPositions[id];
+            var position = _initPositions[idObject];
             var packerReader = new PackerReader(_buffer[position..], ref this);
             var idClassType = packerReader.ReadInt32();
             if (idClassType != deserializer.IdClassType)
             {
                 throw new Exception($"No coinciden las clase: {idClassType} != {deserializer.IdClassType}");
             }
-            var idObject = packerReader.ReadInt32();
-            if (idObject != id)
+            var idObjectPacket = packerReader.ReadInt32();
+            if (idObjectPacket != idObject)
             {
-                throw new Exception($"No coinciden el id objet: {idObject} != {id}");
+                throw new Exception($"No coinciden el id objet: {idObjectPacket} != {idObject}");
             }
 
-            _entries[id].IsCreate = true;
-            _entries[id].Item = deserializer.Deserialize(ref packerReader)!;
-            _entries[id].Deserializer = deserializer;
-            _entries[id].DeserializerCircular = SerializeCircular;
+            _entries[idObject].IsCreate = true;
+            _entries[idObject].Item = deserializer.Deserialize(ref packerReader)!;
+            _entries[idObject].Deserializer = deserializer;
+            _entries[idObject].DeserializerCircular = SerializeCircular;
         }
 
-        return (TReference?)_entries[id].Item;
+        return (TReference?)_entries[idObject].Item;
     }
 
     public TReference? Read<TReference, TDeserializer>(int idObject)
@@ -84,14 +84,14 @@ internal ref struct RecursiveReader
         return Read<TReference, TDeserializer>(idObject, deserializer);
     }
 
-    public TReference? Read<TReference, TDeserializer>(int id, int idReference, ReferenceSetterDelegate<TReference> setter)
-       where TDeserializer : IDeserializer<TReference>, new()
+    public TReference? Read<TReference, TReferenceDeserializer>(int idObject, int idReference, ReferenceSetterDelegate<TReference> setter)
+       where TReferenceDeserializer : IDeserializer<TReference>, new()
     {
-        var deserializer = new TDeserializer();
+        var deserializer = new TReferenceDeserializer();
 
-        var value = Read<TReference, TDeserializer>(id, deserializer);
+        var value = Read<TReference, TReferenceDeserializer>(idObject, deserializer);
 
-        deserializer.ReferenceSetters?[idReference].Reference = value;
+        deserializer.ReferenceSetters?[idReference-1].Reference = value;
 
         return value;
     }
@@ -115,7 +115,7 @@ internal ref struct RecursiveReader
             for (int i = 0; i < serializerPacker.ReferenceSetters.Length; i++)
             {
                 ref var referenceSetter = ref serializerPacker.ReferenceSetters[i];
-                referenceSetter.Reference = recursiveReader._entries[referenceSetter.IdReference].Item;
+                referenceSetter.Reference = recursiveReader._entries[i].Item;
             }
         }
 
