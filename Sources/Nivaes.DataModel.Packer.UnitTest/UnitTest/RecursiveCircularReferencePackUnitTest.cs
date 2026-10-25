@@ -112,8 +112,8 @@ public class RecursiveCircularReferencePackUnitTest
         copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
         copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-        copyModel.Reference1.Reference1.ShouldNotBeNull();
-        copyModel.Reference1.Reference1.ShouldBe(copyModel);
+        copyModel.Reference1.Reference1.ShouldNotBeNull().ShouldBe(copyModel);
+        copyModel.Reference1.Reference2.ShouldBeNull();
     }
 
     [Fact]
