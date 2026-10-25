@@ -19,7 +19,9 @@ public class ReferencePackerModelSerializer : ISerializer<ReferencePackerModel>
 
 public class ReferencePackerModelDeserializer : IDeserializer<ReferencePackerModel>
 {
-    int IDeserializer.IdClassType => 101;
+    static int IDeserializer<ReferencePackerModel>.IdClassType => 101;
+
+    int IDeserializer.IdObject { get; set; }
 
     ReferencePackerModel? IDeserializer<ReferencePackerModel>.Deserialize(ref PackerReader reader)
     {
@@ -48,12 +50,13 @@ public class RootPackerModelSerializer : ISerializer<RootPackerModel>
     {
         writer.Write(value.String1);
         writer.Write(value.String2);
-        writer.Write<ReferencePackerModel, ReferencePackerModelSerializer>(1, value.Reference);
+        writer.Write<ReferencePackerModel, ReferencePackerModelSerializer>(value.Reference);
     }
 }
 public class RootPackerModelDeserializer : IDeserializer<RootPackerModel>
 {
-    int IDeserializer.IdClassType => 102;
+    static int IDeserializer<RootPackerModel>.IdClassType => 102;
+    int IDeserializer.IdObject { get; set; }
 
     RootPackerModel? IDeserializer<RootPackerModel>.Deserialize(ref PackerReader reader)
     {
@@ -61,7 +64,7 @@ public class RootPackerModelDeserializer : IDeserializer<RootPackerModel>
         {
             String1 = reader.ReadString(),
             String2 = reader.ReadString(),
-            Reference = reader.Read<RootPackerModel, ReferencePackerModel, ReferencePackerModelDeserializer>()!
+            Reference = reader.Read<RootPackerModel, ReferencePackerModel, ReferencePackerModelDeserializer>(0)!
         };
 
         return value;

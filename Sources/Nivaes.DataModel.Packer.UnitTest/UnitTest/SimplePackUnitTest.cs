@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Xunit3;
+using static Nivaes.DataModel.Packer.UnitTest.AllTypesPackUnitTest;
 using static Nivaes.DataModel.Packer.UnitTest.SimplePackUnitTest;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
@@ -32,7 +33,8 @@ public class SimplePackUnitTest
 
     public class SimpleModelDeserializer : IDeserializer<SimpleModel>
     {
-        int IDeserializer.IdClassType => 1;
+        static int IDeserializer<SimpleModel>.IdClassType => 1;
+        int IDeserializer.IdObject { get; set; }
 
         SimpleModel? IDeserializer<SimpleModel>.Deserialize(ref PackerReader reader)
         {

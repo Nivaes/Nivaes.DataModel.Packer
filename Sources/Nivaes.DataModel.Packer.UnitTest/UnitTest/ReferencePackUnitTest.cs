@@ -29,19 +29,20 @@ public class ReferencePackUnitTest
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, value.Reference);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(value.Reference);
         }
     }
 
     public class RootModelDeserializer : IDeserializer<RootModel>
     {
-        int IDeserializer.IdClassType => 5;
+        static int IDeserializer<RootModel>.IdClassType => 5;
+        int IDeserializer.IdObject { get; set; }
 
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>()!;
+            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject)!;
 
             var value = new RootModel
             {
@@ -72,7 +73,8 @@ public class ReferencePackUnitTest
 
     public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
     {
-        int IDeserializer.IdClassType => 6;
+        static int IDeserializer<ReferenceModel>.IdClassType => 6;
+        int IDeserializer.IdObject { get; set; }
 
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {

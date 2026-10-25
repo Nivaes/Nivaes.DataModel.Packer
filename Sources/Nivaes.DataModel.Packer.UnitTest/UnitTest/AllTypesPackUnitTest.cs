@@ -111,7 +111,9 @@ public class AllTypesPackUnitTest
 
     public class AllTypesModelDeserializer : IDeserializer<AllTypesModel>
     {
-        int IDeserializer.IdClassType => 2;
+        static int IDeserializer<AllTypesModel>.IdClassType => 2;
+
+        int IDeserializer.IdObject { get; set; }
 
         AllTypesModel? IDeserializer<AllTypesModel>.Deserialize(ref PackerReader reader)
         {

@@ -22,7 +22,8 @@ public class SimplePackerModelSerializer : ISerializer<SimplePackerModel>
 
 public class SimplePackerModelDeserializer : IDeserializer<SimplePackerModel>
 {
-    int IDeserializer.IdClassType => 100;
+    static int IDeserializer<SimplePackerModel>.IdClassType => 100;
+    int IDeserializer.IdObject { get; set; }
 
     SimplePackerModel? IDeserializer<SimplePackerModel>.Deserialize(ref PackerReader reader)
     {

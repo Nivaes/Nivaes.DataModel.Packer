@@ -32,14 +32,16 @@ public class RecursiveCircularReferencePackUnitTest
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference1);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(2, model.Reference2);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference1);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference2);
         }
     }
 
     public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
     {
-        public int IdClassType => 30;
+        static int IDeserializer<ReferenceModel>.IdClassType => 30;
+
+        int IDeserializer.IdObject { get; set; }
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {

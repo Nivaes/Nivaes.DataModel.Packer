@@ -1,9 +1,7 @@
 ﻿using AutoFixture.Xunit3;
 using Nivaes.DataModel.Packer;
-using static Nivaes.DataModel.Packer.UnitTest.AllTypesPackUnitTest;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
-
 
 public class CircularReferencePackUnitTest
 {
@@ -30,13 +28,19 @@ public class CircularReferencePackUnitTest
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(1, model.Reference);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference);
         }
     }
 
     public class RootModelDeserializer : IDeserializer<RootModel>
     {
-        int IDeserializer.IdClassType => 10;
+        static int IDeserializer<RootModel>.IdClassType => 10;
+
+        int IDeserializer.IdObject
+        { 
+            get; 
+            set; 
+        }
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
@@ -45,12 +49,11 @@ public class CircularReferencePackUnitTest
 
         ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
 
-
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1);
+            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1);
 
             var value = new RootModel
             {
@@ -65,7 +68,6 @@ public class CircularReferencePackUnitTest
         {
             ((RootModel)value).Reference = (ReferenceModel)reference;
         }
-
     }
 
     public class ReferenceModel
@@ -84,13 +86,15 @@ public class CircularReferencePackUnitTest
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<RootModel, RootModelSerializer>(1, model.RootReference);
+            writer.Write<RootModel, RootModelSerializer>(model.RootReference);
         }
     }
 
     public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
     {
-        int IDeserializer.IdClassType => 20;
+        static int IDeserializer<ReferenceModel>.IdClassType => 20;
+
+        int IDeserializer.IdObject { get; set; }
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
@@ -103,7 +107,7 @@ public class CircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(1, ReferenceReference1);
+            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1);
 
             var value = new ReferenceModel
             {

@@ -2,14 +2,14 @@
 
 public struct ReferenceSetter
 {
-    //public int IdReference;
     public Action<object, object?> Setter;
+    public int IdObject;
     public object? Reference;
 }
 
 public interface IDeserializer
 {
-    int IdClassType { get; }
+    int IdObject { get; set; }
 
     ReferenceSetter[]? ReferenceSetters { get => null; }
 
@@ -27,5 +27,7 @@ public interface IDeserializer
 
 public interface IDeserializer<T> : IDeserializer
 {
+    static abstract int IdClassType { get; }
+
     T? Deserialize(ref PackerReader reader);
 }

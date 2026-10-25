@@ -4,7 +4,7 @@ namespace Nivaes.DataModel.Packer;
 
 public ref partial struct PackerWriter
 {
-    public int Add<T>(T item, in ISerializer<T> serializer, int idReference)
+    public int Add<T>(T item, in ISerializer<T> serializer)
     {
         var hash = RuntimeHelpers.GetHashCode(item);
 
@@ -60,7 +60,7 @@ public ref partial struct PackerWriter
 
     public ReadOnlySpan<byte> WriteRoot<T>(in T? value, scoped in ISerializer<T> serializer)
     {
-        _ = Add<T>(value!, serializer, 0);
+        _ = Add<T>(value!, serializer);
 
         SerializePending();
 
