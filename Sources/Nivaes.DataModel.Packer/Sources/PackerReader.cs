@@ -211,16 +211,5 @@ public ref struct PackerReader
 
         return _recursiveReader.Read<TReference, TSerializer>(idObject, idReference);
     }
-
-    public TReference? Read<T, TReference, TReferenceDeserializer>(int idReference, ReferenceSetterDelegate<TReference> setter)
-        where TReferenceDeserializer : IDeserializer<TReference>, new()
-    {
-        int idObject = ReadInt32();
-
-        if (idObject == -1)
-            return default(TReference);
-
-        return _recursiveReader.Read<TReference, TReferenceDeserializer>(idObject, idReference/*, setter*/);
-    }
     #endregion
 }

@@ -17,7 +17,8 @@ public class CircularReferencePackUnitTest
         public required string String1 { get; set; }
         public required string String2 { get; set; }
 
-        public required ReferenceModel Reference { get; set; }
+        public required ReferenceModel Reference1 { get; set; }
+        public required ReferenceModel Reference2 { get; set; }
     }
 
     public class RootModelSerializer : ISerializer<RootModel>
@@ -28,7 +29,8 @@ public class CircularReferencePackUnitTest
         {
             writer.Write(model.String1);
             writer.Write(model.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference1);
+            writer.Write<ReferenceModel, ReferenceModelSerializer>(model.Reference2);
         }
     }
 
@@ -44,7 +46,8 @@ public class CircularReferencePackUnitTest
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
-            new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { Tag = "Root.Reference1",  Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { Tag = "Root.Reference2", Setter = ReferenceReference2!, Reference = null },
         };
 
         ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
@@ -53,21 +56,30 @@ public class CircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1);
+            var reference1 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject);
+            var reference2 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject);
 
             var value = new RootModel
             {
                 String1 = string1,
                 String2 = string2,
-                Reference = reference!
+                Reference1 = reference1!,
+                Reference2 = reference2!
+
             };
             return value;
         }
 
         public static void ReferenceReference1(object value, object reference)
         {
-            ((RootModel)value).Reference = (ReferenceModel)reference;
+            ((RootModel)value).Reference1 = (ReferenceModel)reference;
         }
+
+        public static void ReferenceReference2(object value, object reference)
+        {
+            ((RootModel)value).Reference2 = (ReferenceModel)reference;
+        }
+
     }
 
     public class ReferenceModel
@@ -98,7 +110,7 @@ public class CircularReferencePackUnitTest
 
         private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
         {
-            new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
+            new ReferenceSetter { Tag = "Reference.Root", Setter = ReferenceReference1!, Reference = null },
         };
 
         ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
@@ -107,7 +119,7 @@ public class CircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1);
+            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(((IDeserializer)this).IdObject);
 
             var value = new ReferenceModel
             {
@@ -132,13 +144,19 @@ public class CircularReferencePackUnitTest
         {
             String1 = null!,
             String2 = null!,
-            Reference = new ReferenceModel
+            Reference1 = new ReferenceModel
+            {
+                String1 = null!,
+                String2 = null!,
+            },
+            Reference2 = new ReferenceModel
             {
                 String1 = null!,
                 String2 = null!,
             }
         };
-        model.Reference.RootReference = model;
+        model.Reference1.RootReference = model;
+        model.Reference2.RootReference = model;
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
@@ -148,12 +166,12 @@ public class CircularReferencePackUnitTest
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
         copyModel.String2.ShouldBe(model.String2);
-        copyModel.Reference.ShouldNotBeNull();
-        copyModel.Reference.String1.ShouldBe(model.Reference.String1);
-        copyModel.Reference.String2.ShouldBe(model.Reference.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-        copyModel.Reference.RootReference.ShouldNotBeNull();
-        copyModel.Reference.RootReference.ShouldBe(copyModel);
+        copyModel.Reference1.RootReference.ShouldNotBeNull();
+        copyModel.Reference1.RootReference.ShouldBe(copyModel);
     }
 
     [Fact]
@@ -163,13 +181,19 @@ public class CircularReferencePackUnitTest
         {
             String1 = string.Empty,
             String2 = string.Empty,
-            Reference = new ReferenceModel
+            Reference1 = new ReferenceModel
             {
                 String1 = string.Empty,
                 String2 = string.Empty,
-            }
+            },
+            Reference2 = new ReferenceModel
+            {
+                String1 = string.Empty,
+                String2 = string.Empty,
+            },
         };
-        model.Reference.RootReference = model;
+        model.Reference1.RootReference = model;
+        model.Reference2.RootReference = model;
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
@@ -179,12 +203,16 @@ public class CircularReferencePackUnitTest
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
         copyModel.String2.ShouldBe(model.String2);
-        copyModel.Reference.ShouldNotBeNull();
-        copyModel.Reference.String1.ShouldBe(model.Reference.String1);
-        copyModel.Reference.String2.ShouldBe(model.Reference.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-        copyModel.Reference.RootReference.ShouldNotBeNull();
-        copyModel.Reference.RootReference.ShouldBe(copyModel);
+        copyModel.Reference1.RootReference.ShouldNotBeNull();
+        copyModel.Reference1.RootReference.ShouldBe(copyModel);
+
+        copyModel.Reference2.RootReference.ShouldNotBeNull();
+        copyModel.Reference2.RootReference.ShouldBe(copyModel);
+
     }
 
     [Fact]
@@ -194,13 +222,19 @@ public class CircularReferencePackUnitTest
         {
             String1 = "test1",
             String2 = "test2",
-            Reference = new ReferenceModel
+            Reference1 = new ReferenceModel
             {
                 String1 = "test3",
                 String2 = "test4",
+            },
+            Reference2 = new ReferenceModel
+            {
+                String1 = "test5",
+                String2 = "test6",
             }
         };
-        model.Reference.RootReference = model;
+        model.Reference1.RootReference = model;
+        model.Reference2.RootReference = model;
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
@@ -210,28 +244,37 @@ public class CircularReferencePackUnitTest
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
         copyModel.String2.ShouldBe(model.String2);
-        copyModel.Reference.ShouldNotBeNull();
-        copyModel.Reference.String1.ShouldBe(model.Reference.String1);
-        copyModel.Reference.String2.ShouldBe(model.Reference.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-        copyModel.Reference.RootReference.ShouldNotBeNull();
-        copyModel.Reference.RootReference.ShouldBe(copyModel);
+        copyModel.Reference1.RootReference.ShouldNotBeNull();
+        copyModel.Reference1.RootReference.ShouldBe(copyModel);
+
+        copyModel.Reference2.RootReference.ShouldNotBeNull();
+        copyModel.Reference2.RootReference.ShouldBe(copyModel);
     }
 
     [Theory, AutoData]
-    public void SerializerAutoDataTest1(string test1, string test2, string test3, string test4)
+    public void SerializerAutoDataTest1(string test1, string test2, string test3, string test4, string test5, string test6)
     {
         var model = new RootModel
         {
             String1 = test1,
             String2 = test2,
-            Reference = new ReferenceModel
+            Reference1 = new ReferenceModel
             {
                 String1 = test3,
                 String2 = test4,
+            },
+            Reference2 = new ReferenceModel
+            {
+                String1 = test5,
+                String2 = test6,
             }
         };
-        model.Reference.RootReference = model;
+        model.Reference1.RootReference = model;
+        model.Reference2.RootReference = model;
 
         var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
@@ -241,11 +284,15 @@ public class CircularReferencePackUnitTest
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
         copyModel.String2.ShouldBe(model.String2);
-        copyModel.Reference.ShouldNotBeNull();
-        copyModel.Reference.String1.ShouldBe(model.Reference.String1);
-        copyModel.Reference.String2.ShouldBe(model.Reference.String2);
+        copyModel.Reference1.ShouldNotBeNull();
+        copyModel.Reference1.String1.ShouldBe(model.Reference1.String1);
+        copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
-        copyModel.Reference.RootReference.ShouldNotBeNull();
-        copyModel.Reference.RootReference.ShouldBe(copyModel);
+        copyModel.Reference1.RootReference.ShouldNotBeNull();
+        copyModel.Reference1.RootReference.ShouldBe(copyModel);
+
+        copyModel.Reference2.RootReference.ShouldNotBeNull();
+        copyModel.Reference2.RootReference.ShouldBe(copyModel);
+
     }
 }

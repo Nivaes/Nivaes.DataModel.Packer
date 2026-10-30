@@ -2,6 +2,7 @@
 
 public struct ReferenceSetter
 {
+    public string Tag;
     public Action<object, object?> Setter;
     public int IdObject;
     public object? Reference;
