@@ -9,6 +9,7 @@ public class RecursiveCircularReferencePackUnitTest
         _output = output;
     }
 
+    [SerializePacker]
     public class ReferenceModel
     {
         public required string String1 { get; set; }

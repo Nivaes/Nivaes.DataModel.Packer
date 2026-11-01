@@ -63,7 +63,16 @@ public class CreateInterfaces
             .ToArray();
 
         errors.ShouldBeEmpty();
-        
+
+        foreach (var result in runResult.Results)
+        {
+            foreach (var generated in result.GeneratedSources)
+            {
+                Console.WriteLine($"===== {generated.HintName} =====");
+                Console.WriteLine(generated.SourceText.ToString());
+            }
+        }
+
         //var syntaxTree = CSharpSyntaxTree.ParseText(
         //    source,
         //    new CSharpParseOptions(LanguageVersion.Preview));
@@ -107,7 +116,7 @@ public class CreateInterfaces
         //    .Where(x => x.Severity == DiagnosticSeverity.Error)
         //    .ToArray();
 
-        Assert.Empty(errors);
+        //Assert.Empty(errors);
     }
 
     private static CSharpCompilation CreateCompilation(

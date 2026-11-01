@@ -9,6 +9,7 @@ public class ReferenceUnitTest
         _output = output;
     }
 
+    [SerializePacker]
     public class RootModel
     {
         public required string String1 { get; set; }
@@ -44,6 +45,7 @@ public class ReferenceUnitTest
         }
     }
 
+    [SerializePacker]
     public class ReferenceModel
     {
         public required string String1 { get; set; }

@@ -10,6 +10,7 @@ public class AllTypesPackUnitTest
 
     }
 
+    [SerializePacker]
     public class AllTypesModel
     {
         public required Guid Guid { get; set; }

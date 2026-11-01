@@ -64,6 +64,7 @@ public class CircularReferenceUnitTest
 
     }
 
+    [SerializePacker]
     public class ReferenceModel
     {
         public required string String1 { get; set; }

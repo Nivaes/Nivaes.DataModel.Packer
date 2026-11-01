@@ -1,186 +1,396 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Nivaes.Serializer.SourceGenerator;
 
-[Generator(LanguageNames.CSharp)]
+[Generator]
 public sealed class SerializerPackerGenerator : IIncrementalGenerator
 {
-    private sealed class InterceptInfo
-    {
-        public int Version { get; }
-        public string LocationData { get; }
-        public string ModelType { get; }
-        public string SerializerType { get; }
-
-        public InterceptInfo(
-            int version,
-            string locationData,
-            string modelType,
-            string serializerType)
-        {
-            Version = version;
-            LocationData = locationData;
-            ModelType = modelType;
-            SerializerType = serializerType;
-        }
-    }
+    private const string AttributeMetadataName =
+        "Nivaes.Serializer.SerializePackerAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var calls = context.SyntaxProvider.CreateSyntaxProvider(
+        var classes = context.SyntaxProvider.ForAttributeWithMetadataName(
+            fullyQualifiedMetadataName: AttributeMetadataName,
+
             predicate: static (node, _) =>
+                node is ClassDeclarationSyntax,
+
+            transform: static (context, cancellationToken) =>
+                (INamedTypeSymbol)context.TargetSymbol
+        );
+
+        context.RegisterSourceOutput(
+            classes,
+            static (productionContext, symbol) =>
             {
-                if (node is not InvocationExpressionSyntax invocation)
-                    return false;
-
-                // DataModelPacker.Serialize<T>(...)
-                if (invocation.Expression is MemberAccessExpressionSyntax member)
-                {
-                    return member.Name is GenericNameSyntax genericName
-                        && genericName.Identifier.ValueText == "Serialize"
-                        && genericName.TypeArgumentList.Arguments.Count == 1;
-                }
-
-                // Serialize<T>(...) sin calificador.
-                return invocation.Expression is GenericNameSyntax directName
-                    && directName.Identifier.ValueText == "Serialize"
-                    && directName.TypeArgumentList.Arguments.Count == 1;
-            },
-
-            transform: static (ctx, ct) =>
-            {
-                var invocation = (InvocationExpressionSyntax)ctx.Node;
-
-                if (ctx.SemanticModel.GetSymbolInfo(invocation, ct).Symbol
-                    is not IMethodSymbol symbol)
-                {
-                    return null;
-                }
-
-                if (symbol.Name != "Serialize"
-                    || symbol.Arity != 1
-                    || symbol.ContainingType.ToDisplayString()
-                        != "Nivaes.DataModel.Packer.DataModelPacker")
-                {
-                    return null;
-                }
-
-                var location = ctx.SemanticModel
-                    .GetInterceptableLocation(invocation, ct);
-
-                if (location is null)
-                    return null;
-
-                if (symbol.TypeArguments[0] is not INamedTypeSymbol model)
-                    return null;
-
-                var modelType = model.ToDisplayString(
-                    SymbolDisplayFormat.FullyQualifiedFormat);
-
-                var ns = model.ContainingNamespace.IsGlobalNamespace
-                    ? "global::"
-                    : "global::" + model.ContainingNamespace.ToDisplayString() + ".";
-
-                var serializerType = /*ns + model.Name +*/ modelType + "Serializer";
-
-                return new InterceptInfo(
-                    location.Version,
-                    location.Data,
-                    modelType,
-                    serializerType);
-            })
-            .Where(static x => x is not null)
-            .Collect();
-
-        context.RegisterSourceOutput(calls, static (spc, items) =>
-        {
-            var source = new StringBuilder();
-
-            source.AppendLine(Header);
-            source.AppendLine(InterceptorClassTemplate);
-
-            source.AppendLine();
-            source.AppendLine("namespace Nivaes.DataModel.Packer.SourceGenerator");
-            source.AppendLine("{");
-            source.AppendLine("    internal static class DataModelPackerInterceptors");
-            source.AppendLine("    {");
-
-            var index = 0;
-
-            foreach (var item in items)
-            {
-                if (item is null)
-                    continue;
-
-                var locationData = SymbolDisplay.FormatLiteral(
-                    item.LocationData, quote: true);
-
-                source.AppendLine(
-                    $"        [global::System.Runtime.CompilerServices.InterceptsLocation({item.Version}, {locationData})]");
-
-                source.AppendLine(
-                    $"        public static global::System.ReadOnlySpan<byte> Serialize_{index}(");
-
-                source.AppendLine(
-                    $"            in {item.ModelType} value)");
-
-                source.AppendLine("        {");
-
-                source.AppendLine(
-                    $"            return global::Nivaes.DataModel.Packer.DataModelPacker.Serialize<{item.ModelType}, {item.SerializerType}>(in value);");
-
-                source.AppendLine("        }");
-                source.AppendLine();
-
-                index++;
-            }
-
-            source.AppendLine("    }");
-            source.AppendLine("}");
-
-            spc.AddSource(
-                "DataModelPackerInterceptors.g.cs",
-                source.ToString());
-        });
-
-
+                Generate(productionContext, symbol);
+            });
     }
 
-    private const string Header =
-       """
-        //------------------------------------------------------------------------------
-        // <auto-generated>
-        //     This code was generated by the Nivaes.DataModel.Packer.SourceGenerator source generator
-        //
-        //     Changes to this file may cause incorrect behavior and will be lost if
-        //     the code is regenerated.
-        // </auto-generated>
-        //------------------------------------------------------------------------------
+    private static void Generate(
+        SourceProductionContext context,
+        INamedTypeSymbol symbol)
+    {
+        // Esta versión no contempla clases genéricas ni anidadas.
+        if (symbol.IsGenericType || symbol.ContainingType is not null)
+            return;
 
-        #nullable enable
-        """;
+        var properties = symbol.GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(p =>
+                !p.IsStatic &&
+                !p.IsIndexer &&
+                p.GetMethod is not null &&
+                p.SetMethod is not null &&
+                p.GetMethod.DeclaredAccessibility == Accessibility.Public &&
+                p.SetMethod.DeclaredAccessibility == Accessibility.Public)
+            .OrderBy(p => p.Locations
+                .FirstOrDefault(l => l.IsInSource)?
+                .SourceSpan.Start ?? int.MaxValue)
+            .ToArray();
 
-    private const string InterceptorClassTemplate =
-        """
-        namespace System.Runtime.CompilerServices
+        foreach (var property in properties)
         {
-            // this type is needed by the compiler to implement interceptors - it doesn't need to
-            // come from the runtime itself, though
-        
-            [global::System.Diagnostics.Conditional("DEBUG")] // not needed post-build, so: evaporate
-            [global::System.AttributeUsage(global::System.AttributeTargets.Method, AllowMultiple = true)]
-            sealed file class InterceptsLocationAttribute : global::System.Attribute
+            if (!IsSupported(property.Type))
             {
-                public InterceptsLocationAttribute(int version, string data)
-                {
-                    _ = version;
-                    _ = data;
-                }
+                context.ReportDiagnostic(
+                    Diagnostic.Create(
+                        DiagnosticDescriptors.UnsupportedProperty,
+                        property.Locations.FirstOrDefault(),
+                        property.Name,
+                        property.Type.ToDisplayString()));
+
+                return;
             }
         }
-        """;
+
+        var serializer = GenerateSerializer(symbol, properties);
+        var deserializer = GenerateDeserializer(symbol, properties);
+
+        var hintPrefix = GetHintPrefix(symbol);
+
+        context.AddSource(
+            $"{hintPrefix}Serializer.g.cs",
+            serializer);
+
+        context.AddSource(
+            $"{hintPrefix}Deserializer.g.cs",
+            deserializer);
+    }
+
+    // ---------------------------------------------------------
+    // SERIALIZER
+    // ---------------------------------------------------------
+
+    private static string GenerateSerializer(
+        INamedTypeSymbol symbol,
+        IPropertySymbol[] properties)
+    {
+        var typeName = GetTypeName(symbol);
+        var className = symbol.Name;
+        var serializerName = className + "Serializer";
+        var accessibility = GetAccessibility(symbol);
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine("// <auto-generated/>");
+        sb.AppendLine("#nullable enable");
+
+        AppendNamespaceStart(sb, symbol);
+
+        sb.AppendLine($"{accessibility} sealed class {serializerName} : ISerializer<{typeName}>");
+        sb.AppendLine("{");
+
+        sb.AppendLine($"    void ISerializer<{typeName}>.Serialize(");
+        sb.AppendLine($"        scoped in {typeName} model,");
+        sb.AppendLine("        ref PackerWriter writer)");
+        sb.AppendLine("    {");
+
+        foreach (var property in properties)
+        {
+            var propertyType = property.Type;
+
+            if (IsSerializedClass(propertyType))
+            {
+                var referenceType = GetTypeName(propertyType);
+                var referenceSerializer = GetSerializerName(propertyType);
+
+                sb.AppendLine(
+                    $"        writer.Write<{referenceType}, {referenceSerializer}>(model.{property.Name});");
+            }
+            else if (propertyType.TypeKind == TypeKind.Enum)
+            {
+                var enumType = (INamedTypeSymbol)propertyType;
+                var underlyingType = GetTypeName(enumType.EnumUnderlyingType!);
+
+                sb.AppendLine(
+                    $"        writer.Write(({underlyingType})model.{property.Name});");
+            }
+            else
+            {
+                sb.AppendLine($"        writer.Write(model.{property.Name});");
+            }
+        }
+
+        sb.AppendLine("    }");
+        sb.AppendLine("}");
+
+        AppendNamespaceEnd(sb, symbol);
+
+        return sb.ToString();
+    }
+
+    // ---------------------------------------------------------
+    // DESERIALIZER
+    // ---------------------------------------------------------
+
+    private static string GenerateDeserializer(
+        INamedTypeSymbol symbol,
+        IPropertySymbol[] properties)
+    {
+        var typeName = GetTypeName(symbol);
+        var className = symbol.Name;
+        var deserializerName = className + "Deserializer";
+        var accessibility = GetAccessibility(symbol);
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine("// <auto-generated/>");
+        sb.AppendLine("#nullable enable");
+
+        AppendNamespaceStart(sb, symbol);
+
+        sb.AppendLine($"{accessibility} sealed class {deserializerName} : IDeserializer<{typeName}>");
+        sb.AppendLine("{");
+
+        sb.AppendLine($"    private {typeName}? _value;");
+        sb.AppendLine();
+
+        sb.AppendLine($"    {typeName}? IDeserializer<{typeName}>.Deserialize(");
+        sb.AppendLine("        ref PackerReader reader)");
+        sb.AppendLine("    {");
+
+        // Leer todas las propiedades.
+        for (var i = 0; i < properties.Length; i++)
+        {
+            var property = properties[i];
+            var variableName = $"__value{i}";
+
+            var readExpression = GetReadExpression(property);
+
+            sb.AppendLine(
+                $"        var {variableName} = {readExpression};");
+        }
+
+        sb.AppendLine();
+
+        // Crear el objeto.
+        sb.AppendLine("        _value = new " + typeName);
+        sb.AppendLine("        {");
+
+        for (var i = 0; i < properties.Length; i++)
+        {
+            var property = properties[i];
+
+            sb.AppendLine(
+                $"            {property.Name} = __value{i}!,");
+        }
+
+        sb.AppendLine("        };");
+        sb.AppendLine();
+
+        sb.AppendLine("        return _value;");
+        sb.AppendLine("    }");
+
+        // Generar setters para las referencias diferidas.
+        foreach (var property in properties)
+        {
+            if (!IsSerializedClass(property.Type))
+                continue;
+
+            var referenceType = GetTypeName(property.Type);
+
+            sb.AppendLine();
+
+            sb.AppendLine(
+                $"    public void Reference{property.Name}(object reference)");
+
+            sb.AppendLine("    {");
+
+            sb.AppendLine(
+                $"        _value!.{property.Name} = ({referenceType})reference;");
+
+            sb.AppendLine("    }");
+        }
+
+        sb.AppendLine("}");
+
+        AppendNamespaceEnd(sb, symbol);
+
+        return sb.ToString();
+    }
+
+    // ---------------------------------------------------------
+    // PROPERTY READ EXPRESSIONS
+    // ---------------------------------------------------------
+
+    private static string GetReadExpression(IPropertySymbol property)
+    {
+        var type = property.Type;
+
+        if (IsSerializedClass(type))
+        {
+            var rootType = GetTypeName(property.ContainingType);
+            var referenceType = GetTypeName(type);
+            var deserializerName = GetDeserializerName(type);
+
+            return
+                $"reader.Read<{rootType}, {referenceType}, {deserializerName}>(Reference{property.Name}!)";
+        }
+
+        if (type.TypeKind == TypeKind.Enum)
+        {
+            var enumType = (INamedTypeSymbol)type;
+            var underlyingType = enumType.EnumUnderlyingType!;
+
+            return
+                $"({GetTypeName(type)})reader.{GetReadMethod(underlyingType.SpecialType)}()";
+        }
+
+        return $"reader.{GetReadMethod(type.SpecialType)}()";
+    }
+
+    private static string GetReadMethod(SpecialType type)
+    {
+        return type switch
+        {
+            SpecialType.System_String => "ReadString",
+            SpecialType.System_Boolean => "ReadBoolean",
+            SpecialType.System_Byte => "ReadByte",
+            SpecialType.System_SByte => "ReadSByte",
+            SpecialType.System_Int16 => "ReadInt16",
+            SpecialType.System_UInt16 => "ReadUInt16",
+            SpecialType.System_Int32 => "ReadInt32",
+            SpecialType.System_UInt32 => "ReadUInt32",
+            SpecialType.System_Int64 => "ReadInt64",
+            SpecialType.System_UInt64 => "ReadUInt64",
+            SpecialType.System_Single => "ReadSingle",
+            SpecialType.System_Double => "ReadDouble",
+            SpecialType.System_Decimal => "ReadDecimal",
+            _ => throw new NotSupportedException(
+                $"Unsupported SpecialType: {type}")
+        };
+    }
+
+    // ---------------------------------------------------------
+    // TYPE HELPERS
+    // ---------------------------------------------------------
+
+    private static bool IsSupported(ITypeSymbol type)
+    {
+        if (type.SpecialType == SpecialType.System_String)
+            return true;
+
+        if (type.SpecialType is
+            SpecialType.System_Boolean or
+            SpecialType.System_Byte or
+            SpecialType.System_SByte or
+            SpecialType.System_Int16 or
+            SpecialType.System_UInt16 or
+            SpecialType.System_Int32 or
+            SpecialType.System_UInt32 or
+            SpecialType.System_Int64 or
+            SpecialType.System_UInt64 or
+            SpecialType.System_Single or
+            SpecialType.System_Double or
+            SpecialType.System_Decimal)
+            return true;
+
+        if (type.TypeKind == TypeKind.Enum)
+            return true;
+
+        return IsSerializedClass(type);
+    }
+
+    private static bool IsSerializedClass(ITypeSymbol type)
+    {
+        if (type is not INamedTypeSymbol namedType)
+            return false;
+
+        if (namedType.TypeKind != TypeKind.Class)
+            return false;
+
+        if (namedType.IsGenericType)
+            return false;
+
+        return namedType.GetAttributes().Any(attribute =>
+            attribute.AttributeClass?.ToDisplayString() ==
+            AttributeMetadataName);
+    }
+
+    private static string GetTypeName(ITypeSymbol symbol)
+    {
+        return symbol.ToDisplayString(
+            SymbolDisplayFormat.FullyQualifiedFormat);
+    }
+
+    private static string GetSerializerName(ITypeSymbol symbol)
+    {
+        return GetContainingNamespace(symbol) +
+               symbol.Name + "Serializer";
+    }
+
+    private static string GetDeserializerName(ITypeSymbol symbol)
+    {
+        return GetContainingNamespace(symbol) +
+               symbol.Name + "Deserializer";
+    }
+
+    private static string GetContainingNamespace(ITypeSymbol symbol)
+    {
+        var ns = symbol.ContainingNamespace;
+
+        return ns.IsGlobalNamespace
+            ? "global::"
+            : $"global::{ns.ToDisplayString()}.";
+    }
+
+    private static string GetAccessibility(INamedTypeSymbol symbol)
+    {
+        return symbol.DeclaredAccessibility == Accessibility.Public
+            ? "public"
+            : "internal";
+    }
+
+    private static string GetHintPrefix(INamedTypeSymbol symbol)
+    {
+        return symbol.ToDisplayString(
+            SymbolDisplayFormat.FullyQualifiedFormat)
+            .Replace("global::", "")
+            .Replace(".", "_")
+            .Replace("<", "_")
+            .Replace(">", "_");
+    }
+
+    private static void AppendNamespaceStart(
+        StringBuilder sb,
+        INamedTypeSymbol symbol)
+    {
+        if (!symbol.ContainingNamespace.IsGlobalNamespace)
+        {
+            sb.AppendLine(
+                $"namespace {symbol.ContainingNamespace.ToDisplayString()};");
+            sb.AppendLine();
+        }
+    }
+
+    private static void AppendNamespaceEnd(
+        StringBuilder sb,
+        INamedTypeSymbol symbol)
+    {
+        // Se utiliza namespace con sintaxis de fichero.
+    }
 }
