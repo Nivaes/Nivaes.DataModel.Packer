@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Nivaes.Serializer;
 
-namespace Nivaes.Serializer;
-
+[AttributeUsage(AttributeTargets.Class)]
 public class SerializePackerAttribute : Attribute
 {
 }
