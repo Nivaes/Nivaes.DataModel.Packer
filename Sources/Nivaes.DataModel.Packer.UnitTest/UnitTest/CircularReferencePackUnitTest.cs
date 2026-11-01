@@ -72,15 +72,13 @@ public class CircularReferencePackUnitTest
             return _value;
         }
 
-        public void ReferenceReference1(object value, object reference)
+        public void ReferenceReference1(object reference)
         {
-            //((RootModel)value).Reference1 = (ReferenceModel)reference;
             _value!.Reference1 = (ReferenceModel)reference;
         }
 
-        public void ReferenceReference2(object value, object reference)
+        public void ReferenceReference2(object reference)
         {
-            //((RootModel)value).Reference2 = (ReferenceModel)reference;
             _value!.Reference2 = (ReferenceModel)reference;
         }
 
@@ -137,9 +135,8 @@ public class CircularReferencePackUnitTest
             return _value;
         }
 
-        public void ReferenceReference1(object value, object reference)
+        public void ReferenceReference1(object reference)
         {
-            //((ReferenceModel)value).RootReference = (RootModel)reference;
             _value!.RootReference = (RootModel)reference;
         }
     }

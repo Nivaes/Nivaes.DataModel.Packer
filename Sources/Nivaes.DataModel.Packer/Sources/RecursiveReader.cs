@@ -6,15 +6,12 @@ namespace Nivaes.DataModel.Packer;
 
 internal ref struct RecursiveReader
 {
-    private delegate void DeserializeCircularDelegate(ref RecursiveReader recursiveReader, object item, in object serializer, in Action<object, object?> deserializerReference);
+    private delegate void DeserializeCircularDelegate(ref RecursiveReader recursiveReader, object item, in object serializer, in Action<object> deserializerReference);
 
     private struct Reference
     {
         public bool IsCreate;
-        //public int IdReference;
         public object Item;
-        //public object Deserializer;
-        //public DeserializeCircularDelegate DeserializerCircular;
     }
 
     private struct ReferenceReader
@@ -22,7 +19,7 @@ internal ref struct RecursiveReader
         public int IdReference;
         public object Deserializer;
         public DeserializeCircularDelegate DeserializerCircular;
-        public Action<object, object?>? DeserialiceReference;
+        public Action<object>? DeserialiceReference;
     }
 
     private readonly ReadOnlySpan<byte> _buffer;
@@ -81,29 +78,19 @@ internal ref struct RecursiveReader
 
             _references[idObject].IsCreate = true;
 
-            //_references[idObject].Deserializer = deserializer;
-            //_references[idObject].DeserializerCircular = DeserializeCircular;
             _references[idObject].Item = deserializer.Deserialize(ref packerReader)!;
         }
 
         return (TReference?)_references[idObject].Item;
     }
 
-    //private int numReferences = 0;
-
-    public TReference? Read<TReference, TReferenceDeserializer>(int idObject, Action<object, object?>? deserialiceReference)
+    public TReference? Read<TReference, TReferenceDeserializer>(int idObject, Action<object>? deserialiceReference)
         where TReferenceDeserializer : IDeserializer<TReference>, new()
     {
         var deserializer = new TReferenceDeserializer();
         deserializer.IdObject = idObject;
 
         var value = ReadItem<TReference, TReferenceDeserializer>(idObject, deserializer);
-
-        //if (value != null && deserializer.ReferenceSetters?[numReferences].IdObject != idObject)
-        //{
-        //    deserializer.ReferenceSetters?[numReferences].IdObject = idObject;
-        //    deserializer.ReferenceSetters?[numReferences].Reference = value;
-        //}
 
         if (deserialiceReference != null && value == null)
         {
@@ -116,31 +103,8 @@ internal ref struct RecursiveReader
             });
         }
 
-        //numReferences += 1;
-
         return value;
     }
-
-    
-
-    //public TReference? Read<TReference, TReferenceDeserializer>(int idObject, int idReference)
-    //   where TReferenceDeserializer : IDeserializer<TReference>, new()
-    //{
-    //    var deserializer = new TReferenceDeserializer();
-    //    deserializer.IdObject = idObject;
-
-    //    var value = ReadItem<TReference, TReferenceDeserializer>(idObject, deserializer);
-
-    //    if (value != null)
-    //    {
-    //        deserializer.ReferenceSetters?[numReferences].IdObject = idReference;
-    //        deserializer.ReferenceSetters?[numReferences].Reference = value;
-    //    }
-
-    //    numReferences += 1;
-
-    //    return value;
-    //}
 
     public void DeserializeCircular()
     {
@@ -155,34 +119,10 @@ internal ref struct RecursiveReader
        ref RecursiveReader recursiveReader,
        object item,
        in object deserializerObject,
-       in Action<object, object?> deserializerReference)
+       in Action<object> deserializerReference)
     {
         var deserializer = (IDeserializer)deserializerObject;
 
-        deserializerReference(null, item);
-        //if (deserializer.ReferenceSetters is not null)
-        //{
-        //    for (int i = 0; i < deserializer.ReferenceSetters.Length; i++)
-        //    {
-        //        ref var referenceSetter = ref deserializer.ReferenceSetters[i];
-        //        var entry = recursiveReader._references[referenceSetter.IdObject];
-
-        //        referenceSetter.Reference = entry.Item;
-
-        //        //foreach (var entry in recursiveReader._entries)
-        //        //{
-        //        //    if (referenceSetter.IdObject == entry.Item)
-        //        //    {
-        //        //        referenceSetter.Reference = entry.Item;
-        //        //        break;
-        //        //    }
-        //        //}
-        //    }
-        //}
-
-        //if (deserializer.IdObject != 0)
-        //{
-        //    deserializer.DeserializeCircular(item);
-        //}
+        deserializerReference( item);
     }
 }

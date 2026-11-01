@@ -43,22 +43,15 @@ public class RecursiveCircularReferencePackUnitTest
 
         int IDeserializer.IdObject { get; set; }
 
-        //private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
-        //{
-        //    new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
-        //    new ReferenceSetter { Setter = ReferenceReference2!, Reference = null }
-        //};
-
-        //ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
-
+        private ReferenceModel? _value;
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1);
-            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(2);
+            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1!);
+            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(2, ReferenceReference2!);
 
-            var value = new ReferenceModel
+            _value = new ReferenceModel
             {
                 String1 = string1,
                 String2 = string2,
@@ -66,17 +59,17 @@ public class RecursiveCircularReferencePackUnitTest
                 Reference2 = reference2
             };
 
-            return value;
+            return _value;
         }
    
-        public static void ReferenceReference1(object value, object reference)
+        public void ReferenceReference1(object reference)
         {
-            ((ReferenceModel)value).Reference1 = (ReferenceModel)reference;
+            _value!.Reference1 = (ReferenceModel)reference;
         }
 
-        public static void ReferenceReference2(object value, object reference)
+        public void ReferenceReference2(object reference)
         {
-            ((ReferenceModel)value).Reference2 = (ReferenceModel)reference;
+            _value!.Reference2 = (ReferenceModel)reference;
         }
     }
 
@@ -190,7 +183,7 @@ public class RecursiveCircularReferencePackUnitTest
         copyModel.Reference1.String2.ShouldBe(model.Reference1.String2);
 
         copyModel.Reference1.Reference1.ShouldNotBeNull().ShouldBe(copyModel);
-        copyModel.Reference1.Reference1.ShouldNotBeNull().ShouldBe(model.Reference1.Reference1);
+        copyModel.Reference1.Reference1.ShouldNotBeNull().ShouldBe(copyModel.Reference1.Reference1);
         copyModel.Reference2.ShouldBeNull();
     }
 
