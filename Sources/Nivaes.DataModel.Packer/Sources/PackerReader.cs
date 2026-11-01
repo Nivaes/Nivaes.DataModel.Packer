@@ -201,7 +201,7 @@ public ref struct PackerReader
         return ReadSpan(length);
     }
 
-    public TReference? Read<T, TReference, TSerializer>(int idReference, Action<object>? deserialiceReference = null)
+    public TReference? Read<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
         where TSerializer : IDeserializer<TReference>, new()
     {
         int idObject = ReadInt32();

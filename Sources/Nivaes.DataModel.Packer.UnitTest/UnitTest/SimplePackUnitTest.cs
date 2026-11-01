@@ -1,9 +1,4 @@
-﻿using AutoFixture.Xunit3;
-using static Nivaes.DataModel.Packer.UnitTest.AllTypesPackUnitTest;
-using static Nivaes.DataModel.Packer.UnitTest.SimplePackUnitTest;
-
-namespace Nivaes.DataModel.Packer.UnitTest;
-
+﻿namespace Nivaes.DataModel.Packer.UnitTest;
 
 public class SimplePackUnitTest
 {

@@ -86,7 +86,6 @@ public ref partial struct PackerWriter
                     WriteSize();
                 }
             }
-            //writer.RecursiveWriter();
             SerializePending();
         }
     }

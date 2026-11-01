@@ -1,9 +1,4 @@
-﻿using System.Text;
-using AutoFixture.Xunit3;
-using Nivaes.DataModel.Packer;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace Nivaes.DataModel.Packer.UnitTest;
+﻿namespace Nivaes.DataModel.Packer.UnitTest;
 
 public class RecursiveCircularReferencePackUnitTest
 {
@@ -48,8 +43,8 @@ public class RecursiveCircularReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(1, ReferenceReference1!);
-            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(2, ReferenceReference2!);
+            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(ReferenceReference1!);
+            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelDeserializer>(ReferenceReference2!);
 
             _value = new ReferenceModel
             {

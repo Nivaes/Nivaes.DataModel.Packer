@@ -7,11 +7,6 @@ public class ReferencePackUnitTest
     public ReferencePackUnitTest(ITestOutputHelper output)
     {
         _output = output;
-
-        ////DataModelPacker.IdClassToType.TryAdd(5, typeof(RootModel));
-        ////DataModelPacker.IdClassToType.TryAdd(6, typeof(ReferenceModel));
-        ////DataModelPacker.ClassToSerializerType.TryAdd(typeof(RootModel), typeof(RootModelPacker));
-        ////DataModelPacker.ClassToSerializerType.TryAdd(typeof(ReferenceModel), typeof(ReferenceModelPacker));
     }
 
     public class RootModel
@@ -42,7 +37,7 @@ public class ReferencePackUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject)!;
+            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>()!;
 
             var value = new RootModel
             {

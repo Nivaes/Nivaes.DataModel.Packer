@@ -1,7 +1,4 @@
-﻿using AutoFixture.Xunit3;
-using Nivaes.DataModel.Packer;
-
-namespace Nivaes.DataModel.Packer.UnitTest;
+﻿namespace Nivaes.DataModel.Packer.UnitTest;
 
 public class CircularReferencePackUnitTest
 {
@@ -44,22 +41,14 @@ public class CircularReferencePackUnitTest
             set; 
         }
 
-        //private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
-        //{
-        //    new ReferenceSetter { Tag = "Root.Reference1",  Setter = ReferenceReference1! },
-        //    new ReferenceSetter { Tag = "Root.Reference2", Setter = ReferenceReference2! },
-        //};
-
-        //ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
-
         private RootModel? _value;
 
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1!);
-            var reference2 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference2!);
+            var reference1 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(ReferenceReference1!);
+            var reference2 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(ReferenceReference2!);
 
             _value = new RootModel
             {
@@ -110,20 +99,13 @@ public class CircularReferencePackUnitTest
 
         int IDeserializer.IdObject { get; set; }
 
-        //private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
-        //{
-        //    new ReferenceSetter { Tag = "Reference.Root", Setter = ReferenceReference1!, Reference = null },
-        //};
-
-        //ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
-
         ReferenceModel? _value;
 
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1!);
+            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(ReferenceReference1!);
 
             _value = new ReferenceModel
             {
