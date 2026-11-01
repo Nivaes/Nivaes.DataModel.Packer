@@ -19,10 +19,10 @@
     <File Path=".github/workflows/delete-old-runs.yaml" />
   </Folder>
   <Folder Name="/Sources/">
-    <Project Path="Sources/Nivaes.DataModel.Packer.Benchmark/Nivaes.DataModel.Packer.Benchmark.csproj" Id="a2c79cc7-a303-4d12-aa2a-efb6fd0e5b22" />
-    <Project Path="Sources/Nivaes.DataModel.Packer.SourceGenerator.UnitTest/Nivaes.DataModel.Packer.SourceGenerator.UnitTest.csproj" />
-    <Project Path="Sources/Nivaes.DataModel.Packer.SourceGenerator/Nivaes.DataModel.Packer.SourceGenerator.csproj" Id="42ce9f25-a413-4781-873e-ebec8a96b4a2" />
-    <Project Path="Sources/Nivaes.DataModel.Packer.UnitTest/Nivaes.DataModel.Packer.UnitTest.csproj" Id="be6acb22-48e4-4f9a-a2dd-61916861d608" />
-    <Project Path="Sources/Nivaes.DataModel.Packer/Nivaes.DataModel.Packer.csproj" Id="eece0395-4134-4146-8795-96ebfc4fc8ca" />
+    <Project Path="Sources/Nivaes.Serializer.Benchmark/Nivaes.Serializer.Benchmark.csproj" Id="a2c79cc7-a303-4d12-aa2a-efb6fd0e5b22" />
+    <Project Path="Sources/Nivaes.Serializer.SourceGenerator.UnitTest/Nivaes.Serializer.SourceGenerator.UnitTest.csproj" />
+    <Project Path="Sources/Nivaes.Serializer.SourceGenerator/Nivaes.Serializer.SourceGenerator.csproj" Id="42ce9f25-a413-4781-873e-ebec8a96b4a2" />
+    <Project Path="Sources/Nivaes.Serializer.UnitTest/Nivaes.Serializer.UnitTest.csproj" Id="be6acb22-48e4-4f9a-a2dd-61916861d608" />
+    <Project Path="Sources/Nivaes.Serializer/Nivaes.Serializer.csproj" Id="eece0395-4134-4146-8795-96ebfc4fc8ca" />
   </Folder>
 </Solution>

@@ -19,6 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nivaes.DataModel.Packer\Nivaes.DataModel.Packer.csproj" />
+    <ProjectReference Include="..\Nivaes.Serializer\Nivaes.Serializer.csproj" />
   </ItemGroup>
 </Project>
