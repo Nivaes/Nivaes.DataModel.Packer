@@ -18,7 +18,6 @@ public ref partial struct PackerWriter
     private struct Entry
     {
         public int Hash;
-        public int IdClass;
         public object Serializer;
         public object Item;
         public SerializeDelegate Serialize;
@@ -33,7 +32,7 @@ public ref partial struct PackerWriter
     private int _serializeCount;
     #endregion
 
-    public PackerWriter(/*ref RecursiveWriter recursiveWriter*/)
+    public PackerWriter()
     { 
         _buffer = GC.AllocateUninitializedArray<byte>(InitialCapacity);
         _span = _buffer;
@@ -77,11 +76,6 @@ public ref partial struct PackerWriter
         _buffer = newBuffer;
         _span = newBuffer;
     }
-
-    //internal void RecursiveWriter()
-    //{
-    //    _recursiveWriter.SerializePending(ref this);
-    //}
 
     internal void ReserveSizeInt32()
     {

@@ -21,7 +21,6 @@ public ref partial struct PackerWriter
         _entries[index] = new Entry
         {
             Hash = hash,
-            IdClass = serializer.IdClassType,
             Serializer = serializer,
             Item = item!,
             Serialize = Serialize<T>
@@ -78,8 +77,8 @@ public ref partial struct PackerWriter
                 if (entry.Item is not null)
                 {
                     ReserveSizeInt32();
-                    Write(entry.IdClass);
-                    Write(_serializeCount);
+                    //Write(entry.IdClass);
+                    //Write(_serializeCount);
 
                     entry.Serialize(entry.Item, entry.Serializer, ref this);
 

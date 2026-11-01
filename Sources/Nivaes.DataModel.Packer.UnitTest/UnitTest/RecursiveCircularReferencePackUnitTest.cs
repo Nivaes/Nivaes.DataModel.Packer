@@ -34,9 +34,9 @@ public class RecursiveCircularReferencePackUnitTest
 
     public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
     {
-        static int IDeserializer<ReferenceModel>.IdClassType => 30;
+        //static int IDeserializer<ReferenceModel>.IdClassType => 30;
 
-        int IDeserializer.IdObject { get; set; }
+        //int IDeserializer.IdObject { get; set; }
 
         private ReferenceModel? _value;
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)

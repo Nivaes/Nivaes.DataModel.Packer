@@ -56,7 +56,7 @@ public class AllTypesPackUnitTest
     }
     public class AllTypesModelSerializer : ISerializer<AllTypesModel>
     {
-        int ISerializer.IdClassType => 2;
+        //int ISerializer.IdClassType => 2;
 
         void ISerializer<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
         {
@@ -107,9 +107,9 @@ public class AllTypesPackUnitTest
 
     public class AllTypesModelDeserializer : IDeserializer<AllTypesModel>
     {
-        static int IDeserializer<AllTypesModel>.IdClassType => 2;
+        //static int IDeserializer<AllTypesModel>.IdClassType => 2;
 
-        int IDeserializer.IdObject { get; set; }
+        //int IDeserializer.IdObject { get; set; }
 
         AllTypesModel? IDeserializer<AllTypesModel>.Deserialize(ref PackerReader reader)
         {

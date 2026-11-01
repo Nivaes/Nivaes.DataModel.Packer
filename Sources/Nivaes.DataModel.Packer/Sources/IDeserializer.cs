@@ -1,13 +1,8 @@
 ﻿namespace Nivaes.DataModel.Packer;
 
-public interface IDeserializer
+public interface IDeserializer<T>
 {
-    int IdObject { get; set; }
-}
-
-public interface IDeserializer<T> : IDeserializer
-{
-    static abstract int IdClassType { get; }
+    //int IdObject { get; set; }
 
     T? Deserialize(ref PackerReader reader);
 }

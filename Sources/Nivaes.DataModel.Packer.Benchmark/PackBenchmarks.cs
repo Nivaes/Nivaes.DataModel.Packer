@@ -8,11 +8,11 @@ namespace Nivaes.DataModel.Packer.Benchmark.SimplePack;
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 //[SimpleJob(RunStrategy.Throughput)]
-//[SimpleJob(launchCount: 1, warmupCount: 0, iterationCount: 1)]
+[SimpleJob(launchCount: 1, warmupCount: 0, iterationCount: 1)]
 public class PackBenchmarks
 {
     //[Params(100, 1_000, 10_000, 100_000, 1_000_000)]
-    [Params(100, 10_000)]
+    [Params(100, 1_000)]
     public int Length;
 
     private string _text1 = null!;
@@ -33,34 +33,34 @@ public class PackBenchmarks
         _text3 = TextHelper.Create(Length);
         _text4 = TextHelper.Create(Length);
 
-        _packSerialize = PreparePackSerialize();
+        _packSerialize = PrepareNivaesSerialize();
         _memoryPackSerialize = PrepareMemoryPackSerialize();
-        _packReferenceSerialize = PreparePackReferenceSerialize();
+        _packReferenceSerialize = PrepareNivaesReferenceSerialize();
         _memoryPackReferenceSerialize = PrepareReferenceMemoryPackSerialize();
     }
 
-    private byte[] PreparePackSerialize()
+    private byte[] PrepareNivaesSerialize()
     {
-        var model = new SimplePackerModel
+        var model = new SimpleNivaesSerializeModel
         {
             String1 = _text1,
             String2 = _text2,
             Int1 = 42
         };
 
-        return DataModelPacker.Serialize<SimplePackerModel, SimplePackerModelSerializer>(model).ToArray();
+        return DataModelPacker.Serialize<SimpleNivaesSerializeModel, SimplePackerModelSerializer>(model).ToArray();
     }
 
     [Benchmark]
-    public void PackSerialize()
+    public void NivaesSerialize()
     {
-        var model = PreparePackSerialize();
+        var model = PrepareNivaesSerialize();
     }
 
     [Benchmark]
-    public void PackDeserialize()
+    public void NivaesDeserialize()
     {
-        var copyModel = DataModelPacker.Deserialize<SimplePackerModel, SimplePackerModelDeserializer>(_packSerialize);
+        var copyModel = DataModelPacker.Deserialize<SimpleNivaesSerializeModel, SimplePackerModelDeserializer>(_packSerialize);
     }
 
     private byte[] PrepareMemoryPackSerialize()
@@ -87,7 +87,7 @@ public class PackBenchmarks
         var copyModel = MemoryPackSerializer.Deserialize<SimpleMemoryPackModel>(_memoryPackSerialize);
     }
 
-    private byte[] PreparePackReferenceSerialize()
+    private byte[] PrepareNivaesReferenceSerialize()
     {
         var model = new RootPackerModel
         {
@@ -105,13 +105,13 @@ public class PackBenchmarks
     }
 
     [Benchmark]
-    public void PackReferenceSerialize()
+    public void NivaesReferenceSerialize()
     {
-        var model = PreparePackReferenceSerialize();
+        var model = PrepareNivaesReferenceSerialize();
     }
 
     [Benchmark]
-    public void PackReferenceDeserialize()
+    public void NivaesReferenceDeserialize()
     {
         var copyModel = DataModelPacker.Deserialize<RootPackerModel, RootPackerModelDeserializer>(_packReferenceSerialize);
     }
