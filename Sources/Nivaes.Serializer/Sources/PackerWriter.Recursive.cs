@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Nivaes.DataModel.Packer;
+namespace Nivaes.Serializer;
 
 public ref partial struct PackerWriter
 {

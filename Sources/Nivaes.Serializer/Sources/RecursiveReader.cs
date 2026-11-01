@@ -1,6 +1,6 @@
 ﻿using System.Buffers.Binary;
 
-namespace Nivaes.DataModel.Packer;
+namespace Nivaes.Serializer;
 
 internal ref struct RecursiveReader
 {

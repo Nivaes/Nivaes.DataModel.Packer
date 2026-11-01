@@ -1,9 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using MemoryPack;
 
-namespace Nivaes.DataModel.Packer.Benchmark.SimplePack;
+namespace Nivaes.Serializer.Benchmark.SimplePack;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]

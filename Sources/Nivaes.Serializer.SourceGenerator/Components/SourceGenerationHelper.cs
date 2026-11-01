@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Nivaes.DataModel.Packer.SourceGenerator;
+namespace Nivaes.Serializer.SourceGenerator;
 
 public static class SourceGenerationHelper
 {

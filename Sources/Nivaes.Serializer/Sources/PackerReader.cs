@@ -1,9 +1,8 @@
 ﻿using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Nivaes.DataModel.Packer.PackerReader;
 
-namespace Nivaes.DataModel.Packer;
+namespace Nivaes.Serializer;
 
 public ref struct PackerReader
 {

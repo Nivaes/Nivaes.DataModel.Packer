@@ -1,4 +1,4 @@
-﻿namespace Nivaes.DataModel.Packer.UnitTest;
+﻿namespace Nivaes.Serializer.UnitTest;
 
 public class CircularReferencePackUnitTest
 {

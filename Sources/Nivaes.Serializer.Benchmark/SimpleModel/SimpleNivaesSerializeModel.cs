@@ -1,4 +1,4 @@
-﻿namespace Nivaes.DataModel.Packer.Benchmark.SimplePack;
+﻿namespace Nivaes.Serializer.Benchmark.SimplePack;
 
 public class SimpleNivaesSerializeModel
 {

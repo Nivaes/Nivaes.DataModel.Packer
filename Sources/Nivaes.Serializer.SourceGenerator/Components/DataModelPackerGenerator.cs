@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Nivaes.DataModel.Packer.SourceGenerator;
+namespace Nivaes.Serializer.SourceGenerator;
 
 [Generator(LanguageNames.CSharp)]
 public sealed class DataModelPackerGenerator : IIncrementalGenerator

@@ -1,4 +1,4 @@
-﻿namespace Nivaes.DataModel.Packer;
+﻿namespace Nivaes.Serializer;
 
 public interface IDeserializer<T>
 {

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Nivaes.DataModel.Packer;
+namespace Nivaes.Serializer;
 
 public static partial class DataModelPacker
 {

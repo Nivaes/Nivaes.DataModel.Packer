@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Nivaes.DataModel.Packer;
+namespace Nivaes.Serializer;
 
 public ref partial struct PackerWriter
 {

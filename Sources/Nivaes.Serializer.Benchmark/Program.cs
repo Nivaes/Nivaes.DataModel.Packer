@@ -1,8 +1,7 @@
-﻿using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Running;
-using Nivaes.DataModel.Packer.Benchmark.SimplePack;
+﻿using BenchmarkDotNet.Running;
+using Nivaes.Serializer.Benchmark.SimplePack;
 
-namespace Nivaes.DataModel.Packer.Benchmark;
+namespace Nivaes.Serializer.Benchmark;
 
 internal class Program
 {

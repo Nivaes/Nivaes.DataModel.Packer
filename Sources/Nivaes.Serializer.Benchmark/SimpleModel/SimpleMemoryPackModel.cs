@@ -1,6 +1,6 @@
 ﻿using MemoryPack;
 
-namespace Nivaes.DataModel.Packer.Benchmark.SimplePack;
+namespace Nivaes.Serializer.Benchmark.SimplePack;
 
 [MemoryPackable]
 public partial class SimpleMemoryPackModel 

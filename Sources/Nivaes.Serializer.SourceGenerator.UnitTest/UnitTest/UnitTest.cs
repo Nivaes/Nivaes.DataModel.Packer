@@ -1,7 +1,4 @@
-﻿using System.Text;
-using Nivaes.DataModel.Packer;
-
-namespace Nivaes.DataModel.Packer.SourceGenerator.UnitTest;
+﻿namespace Nivaes.Serializer.SourceGenerator.UnitTest;
 
 public class UnitTest
 {
