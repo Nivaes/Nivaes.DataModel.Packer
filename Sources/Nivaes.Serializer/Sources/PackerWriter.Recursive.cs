@@ -69,21 +69,17 @@ public ref partial struct PackerWriter
     private void SerializePending()
     {
         while (_serializeCount < _count)
-        {
-            for (; _serializeCount < _count; _serializeCount++)
+        {           
+            ref Entry entry = ref _entries[_serializeCount++];
+
+            if (entry.Item is not null)
             {
-                ref Entry entry = ref _entries[_serializeCount];
+                ReserveSizeInt32();
 
-                if (entry.Item is not null)
-                {
-                    ReserveSizeInt32();
+                entry.Serialize(entry.Item, entry.Serializer, ref this);
 
-                    entry.Serialize(entry.Item, entry.Serializer, ref this);
-
-                    WriteSize();
-                }
+                WriteSize();
             }
-            SerializePending();
         }
     }
 }
