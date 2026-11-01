@@ -1,10 +1,10 @@
 ﻿namespace Nivaes.Serializer.UnitTest;
 
-public class CircularReferencePackUnitTest
+public class CircularReferenceUnitTest
 {
     private readonly ITestOutputHelper _output;
 
-    public CircularReferencePackUnitTest(ITestOutputHelper output)
+    public CircularReferenceUnitTest(ITestOutputHelper output)
     {
         _output = output;
     }

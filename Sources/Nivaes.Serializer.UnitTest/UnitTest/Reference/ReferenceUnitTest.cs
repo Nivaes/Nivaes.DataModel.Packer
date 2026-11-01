@@ -1,10 +1,10 @@
 ﻿namespace Nivaes.Serializer.UnitTest;
 
-public class ReferencePackUnitTest
+public class ReferenceUnitTest
 {
     private readonly ITestOutputHelper _output;
 
-    public ReferencePackUnitTest(ITestOutputHelper output)
+    public ReferenceUnitTest(ITestOutputHelper output)
     {
         _output = output;
     }
