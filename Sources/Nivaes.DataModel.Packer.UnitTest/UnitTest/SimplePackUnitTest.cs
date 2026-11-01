@@ -1,4 +1,5 @@
 ﻿using AutoFixture.Xunit3;
+using static Nivaes.DataModel.Packer.UnitTest.AllTypesPackUnitTest;
 using static Nivaes.DataModel.Packer.UnitTest.SimplePackUnitTest;
 
 namespace Nivaes.DataModel.Packer.UnitTest;
@@ -11,9 +12,6 @@ public class SimplePackUnitTest
     public SimplePackUnitTest(ITestOutputHelper output)
     {
         _output = output;
-
-        DataModelPacker.IdClassToType.TryAdd(1, typeof(SimpleModelSerializer));
-        DataModelPacker.ClassToSerializerType.TryAdd(typeof(SimpleModel), typeof(SimpleModelSerializer));
     }
 
     public class SimpleModel 
@@ -22,17 +20,23 @@ public class SimplePackUnitTest
         public required string String2 { get; set; }
     }
 
-    public class SimpleModelSerializer : IPacker<SimpleModel>
+    public class SimpleModelSerializer : ISerializer<SimpleModel>
     {
-        int IPacker<SimpleModel>.IdClassType => 1;
+        int ISerializer.IdClassType => 1;
 
-        void IPacker<SimpleModel>.Serialize(scoped in SimpleModel value, ref PackerWriter writer)
+        void ISerializer<SimpleModel>.Serialize(scoped in SimpleModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
         }
+    }
 
-        SimpleModel? IPacker<SimpleModel>.Deserialize(ref PackerReader reader)
+    public class SimpleModelDeserializer : IDeserializer<SimpleModel>
+    {
+        static int IDeserializer<SimpleModel>.IdClassType => 1;
+        int IDeserializer.IdObject { get; set; }
+
+        SimpleModel? IDeserializer<SimpleModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
@@ -44,10 +48,6 @@ public class SimplePackUnitTest
             };
 
             return value;
-        }
-
-        void IPacker<SimpleModel>.DeserializeCircular(SimpleModel value, ref PackerReader reader)
-        {
         }
     }
 
@@ -67,7 +67,7 @@ public class SimplePackUnitTest
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -91,7 +91,7 @@ public class SimplePackUnitTest
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -114,7 +114,7 @@ public class SimplePackUnitTest
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -133,7 +133,7 @@ public class SimplePackUnitTest
         var cache = DataModelPacker.Serialize<SimpleModel, SimpleModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -150,7 +150,7 @@ public class SimplePackUnitTest
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<SimpleModel, SimpleModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);

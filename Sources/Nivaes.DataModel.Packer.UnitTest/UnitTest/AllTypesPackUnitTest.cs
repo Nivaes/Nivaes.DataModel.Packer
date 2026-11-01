@@ -12,8 +12,6 @@ public class AllTypesPackUnitTest
     {
         _output = output;
 
-        DataModelPacker.IdClassToType.TryAdd(2, typeof(AllTypesModelSerializer));
-        DataModelPacker.ClassToSerializerType.TryAdd(typeof(AllTypesModel), typeof(AllTypesModelSerializer));  
     }
 
     public class AllTypesModel
@@ -60,11 +58,11 @@ public class AllTypesPackUnitTest
         public required DateTimeOffset DateTimeOffset1 { get; set; }
         public required DateTimeOffset DateTimeOffset2 { get; set; }
     }
-    public class AllTypesModelSerializer : IPacker<AllTypesModel>
+    public class AllTypesModelSerializer : ISerializer<AllTypesModel>
     {
-        int IPacker<AllTypesModel>.IdClassType => 2;
+        int ISerializer.IdClassType => 2;
 
-        void IPacker<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
+        void ISerializer<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
         {
             writer.Write(item.Guid);
 
@@ -109,8 +107,15 @@ public class AllTypesPackUnitTest
             writer.Write(item.DateTimeOffset1);
             writer.Write(item.DateTimeOffset2);
         }
+    }
 
-        AllTypesModel? IPacker<AllTypesModel>.Deserialize(ref PackerReader reader)
+    public class AllTypesModelDeserializer : IDeserializer<AllTypesModel>
+    {
+        static int IDeserializer<AllTypesModel>.IdClassType => 2;
+
+        int IDeserializer.IdObject { get; set; }
+
+        AllTypesModel? IDeserializer<AllTypesModel>.Deserialize(ref PackerReader reader)
         {
             var value = new AllTypesModel
             {
@@ -161,9 +166,11 @@ public class AllTypesPackUnitTest
             return value;
         }
 
-        void IPacker<AllTypesModel>.DeserializeCircular(AllTypesModel value, ref PackerReader reader)
-        {
-        }
+        //// Implement the required UpackerReferences property
+        //IPacker<AllTypesModel>.UnpackerReferences[] IPacker<AllTypesModel>.UpackerReferences { get; set; }
+
+        //// Implement the required DeserializeCircular method (no-op if not needed)
+        //void IPacker<AllTypesModel>.DeserializeCircular(AllTypesModel value) { }
     }
 
     [Fact]
@@ -222,7 +229,7 @@ public class AllTypesPackUnitTest
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
 
@@ -324,7 +331,7 @@ public class AllTypesPackUnitTest
            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
        );
 
-        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
 
@@ -376,7 +383,7 @@ public class AllTypesPackUnitTest
         var cache = DataModelPacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
-        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelSerializer>(cache);
+        var copyModel = DataModelPacker.Deserialize<AllTypesModel, AllTypesModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.Byte1.ShouldBe(model.Byte1);

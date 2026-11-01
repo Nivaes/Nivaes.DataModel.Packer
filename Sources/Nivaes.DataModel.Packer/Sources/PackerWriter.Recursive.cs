@@ -4,15 +4,15 @@ namespace Nivaes.DataModel.Packer;
 
 public ref partial struct PackerWriter
 {
-    public int Add<T>(T item, in IPacker<T> serializer)
+    public int Add<T>(T item, in ISerializer<T> serializer)
     {
         var hash = RuntimeHelpers.GetHashCode(item);
 
-        if(Exist(hash, out var index))
+        if (Exist(hash, out var index))
         {
             return index;
         }
-        
+
         if (_count == _entries.Length)
             Grow();
 
@@ -44,17 +44,6 @@ public ref partial struct PackerWriter
         return false;
     }
 
-    //public int TryGet(int hash)
-    //{
-    //    for (int i = 0; i < _count; i++)
-    //    {
-    //        if (_entries[i].Hash == hash)
-    //            return i;
-    //    }
-
-    //    throw new IndexOutOfRangeException("Item not found");
-    //}
-
     private void Grow()
     {
         int newSize = _entries.Length == 0
@@ -66,12 +55,12 @@ public ref partial struct PackerWriter
 
     private static void Serialize<T>(scoped in object item, scoped in object serializer, ref PackerWriter writer)
     {
-        ((IPacker<T>)serializer).Serialize((T)item, ref writer);
+        ((ISerializer<T>)serializer).Serialize((T)item, ref writer);
     }
 
-    public ReadOnlySpan<byte> WriteRoot<T>(in T? value, scoped in IPacker<T> serializer)
+    public ReadOnlySpan<byte> WriteRoot<T>(in T? value, scoped in ISerializer<T> serializer)
     {
-        var id = Add<T>(value!, serializer);
+        _ = Add<T>(value!, serializer);
 
         SerializePending();
 
@@ -86,13 +75,16 @@ public ref partial struct PackerWriter
             {
                 ref Entry entry = ref _entries[_serializeCount];
 
-                ReserveSizeInt32();
-                Write(entry.IdClass);
-                Write(_serializeCount);
-                
-                entry.Serialize(entry.Item, entry.Serializer, ref this);
+                if (entry.Item is not null)
+                {
+                    ReserveSizeInt32();
+                    Write(entry.IdClass);
+                    Write(_serializeCount);
 
-                WriteSize();
+                    entry.Serialize(entry.Item, entry.Serializer, ref this);
+
+                    WriteSize();
+                }
             }
             //writer.RecursiveWriter();
             SerializePending();

@@ -277,7 +277,7 @@ public ref partial struct PackerWriter
     }
 
     public void Write<T, TSerializer>(in T? value)
-        where TSerializer : IPacker<T>, new()
+        where TSerializer : ISerializer<T>, new()
     {
         if (value is null)
         {
