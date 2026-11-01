@@ -201,7 +201,7 @@ public ref struct PackerReader
         return ReadSpan(length);
     }
 
-    public TReference? Read<T, TReference, TSerializer>(int idReference)
+    public TReference? Read<T, TReference, TSerializer>(int idReference, Action<object, object?>? deserialiceReference = null)
         where TSerializer : IDeserializer<TReference>, new()
     {
         int idObject = ReadInt32();
@@ -209,7 +209,7 @@ public ref struct PackerReader
         if (idObject == -1)
             return default(TReference);
 
-        return _recursiveReader.Read<TReference, TSerializer>(idObject, idReference);
+        return _recursiveReader.Read<TReference, TSerializer>(idObject, deserialiceReference);
     }
     #endregion
 }

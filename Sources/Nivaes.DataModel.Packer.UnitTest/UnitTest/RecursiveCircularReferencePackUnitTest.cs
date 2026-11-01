@@ -43,13 +43,13 @@ public class RecursiveCircularReferencePackUnitTest
 
         int IDeserializer.IdObject { get; set; }
 
-        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
-        {
-            new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
-            new ReferenceSetter { Setter = ReferenceReference2!, Reference = null }
-        };
+        //private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
+        //{
+        //    new ReferenceSetter { Setter = ReferenceReference1!, Reference = null },
+        //    new ReferenceSetter { Setter = ReferenceReference2!, Reference = null }
+        //};
 
-        ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
+        //ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
 
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {

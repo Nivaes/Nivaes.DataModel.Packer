@@ -44,22 +44,24 @@ public class CircularReferencePackUnitTest
             set; 
         }
 
-        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
-        {
-            new ReferenceSetter { Tag = "Root.Reference1",  Setter = ReferenceReference1!, Reference = null },
-            new ReferenceSetter { Tag = "Root.Reference2", Setter = ReferenceReference2!, Reference = null },
-        };
+        //private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
+        //{
+        //    new ReferenceSetter { Tag = "Root.Reference1",  Setter = ReferenceReference1! },
+        //    new ReferenceSetter { Tag = "Root.Reference2", Setter = ReferenceReference2! },
+        //};
 
-        ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
+        //ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
+
+        private RootModel? _value;
 
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject);
-            var reference2 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject);
+            var reference1 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1!);
+            var reference2 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference2!);
 
-            var value = new RootModel
+            _value = new RootModel
             {
                 String1 = string1,
                 String2 = string2,
@@ -67,17 +69,19 @@ public class CircularReferencePackUnitTest
                 Reference2 = reference2!
 
             };
-            return value;
+            return _value;
         }
 
-        public static void ReferenceReference1(object value, object reference)
+        public void ReferenceReference1(object value, object reference)
         {
-            ((RootModel)value).Reference1 = (ReferenceModel)reference;
+            //((RootModel)value).Reference1 = (ReferenceModel)reference;
+            _value!.Reference1 = (ReferenceModel)reference;
         }
 
-        public static void ReferenceReference2(object value, object reference)
+        public void ReferenceReference2(object value, object reference)
         {
-            ((RootModel)value).Reference2 = (ReferenceModel)reference;
+            //((RootModel)value).Reference2 = (ReferenceModel)reference;
+            _value!.Reference2 = (ReferenceModel)reference;
         }
 
     }
@@ -108,32 +112,35 @@ public class CircularReferencePackUnitTest
 
         int IDeserializer.IdObject { get; set; }
 
-        private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
-        {
-            new ReferenceSetter { Tag = "Reference.Root", Setter = ReferenceReference1!, Reference = null },
-        };
+        //private readonly ReferenceSetter[] _referenceSetters = new ReferenceSetter[]
+        //{
+        //    new ReferenceSetter { Tag = "Reference.Root", Setter = ReferenceReference1!, Reference = null },
+        //};
 
-        ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
+        //ReferenceSetter[] IDeserializer.ReferenceSetters => _referenceSetters;
+
+        ReferenceModel? _value;
 
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(((IDeserializer)this).IdObject);
+            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelDeserializer>(((IDeserializer)this).IdObject, ReferenceReference1!);
 
-            var value = new ReferenceModel
+            _value = new ReferenceModel
             {
                 String1 = string1,
                 String2 = string2,
                 RootReference = rootReference
             };
 
-            return value;
+            return _value;
         }
 
-        public static void ReferenceReference1(object value, object reference)
+        public void ReferenceReference1(object value, object reference)
         {
-            ((ReferenceModel)value).RootReference = (RootModel)reference;
+            //((ReferenceModel)value).RootReference = (RootModel)reference;
+            _value!.RootReference = (RootModel)reference;
         }
     }
 
