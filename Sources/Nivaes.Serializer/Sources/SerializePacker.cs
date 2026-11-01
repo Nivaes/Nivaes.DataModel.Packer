@@ -2,7 +2,7 @@
 
 namespace Nivaes.Serializer;
 
-public static partial class DataModelPacker
+public static partial class SerializePacker
 {
     public static ReadOnlySpan<byte> Serialize<T, TSerializer>(in T value)
         where TSerializer : ISerializer<T>, new()

@@ -21,14 +21,14 @@
 
 	<ItemGroup>
 
-		<ProjectReference Include="..\Nivaes.Serializer.SourceGenerator\Nivaes.Serializer.SourceGenerator.csproj">
+		<ProjectReference Include="..\..\Sources\Nivaes.Serializer.SourceGenerator\Nivaes.Serializer.SourceGenerator.csproj">
 			<PrivateAssets>all</PrivateAssets>
 			<OutputItemType>Analyzer</OutputItemType>
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 			<ExcludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</ExcludeAssets>
 		</ProjectReference>
 
-		<ProjectReference Include="..\Nivaes.Serializer\Nivaes.Serializer.csproj" />
+		<ProjectReference Include="..\..\Sources\Nivaes.Serializer\Nivaes.Serializer.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup>

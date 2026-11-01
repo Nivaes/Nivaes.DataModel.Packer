@@ -95,14 +95,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -126,14 +126,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -157,14 +157,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -188,14 +188,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -208,14 +208,14 @@ public class ReferenceUnitTest
     [Theory, AutoData]
     public void SerializerAutoDataTest2(RootModel model)
     {
-        var cache = DataModelPacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);

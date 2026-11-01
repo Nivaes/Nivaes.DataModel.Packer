@@ -80,14 +80,14 @@ public class RecursiveCircularReferencePackUnitTest
         };
         model.Reference1.Reference1 = model;
 
-        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        var cache = SerializePacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -116,14 +116,14 @@ public class RecursiveCircularReferencePackUnitTest
         };
         model.Reference1.Reference1 = model;
 
-        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        var cache = SerializePacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -152,7 +152,7 @@ public class RecursiveCircularReferencePackUnitTest
         };
         model.Reference1.Reference1 = model;
 
-        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        var cache = SerializePacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
@@ -164,7 +164,7 @@ public class RecursiveCircularReferencePackUnitTest
         );
 
 
-        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -194,14 +194,14 @@ public class RecursiveCircularReferencePackUnitTest
         };
         model.Reference1.Reference1 = model;
 
-        var cache = DataModelPacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
+        var cache = SerializePacker.Serialize<ReferenceModel, ReferenceModelSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = DataModelPacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<ReferenceModel, ReferenceModelDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);

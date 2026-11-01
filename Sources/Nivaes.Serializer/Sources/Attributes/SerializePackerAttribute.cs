@@ -4,6 +4,6 @@ using System.Text;
 
 namespace Nivaes.Serializer;
 
-public class SerializeAttribute : Attribute
+public class SerializePackerAttribute : Attribute
 {
 }

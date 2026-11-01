@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Nivaes.Serializer.SourceGenerator;
 
 [Generator(LanguageNames.CSharp)]
-public sealed class DataModelPackerGenerator : IIncrementalGenerator
+public sealed class SerializerPackerGenerator : IIncrementalGenerator
 {
     private sealed class InterceptInfo
     {
