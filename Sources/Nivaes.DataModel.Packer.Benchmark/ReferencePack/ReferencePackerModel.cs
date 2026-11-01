@@ -17,8 +17,6 @@ public class ReferencePackerModelSerializer : ISerializer<ReferencePackerModel>
 
 public class ReferencePackerModelDeserializer : IDeserializer<ReferencePackerModel>
 {
-    //int IDeserializer<ReferencePackerModel>.IdObject { get; set; }
-
     ReferencePackerModel? IDeserializer<ReferencePackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new ReferencePackerModel
@@ -49,8 +47,6 @@ public class RootPackerModelSerializer : ISerializer<RootPackerModel>
 }
 public class RootPackerModelDeserializer : IDeserializer<RootPackerModel>
 {
-    //int IDeserializer.IdObject { get; set; }
-
     RootPackerModel? IDeserializer<RootPackerModel>.Deserialize(ref PackerReader reader)
     {
         var value = new RootPackerModel

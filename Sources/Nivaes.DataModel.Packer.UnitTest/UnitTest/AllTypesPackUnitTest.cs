@@ -56,8 +56,6 @@ public class AllTypesPackUnitTest
     }
     public class AllTypesModelSerializer : ISerializer<AllTypesModel>
     {
-        //int ISerializer.IdClassType => 2;
-
         void ISerializer<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
         {
             writer.Write(item.Guid);
@@ -107,10 +105,6 @@ public class AllTypesPackUnitTest
 
     public class AllTypesModelDeserializer : IDeserializer<AllTypesModel>
     {
-        //static int IDeserializer<AllTypesModel>.IdClassType => 2;
-
-        //int IDeserializer.IdObject { get; set; }
-
         AllTypesModel? IDeserializer<AllTypesModel>.Deserialize(ref PackerReader reader)
         {
             var value = new AllTypesModel
@@ -161,12 +155,6 @@ public class AllTypesPackUnitTest
 
             return value;
         }
-
-        //// Implement the required UpackerReferences property
-        //IPacker<AllTypesModel>.UnpackerReferences[] IPacker<AllTypesModel>.UpackerReferences { get; set; }
-
-        //// Implement the required DeserializeCircular method (no-op if not needed)
-        //void IPacker<AllTypesModel>.DeserializeCircular(AllTypesModel value) { }
     }
 
     [Fact]

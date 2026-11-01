@@ -20,8 +20,6 @@ public class SimplePackerModelSerializer : ISerializer<SimpleNivaesSerializeMode
 
 public class SimplePackerModelDeserializer : IDeserializer<SimpleNivaesSerializeModel>
 {
-    //int IDeserializer.IdObject { get; set; }
-
     SimpleNivaesSerializeModel? IDeserializer<SimpleNivaesSerializeModel>.Deserialize(ref PackerReader reader)
     {
         var value = new SimpleNivaesSerializeModel

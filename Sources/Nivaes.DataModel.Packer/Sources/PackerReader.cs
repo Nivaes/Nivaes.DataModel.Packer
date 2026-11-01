@@ -14,40 +14,11 @@ public ref struct PackerReader
 
     public delegate void ReferenceSetterDelegate<TReference>(object value, TReference reference);
 
-    //internal PackerReader(ReadOnlySpan<byte> buffer)
-    //{
-    //    _spanBuffer = buffer;
-    //    //_position = 4; // Los 4 primeras posición indican el tamaño.
-    //    _recursiveReader = new RecursiveReader(buffer);
-    //}
-
     internal PackerReader(ReadOnlySpan<byte> buffer, ref RecursiveReader recursiveReader)
     {
         _spanBuffer = buffer;
-        //_position = 4; // Los 4 primeras posición indican el tamaño.
         _recursiveReader = recursiveReader;
     }
-
-    //public readonly int Position => _position;
-
-    //public readonly int Remaining =>
-    //    _span.Length - _position;
-
-    //internal void ReaderSize()
-    //{
-    //    _position += 4;
-    //}
-
-    //internal void Register<T>(T item)
-    //    where T : IPackable<T>
-    //{
-    //    _recursiveReader.Register(item);
-    //}
-
-    //internal void ReadItems()
-    //{
-    //    _recursiveReader.ReadItems();
-    //}
 
     #region Reads
     private ReadOnlySpan<byte> ReadSpan(int size)

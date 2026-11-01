@@ -20,8 +20,6 @@ public class CircularReferencePackUnitTest
 
     public class RootModelSerializer : ISerializer<RootModel>
     {
-        //int ISerializer.IdClassType => 10;
-
         void ISerializer<RootModel>.Serialize(scoped in RootModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);
@@ -33,14 +31,6 @@ public class CircularReferencePackUnitTest
 
     public class RootModelDeserializer : IDeserializer<RootModel>
     {
-        //static int IDeserializer<RootModel>.IdClassType => 10;
-
-        //int IDeserializer.IdObject
-        //{ 
-        //    get; 
-        //    set; 
-        //}
-
         private RootModel? _value;
 
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
@@ -95,10 +85,6 @@ public class CircularReferencePackUnitTest
 
     public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
     {
-        //static int IDeserializer<ReferenceModel>.IdClassType => 20;
-
-        //int IDeserializer.IdObject { get; set; }
-
         ReferenceModel? _value;
 
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)

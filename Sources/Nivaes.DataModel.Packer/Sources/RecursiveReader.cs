@@ -64,19 +64,7 @@ internal ref struct RecursiveReader
             var position = _initPositions[idObject];
             var packerReader = new PackerReader(_buffer[position..], ref this);
 
-            //var idClassType = packerReader.ReadInt32();
-            //if (idClassType != TReferenceDeserializer.IdClassType)
-            //{
-            //    throw new Exception($"No coinciden las clase: {idClassType} != {TReferenceDeserializer.IdClassType}");
-            //}
-            //var idObjectPacket = packerReader.ReadInt32();
-            //if (idObjectPacket != idObject)
-            //{
-            //    throw new Exception($"No coinciden el id objet: {idObjectPacket} != {idObject}");
-            //}
-
             _references[idObject].IsCreate = true;
-
             _references[idObject].Item = deserializer.Deserialize(ref packerReader)!;
         }
 
@@ -87,7 +75,6 @@ internal ref struct RecursiveReader
         where TReferenceDeserializer : IDeserializer<TReference>, new()
     {
         var deserializer = new TReferenceDeserializer();
-        //deserializer.IdObject = idObject;
 
         var value = ReadItem<TReference, TReferenceDeserializer>(idObject, deserializer);
 
@@ -97,7 +84,6 @@ internal ref struct RecursiveReader
             {
                 IdReference = idObject,
                 Deserializer = deserializer,
-                //DeserializerCircular = DeserializeCircularReferences,
                 DeserialiceReference = deserialiceReference
             });
         }
@@ -110,20 +96,7 @@ internal ref struct RecursiveReader
         foreach (var reference in _referenceReaders)
         {
             var item = _references[reference.IdReference].Item;
-            //reference.DeserializerCircular(ref this, item, reference.Deserializer, reference.DeserialiceReference!);
-
             reference.DeserialiceReference!(item);
         }
     }
-
-    //private static void DeserializeCircularReferences(
-    //   //ref RecursiveReader recursiveReader,
-    //   object item,
-    //   //in object deserializerObject,
-    //   in Action<object> deserializerReference)
-    //{
-    //    //var deserializer = (IDeserializer)deserializerObject;
-
-    //    deserializerReference(item);
-    //}
 }
