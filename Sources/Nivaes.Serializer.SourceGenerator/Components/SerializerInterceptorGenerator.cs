@@ -117,8 +117,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                     ", ",
                     symbol.Parameters.Select(GetArgument));
 
-                var returnType = symbol.ReturnType.ToDisplayString(
-                    SymbolDisplayFormat.FullyQualifiedFormat);
+                var returnType = symbol.ReturnType.ToDisplayString(NullableFormat);
 
                 return new InterceptInfo(
                     location.Version,
@@ -216,8 +215,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
 
         var paramsModifier = parameter.IsParams ? "params " : "";
 
-        var type = parameter.Type.ToDisplayString(
-            SymbolDisplayFormat.FullyQualifiedFormat);
+        var type = parameter.Type.ToDisplayString(NullableFormat);
 
         return $"{paramsModifier}{modifier}{type} {parameter.Name}";
     }
@@ -235,6 +233,11 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
 
         return $"{modifier}{parameter.Name}";
     }
+
+    private static readonly SymbolDisplayFormat NullableFormat =
+        SymbolDisplayFormat.FullyQualifiedFormat.WithMiscellaneousOptions(
+            SymbolDisplayFormat.FullyQualifiedFormat.MiscellaneousOptions |
+            SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
 
     private const string Header =
         """
