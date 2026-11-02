@@ -1,10 +1,10 @@
 ﻿namespace Nivaes.Serializer.UnitTest;
 
-public class RecursiveCircularReferencePackUnitTest
+public class RecursiveCircularReferenceUnitTest
 {
     private readonly ITestOutputHelper _output;
 
-    public RecursiveCircularReferencePackUnitTest(ITestOutputHelper output)
+    public RecursiveCircularReferenceUnitTest(ITestOutputHelper output)
     {
         _output = output;
     }
@@ -22,8 +22,6 @@ public class RecursiveCircularReferencePackUnitTest
 
     public class ReferenceModelTestSerializer : ISerializer<ReferenceModel>
     {
-        public int IdClassType => 30;
-
         void ISerializer<ReferenceModel>.Serialize(scoped in ReferenceModel model, ref PackerWriter writer)
         {
             writer.Write(model.String1);

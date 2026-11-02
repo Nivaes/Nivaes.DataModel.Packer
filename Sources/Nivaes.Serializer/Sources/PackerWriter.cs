@@ -6,7 +6,7 @@ namespace Nivaes.Serializer;
 
 public ref partial struct PackerWriter
 {
-    private const int InitialCapacity = 512;
+    private const int InitialCapacity = 1024;
     private byte[] _buffer;
     private Span<byte> _span;
     private int _position;

@@ -47,7 +47,7 @@ public class PackBenchmarks
             Int1 = 42
         };
 
-        return SerializePacker.Serialize<SimpleNivaesSerializeModel, SimplePackerModelSerializer>(model).ToArray();
+        return SerializePacker.Serialize(model).ToArray();
     }
 
     [Benchmark]
@@ -59,7 +59,7 @@ public class PackBenchmarks
     [Benchmark]
     public void NivaesDeserialize()
     {
-        var copyModel = SerializePacker.Deserialize<SimpleNivaesSerializeModel, SimplePackerModelDeserializer>(_packSerialize);
+        var copyModel = SerializePacker.Deserialize<SimpleNivaesSerializeModel>(_packSerialize);
     }
 
     private byte[] PrepareMemoryPackSerialize()
@@ -100,7 +100,7 @@ public class PackBenchmarks
             }
         };
 
-        return SerializePacker.Serialize<RootPackerModel, RootPackerModelSerializer>(model).ToArray();
+        return SerializePacker.Serialize(model).ToArray();
     }
 
     [Benchmark]
@@ -112,7 +112,7 @@ public class PackBenchmarks
     [Benchmark]
     public void NivaesReferenceDeserialize()
     {
-        var copyModel = SerializePacker.Deserialize<RootPackerModel, RootPackerModelDeserializer>(_packReferenceSerialize);
+        var copyModel = SerializePacker.Deserialize<RootPackerModel>(_packReferenceSerialize);
     }
 
     private byte[] PrepareReferenceMemoryPackSerialize()
