@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Nivaes.Serializer.SourceGenerator.UnitTest;
 
-public class CreateInterfaces
+public class CreateSerialize
 {
     [Fact]
     public async Task CreateInterfacesTest()

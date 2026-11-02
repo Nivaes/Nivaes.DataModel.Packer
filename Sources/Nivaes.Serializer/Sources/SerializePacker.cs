@@ -4,6 +4,11 @@ namespace Nivaes.Serializer;
 
 public static partial class SerializePacker
 {
+    public static ReadOnlySpan<byte> Serialize<T>(in T model)
+    {
+        throw new NotSupportedException("This method should be intercepted.");
+    }
+
     public static ReadOnlySpan<byte> Serialize<T, TSerializer>(in T value)
         where TSerializer : ISerializer<T>, new()
     {
@@ -14,6 +19,11 @@ public static partial class SerializePacker
         var serializer = new TSerializer();
 
         return write.WriteRoot(value, serializer);
+    }
+
+    public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(ReadOnlySpan<byte> cache)
+    {
+        throw new NotSupportedException("This method should be intercepted.");
     }
 
     public static T? Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TDeserializer>(ReadOnlySpan<byte> buffer)

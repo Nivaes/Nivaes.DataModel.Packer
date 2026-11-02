@@ -32,7 +32,7 @@
 	</ItemGroup>
 
 	<PropertyGroup>
-		<InterceptorsNamespaces>$(InterceptorsNamespaces);Nivaes.DataModel.Packer.SourceGenerator</InterceptorsNamespaces>
+		<InterceptorsNamespaces>$(InterceptorsNamespaces);Nivaes.Serializer.SourceGenerator</InterceptorsNamespaces>
 	</PropertyGroup>
 
 	<ItemGroup>

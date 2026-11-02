@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using System;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -9,23 +11,40 @@ namespace Nivaes.Serializer.SourceGenerator;
 [Generator(LanguageNames.CSharp)]
 public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
 {
+    private const string TargetType = "Nivaes.Serializer.SerializePacker";
+
     private sealed class InterceptInfo
     {
         public int Version { get; }
         public string LocationData { get; }
+        public string MethodName { get; }
         public string ModelType { get; }
-        public string SerializerType { get; }
+        public string HelperType { get; }
+        public string ReturnType { get; }
+        public string Parameters { get; }
+        public string Arguments { get; }
+        public bool ReturnsVoid { get; }
 
         public InterceptInfo(
             int version,
             string locationData,
+            string methodName,
             string modelType,
-            string serializerType)
+            string helperType,
+            string returnType,
+            string parameters,
+            string arguments,
+            bool returnsVoid)
         {
             Version = version;
             LocationData = locationData;
+            MethodName = methodName;
             ModelType = modelType;
-            SerializerType = serializerType;
+            HelperType = helperType;
+            ReturnType = returnType;
+            Parameters = parameters;
+            Arguments = arguments;
+            ReturnsVoid = returnsVoid;
         }
     }
 
@@ -37,20 +56,15 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                 if (node is not InvocationExpressionSyntax invocation)
                     return false;
 
-                // DataModelPacker.Serialize<T>(...)
                 if (invocation.Expression is MemberAccessExpressionSyntax member)
                 {
-                    return member.Name is GenericNameSyntax genericName
-                        && genericName.Identifier.ValueText == "Serialize"
-                        && genericName.TypeArgumentList.Arguments.Count == 1;
+                    var name = member.Name.Identifier.ValueText;
+
+                    return name is "Serialize" or "Deserialize";
                 }
 
-                // Serialize<T>(...) sin calificador.
-                return invocation.Expression is GenericNameSyntax directName
-                    && directName.Identifier.ValueText == "Serialize"
-                    && directName.TypeArgumentList.Arguments.Count == 1;
+                return false;
             },
-
             transform: static (ctx, ct) =>
             {
                 var invocation = (InvocationExpressionSyntax)ctx.Node;
@@ -61,13 +75,14 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                     return null;
                 }
 
-                if (symbol.Name != "Serialize"
-                    || symbol.Arity != 1
-                    || symbol.ContainingType.ToDisplayString()
-                        != "Nivaes.Serializer.DataModelPacker")
-                {
+                if (symbol.ContainingType.ToDisplayString() != TargetType)
                     return null;
-                }
+
+                if (symbol.Arity != 1 || symbol.TypeArguments.Length != 1)
+                    return null;
+
+                if (symbol.Name is not ("Serialize" or "Deserialize"))
+                    return null;
 
                 var location = ctx.SemanticModel
                     .GetInterceptableLocation(invocation, ct);
@@ -81,17 +96,40 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                 var modelType = model.ToDisplayString(
                     SymbolDisplayFormat.FullyQualifiedFormat);
 
-                var ns = model.ContainingNamespace.IsGlobalNamespace
-                    ? "global::"
-                    : "global::" + model.ContainingNamespace.ToDisplayString() + ".";
+                // Obtener el nombre de la clase auxiliar utilizando
+                // los mismos métodos que utiliza el generador.
+                var helperClassName = symbol.Name == "Serialize"
+                    ? model.GetSerializerClassName()
+                    : model.GetDeserializerClassName();
 
-                var serializerType = /*ns + model.Name +*/ modelType + "Serializer";
+                // Construir el nombre completamente cualificado.
+                var ns = model.ContainingNamespace;
+
+                var helperType = ns.IsGlobalNamespace
+                    ? $"global::{helperClassName}"
+                    : $"global::{ns.ToDisplayString()}.{helperClassName}";
+
+                var parameters = string.Join(
+                    ", ",
+                    symbol.Parameters.Select(GetParameterDeclaration));
+
+                var arguments = string.Join(
+                    ", ",
+                    symbol.Parameters.Select(GetArgument));
+
+                var returnType = symbol.ReturnType.ToDisplayString(
+                    SymbolDisplayFormat.FullyQualifiedFormat);
 
                 return new InterceptInfo(
                     location.Version,
                     location.Data,
+                    symbol.Name,
                     modelType,
-                    serializerType);
+                    helperType,
+                    returnType,
+                    parameters,
+                    arguments,
+                    symbol.ReturnsVoid);
             })
             .Where(static x => x is not null)
             .Collect();
@@ -104,9 +142,12 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
             source.AppendLine(InterceptorClassTemplate);
 
             source.AppendLine();
-            source.AppendLine("namespace Nivaes.Serializer.SourceGenerator");
+            source.AppendLine(
+                "namespace Nivaes.Serializer.SourceGenerator");
             source.AppendLine("{");
-            source.AppendLine("    internal static class DataModelPackerInterceptors");
+
+            source.AppendLine(
+                "    internal static class SerializePackerInterceptors");
             source.AppendLine("    {");
 
             var index = 0;
@@ -117,21 +158,34 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                     continue;
 
                 var locationData = SymbolDisplay.FormatLiteral(
-                    item.LocationData, quote: true);
+                    item.LocationData,
+                    quote: true);
+
+                var genericArguments =
+                    $"{item.ModelType}, {item.HelperType}";
 
                 source.AppendLine(
                     $"        [global::System.Runtime.CompilerServices.InterceptsLocation({item.Version}, {locationData})]");
 
                 source.AppendLine(
-                    $"        public static global::System.ReadOnlySpan<byte> Serialize_{index}(");
+                    $"        public static {item.ReturnType} {item.MethodName}_{index}(");
 
                 source.AppendLine(
-                    $"            in {item.ModelType} value)");
+                    $"            {item.Parameters})");
 
                 source.AppendLine("        {");
 
-                source.AppendLine(
-                    $"            return global::Nivaes.Serializer.DataModelPacker.Serialize<{item.ModelType}, {item.SerializerType}>(in value);");
+                var methodCall =
+                    $"global::Nivaes.Serializer.SerializePacker.{item.MethodName}<{genericArguments}>({item.Arguments})";
+
+                if (item.ReturnsVoid)
+                {
+                    source.AppendLine($"            {methodCall};");
+                }
+                else
+                {
+                    source.AppendLine($"            return {methodCall};");
+                }
 
                 source.AppendLine("        }");
                 source.AppendLine();
@@ -143,21 +197,50 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
             source.AppendLine("}");
 
             spc.AddSource(
-                "DataModelPackerInterceptors.g.cs",
+                "SerializePackerInterceptors.g.cs",
                 source.ToString());
         });
+    }
 
+    private static string GetParameterDeclaration(
+        IParameterSymbol parameter)
+    {
+        var modifier = parameter.RefKind switch
+        {
+            RefKind.Ref => "ref ",
+            RefKind.Out => "out ",
+            RefKind.In => "in ",
+            RefKind.RefReadOnlyParameter => "ref readonly ",
+            _ => string.Empty
+        };
 
+        var paramsModifier = parameter.IsParams ? "params " : "";
+
+        var type = parameter.Type.ToDisplayString(
+            SymbolDisplayFormat.FullyQualifiedFormat);
+
+        return $"{paramsModifier}{modifier}{type} {parameter.Name}";
+    }
+
+    private static string GetArgument(IParameterSymbol parameter)
+    {
+        var modifier = parameter.RefKind switch
+        {
+            RefKind.Ref => "ref ",
+            RefKind.Out => "out ",
+            RefKind.In => "in ",
+            RefKind.RefReadOnlyParameter => "in ",
+            _ => string.Empty
+        };
+
+        return $"{modifier}{parameter.Name}";
     }
 
     private const string Header =
-       """
+        """
         //------------------------------------------------------------------------------
         // <auto-generated>
-        //     This code was generated by the Nivaes.DataModel.Packer.SourceGenerator source generator
-        //
-        //     Changes to this file may cause incorrect behavior and will be lost if
-        //     the code is regenerated.
+        //     Generated by Nivaes.Serializer.SourceGenerator
         // </auto-generated>
         //------------------------------------------------------------------------------
 
@@ -168,14 +251,16 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
         """
         namespace System.Runtime.CompilerServices
         {
-            // this type is needed by the compiler to implement interceptors - it doesn't need to
-            // come from the runtime itself, though
-        
-            [global::System.Diagnostics.Conditional("DEBUG")] // not needed post-build, so: evaporate
-            [global::System.AttributeUsage(global::System.AttributeTargets.Method, AllowMultiple = true)]
-            sealed file class InterceptsLocationAttribute : global::System.Attribute
+            [global::System.Diagnostics.Conditional("DEBUG")]
+            [global::System.AttributeUsage(
+                global::System.AttributeTargets.Method,
+                AllowMultiple = true)]
+            sealed file class InterceptsLocationAttribute
+                : global::System.Attribute
             {
-                public InterceptsLocationAttribute(int version, string data)
+                public InterceptsLocationAttribute(
+                    int version,
+                    string data)
                 {
                     _ = version;
                     _ = data;

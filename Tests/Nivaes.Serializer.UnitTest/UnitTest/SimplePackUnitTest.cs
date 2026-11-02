@@ -9,7 +9,6 @@ public class SimplePackUnitTest
         _output = output;
     }
 
-    [SerializePacker]
     public class SimpleModel
     {
         public required string String1 { get; set; }
