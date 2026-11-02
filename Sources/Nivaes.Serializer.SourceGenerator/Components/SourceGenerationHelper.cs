@@ -133,12 +133,12 @@ internal static class SourceGenerationHelper
         return string.Join("_", names);
     }
 
-    public static string GetSerializerClassName(INamedTypeSymbol symbol)
+    public static string GetSerializerClassName(this INamedTypeSymbol symbol)
     {
         return GetPrefixSerializerClassName(symbol) + "Serializer";
     }
 
-    public static string GetDeserializerClassName(INamedTypeSymbol symbol)
+    public static string GetDeserializerClassName(this INamedTypeSymbol symbol)
     {
         return GetPrefixSerializerClassName(symbol) + "Deserializer";
     }

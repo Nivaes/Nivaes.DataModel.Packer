@@ -9,6 +9,7 @@ public class CreateInterfaces
     public async Task CreateInterfacesTest()
     {
         string source = @"
+        using System;
         using Nivaes.Serializer;
 
         [SerializePacker]

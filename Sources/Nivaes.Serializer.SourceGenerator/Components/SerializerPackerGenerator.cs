@@ -309,8 +309,6 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
 
     private static bool IsSupported(ITypeSymbol type)
     {
-        //System.Diagnostics.Debugger.Launch();
-
         if (type.SpecialType is
             SpecialType.System_String or
             SpecialType.System_Array or
@@ -329,12 +327,11 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             SpecialType.System_Decimal)
             return true;
 
-        var typeName = type.ToDisplayString();
-
+        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         if (typeName is
-            "System.Guid" or
-            "System.DateTime" or
-            "System.DateTimeOffset")
+            "global::System.Guid" or
+            "global::System.DateTime" or
+            "global::System.DateTimeOffset")
             return true;
 
         // byte[]
