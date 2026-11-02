@@ -17,23 +17,23 @@ public class ReferenceUnitTest
         public required ReferenceModel Reference { get; set; }
     }
 
-    public class RootModelSerializer : ISerializer<RootModel>
+    public class RootModelTestSerializer : ISerializer<RootModel>
     {
         void ISerializer<RootModel>.Serialize(scoped in RootModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
             writer.Write(value.String2);
-            writer.Write<ReferenceModel, ReferenceModelSerializer>(value.Reference);
+            writer.Write<ReferenceModel, ReferenceModelTestSerializer>(value.Reference);
         }
     }
 
-    public class RootModelDeserializer : IDeserializer<RootModel>
+    public class RootModelTestDeserializer : IDeserializer<RootModel>
     {
         RootModel? IDeserializer<RootModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializer>()!;
+            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelTestDeserializer>()!;
 
             var value = new RootModel
             {
@@ -52,10 +52,8 @@ public class ReferenceUnitTest
         public required string String2 { get; set; }
     }
 
-    public class ReferenceModelSerializer : ISerializer<ReferenceModel>
+    public class ReferenceModelTestSerializer : ISerializer<ReferenceModel>
     {
-        //int ISerializer.IdClassType => 6;
-
         void ISerializer<ReferenceModel>.Serialize(scoped in ReferenceModel value, ref PackerWriter writer)
         {
             writer.Write(value.String1);
@@ -63,11 +61,8 @@ public class ReferenceUnitTest
         }
     }
 
-    public class ReferenceModelDeserializer : IDeserializer<ReferenceModel>
+    public class ReferenceModelTestDeserializer : IDeserializer<ReferenceModel>
     {
-        //static int IDeserializer<ReferenceModel>.IdClassType => 6;
-        //int IDeserializer.IdObject { get; set; }
-
         ReferenceModel? IDeserializer<ReferenceModel>.Deserialize(ref PackerReader reader)
         {
             var string1 = reader.ReadString();
@@ -97,14 +92,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelTestSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelTestDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -128,14 +123,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelTestSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelTestDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -159,14 +154,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelTestSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelTestDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -190,14 +185,14 @@ public class ReferenceUnitTest
             }
         };
 
-        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelTestSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelTestDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);
@@ -210,14 +205,14 @@ public class ReferenceUnitTest
     [Theory, AutoData]
     public void SerializerAutoDataTest2(RootModel model)
     {
-        var cache = SerializePacker.Serialize<RootModel, RootModelSerializer>(model);
+        var cache = SerializePacker.Serialize<RootModel, RootModelTestSerializer>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = SerializePacker.Deserialize<RootModel, RootModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<RootModel, RootModelTestDeserializer>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.String1.ShouldBe(model.String1);

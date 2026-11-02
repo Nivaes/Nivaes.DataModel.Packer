@@ -14,6 +14,7 @@ public class CreateInterfaces
         [SerializePacker]
         public class SimpleModel 
         {
+            public required Guid Guid1 { get; set; }
             public required string String1 { get; set; }
             public required string String2 { get; set; }
         }
@@ -46,16 +47,6 @@ public class CreateInterfaces
         var generatedSources = runResult.Results
             .SelectMany(x => x.GeneratedSources)
             .ToArray();
-
-        //Assert.Equal(2, generatedSources.Length);
-
-        //Assert.Contains(
-        //    generatedSources,
-        //    x => x.HintName.Contains("RootModelSerializer"));
-
-        //Assert.Contains(
-        //    generatedSources,
-        //    x => x.HintName.Contains("RootModelDeserializer"));
 
         // Comprobar que el código generado compila.
         var errors = outputCompilation.GetDiagnostics()

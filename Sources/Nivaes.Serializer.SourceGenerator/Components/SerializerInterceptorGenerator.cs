@@ -64,7 +64,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                 if (symbol.Name != "Serialize"
                     || symbol.Arity != 1
                     || symbol.ContainingType.ToDisplayString()
-                        != "Nivaes.DataModel.Packer.DataModelPacker")
+                        != "Nivaes.Serializer.DataModelPacker")
                 {
                     return null;
                 }
@@ -104,7 +104,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
             source.AppendLine(InterceptorClassTemplate);
 
             source.AppendLine();
-            source.AppendLine("namespace Nivaes.DataModel.Packer.SourceGenerator");
+            source.AppendLine("namespace Nivaes.Serializer.SourceGenerator");
             source.AppendLine("{");
             source.AppendLine("    internal static class DataModelPackerInterceptors");
             source.AppendLine("    {");
@@ -131,7 +131,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                 source.AppendLine("        {");
 
                 source.AppendLine(
-                    $"            return global::Nivaes.DataModel.Packer.DataModelPacker.Serialize<{item.ModelType}, {item.SerializerType}>(in value);");
+                    $"            return global::Nivaes.Serializer.DataModelPacker.Serialize<{item.ModelType}, {item.SerializerType}>(in value);");
 
                 source.AppendLine("        }");
                 source.AppendLine();

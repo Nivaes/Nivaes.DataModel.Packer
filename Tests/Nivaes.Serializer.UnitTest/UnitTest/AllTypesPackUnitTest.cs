@@ -55,7 +55,7 @@ public class AllTypesPackUnitTest
         public required DateTimeOffset DateTimeOffset1 { get; set; }
         public required DateTimeOffset DateTimeOffset2 { get; set; }
     }
-    public class AllTypesModelSerializer : ISerializer<AllTypesModel>
+    public class AllTypesModelSerializerTest : ISerializer<AllTypesModel>
     {
         void ISerializer<AllTypesModel>.Serialize(scoped in AllTypesModel item, ref PackerWriter writer)
         {
@@ -104,7 +104,7 @@ public class AllTypesPackUnitTest
         }
     }
 
-    public class AllTypesModelDeserializer : IDeserializer<AllTypesModel>
+    public class AllTypesModelDeserializerTest : IDeserializer<AllTypesModel>
     {
         AllTypesModel? IDeserializer<AllTypesModel>.Deserialize(ref PackerReader reader)
         {
@@ -207,14 +207,14 @@ public class AllTypesPackUnitTest
             DateTimeOffset2 = DateTimeOffset.Now.AddSeconds(223934),
         };
 
-        var cache = SerializePacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
+        var cache = SerializePacker.Serialize<AllTypesModel, AllTypesModelSerializerTest>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
             string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
         );
 
-        var copyModel = SerializePacker.Deserialize<AllTypesModel, AllTypesModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<AllTypesModel, AllTypesModelDeserializerTest>(cache);
 
         copyModel.ShouldNotBeNull();
 
@@ -309,14 +309,14 @@ public class AllTypesPackUnitTest
             DateTimeOffset2 = DateTimeOffset.MaxValue,
         };
 
-        var cache = SerializePacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
+        var cache = SerializePacker.Serialize<AllTypesModel, AllTypesModelSerializerTest>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
         _output.WriteLine(
            string.Join(" ", cache.ToArray().Select((b, i) => $"{i}:{b}"))
        );
 
-        var copyModel = SerializePacker.Deserialize<AllTypesModel, AllTypesModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<AllTypesModel, AllTypesModelDeserializerTest>(cache);
 
         copyModel.ShouldNotBeNull();
 
@@ -365,10 +365,10 @@ public class AllTypesPackUnitTest
     [Theory, AutoData]
     public void SerializerAllDataTest2(AllTypesModel model)
     {
-        var cache = SerializePacker.Serialize<AllTypesModel, AllTypesModelSerializer>(model);
+        var cache = SerializePacker.Serialize<AllTypesModel, AllTypesModelSerializerTest>(model);
         cache.ToArray().ShouldNotBeNull().ShouldNotBeEmpty();
 
-        var copyModel = SerializePacker.Deserialize<AllTypesModel, AllTypesModelDeserializer>(cache);
+        var copyModel = SerializePacker.Deserialize<AllTypesModel, AllTypesModelDeserializerTest>(cache);
 
         copyModel.ShouldNotBeNull();
         copyModel.Byte1.ShouldBe(model.Byte1);
