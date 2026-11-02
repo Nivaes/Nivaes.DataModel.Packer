@@ -14,9 +14,11 @@
   </Folder>
   <Folder Name="/Solution Items/.github/" />
   <Folder Name="/Solution Items/.github/workflows/">
+    <File Path=".github/workflows/build_release.yaml" />
     <File Path=".github/workflows/ci.yaml" />
     <File Path=".github/workflows/CodeQL.yaml" />
     <File Path=".github/workflows/delete-old-runs.yaml" />
+    <File Path=".github/workflows/publish_release.yaml" />
   </Folder>
   <Folder Name="/Sources/">
     <Project Path="Sources/Nivaes.Serializer.SourceGenerator/Nivaes.Serializer.SourceGenerator.csproj" Id="42ce9f25-a413-4781-873e-ebec8a96b4a2" />
