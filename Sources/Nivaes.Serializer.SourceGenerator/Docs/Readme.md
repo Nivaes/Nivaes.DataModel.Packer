@@ -1,1 +1,1 @@
-﻿# Nivaes.DataModel.Packer.SourceGenerator
+﻿# Nivaes.Serializer.SourceGenerator

@@ -13,4 +13,38 @@
 		<OptimizationPreference>Speed</OptimizationPreference>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PackageId>Nivaes.Serializer</PackageId>
+		<Title>Nivaes Serializer</Title>
+
+		<Product>Nivaes Serializer</Product>
+		<Description>Nivaes Serializer.</Description>
+		<PackageTags>Nivaes;Serializer</PackageTags>
+		<PackageReadmeFile>Readme.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Nivaes.Serializer.SourceGenerator\Nivaes.Serializer.SourceGenerator.csproj">
+			<OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<PrivateAssets>runtime; build; native; contentfiles; buildtransitive</PrivateAssets>
+			<IncludeAssets>analyzers</IncludeAssets>
+			<ExcludeAssets>runtime; build; native; contentfiles; buildtransitive</ExcludeAssets>
+		</ProjectReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="SonarAnalyzer.CSharp">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="Roslynator.Analyzers">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	
 </Project>
