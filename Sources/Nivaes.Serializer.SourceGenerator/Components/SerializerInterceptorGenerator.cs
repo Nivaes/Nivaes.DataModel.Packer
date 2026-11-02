@@ -20,6 +20,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
         public string MethodName { get; }
         public string ModelType { get; }
         public string HelperType { get; }
+        public string? SecondHelperType { get; }
         public string ReturnType { get; }
         public string Parameters { get; }
         public string Arguments { get; }
@@ -31,6 +32,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
             string methodName,
             string modelType,
             string helperType,
+            string? secondHelperType,
             string returnType,
             string parameters,
             string arguments,
@@ -41,6 +43,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
             MethodName = methodName;
             ModelType = modelType;
             HelperType = helperType;
+            SecondHelperType = secondHelperType;
             ReturnType = returnType;
             Parameters = parameters;
             Arguments = arguments;
@@ -60,7 +63,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                 {
                     var name = member.Name.Identifier.ValueText;
 
-                    return name is "Serialize" or "Deserialize";
+                    return name is "Serialize" or "Deserialize" or "Clone";
                 }
 
                 return false;
@@ -81,7 +84,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                 if (symbol.Arity != 1 || symbol.TypeArguments.Length != 1)
                     return null;
 
-                if (symbol.Name is not ("Serialize" or "Deserialize"))
+                if (symbol.Name is not ("Serialize" or "Deserialize" or "Clone"))
                     return null;
 
                 var location = ctx.SemanticModel
@@ -94,20 +97,42 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                     return null;
 
                 var modelType = model.ToDisplayString(
-                    SymbolDisplayFormat.FullyQualifiedFormat);
+                    NullableFormat);
 
-                // Obtener el nombre de la clase auxiliar utilizando
-                // los mismos métodos que utiliza el generador.
-                var helperClassName = symbol.Name == "Serialize"
-                    ? model.GetSerializerClassName()
-                    : model.GetDeserializerClassName();
+                // Obtener los nombres de las clases auxiliares.
+                var serializerClassName = model.GetSerializerClassName();
+                var deserializerClassName = model.GetDeserializerClassName();
 
-                // Construir el nombre completamente cualificado.
-                var ns = model.ContainingNamespace;
+                // Construir los nombres completamente cualificados.
+                var serializerType = GetQualifiedHelperTypeName(
+                    model,
+                    serializerClassName);
 
-                var helperType = ns.IsGlobalNamespace
-                    ? $"global::{helperClassName}"
-                    : $"global::{ns.ToDisplayString()}.{helperClassName}";
+                var deserializerType = GetQualifiedHelperTypeName(
+                    model,
+                    deserializerClassName);
+
+                string helperType;
+                string? secondHelperType = null;
+
+                switch (symbol.Name)
+                {
+                    case "Serialize":
+                        helperType = serializerType;
+                        break;
+
+                    case "Deserialize":
+                        helperType = deserializerType;
+                        break;
+
+                    case "Clone":
+                        helperType = serializerType;
+                        secondHelperType = deserializerType;
+                        break;
+
+                    default:
+                        return null;
+                }
 
                 var parameters = string.Join(
                     ", ",
@@ -117,7 +142,8 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                     ", ",
                     symbol.Parameters.Select(GetArgument));
 
-                var returnType = symbol.ReturnType.ToDisplayString(NullableFormat);
+                var returnType = symbol.ReturnType.ToDisplayString(
+                    NullableFormat);
 
                 return new InterceptInfo(
                     location.Version,
@@ -125,6 +151,7 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                     symbol.Name,
                     modelType,
                     helperType,
+                    secondHelperType,
                     returnType,
                     parameters,
                     arguments,
@@ -160,8 +187,11 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                     item.LocationData,
                     quote: true);
 
-                var genericArguments =
-                    $"{item.ModelType}, {item.HelperType}";
+                // Serialize y Deserialize utilizan dos argumentos genéricos.
+                // Clone utiliza tres.
+                var genericArguments = item.SecondHelperType is null
+                    ? $"{item.ModelType}, {item.HelperType}"
+                    : $"{item.ModelType}, {item.HelperType}, {item.SecondHelperType}";
 
                 source.AppendLine(
                     $"        [global::System.Runtime.CompilerServices.InterceptsLocation({item.Version}, {locationData})]");
@@ -199,6 +229,17 @@ public sealed class SerializerInterceptorGenerator : IIncrementalGenerator
                 "SerializePackerInterceptors.g.cs",
                 source.ToString());
         });
+    }
+
+    private static string GetQualifiedHelperTypeName(
+        INamedTypeSymbol model,
+        string helperClassName)
+    {
+        var ns = model.ContainingNamespace;
+
+        return ns.IsGlobalNamespace
+            ? $"global::{helperClassName}"
+            : $"global::{ns.ToDisplayString()}.{helperClassName}";
     }
 
     private static string GetParameterDeclaration(

@@ -123,4 +123,20 @@ public class SimplePackGeneratorUnitTest
         copyModel.String1.ShouldBe(model.String1);
         copyModel.String2.ShouldBe(model.String2);
     }
+
+    [Fact]
+    public void CloneDataTest()
+    {
+        var model = new SimpleModel()
+        {
+            String1 = "String1",
+            String2 = "String2",
+        };
+
+        var copyModel = SerializePacker.Clone(model);
+
+        copyModel.ShouldNotBeNull();
+        copyModel.String1.ShouldBe(model.String1);
+        copyModel.String2.ShouldBe(model.String2);
+    }
 }

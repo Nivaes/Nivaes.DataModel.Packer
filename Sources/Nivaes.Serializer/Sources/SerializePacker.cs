@@ -4,12 +4,12 @@ namespace Nivaes.Serializer;
 
 public static partial class SerializePacker
 {
-    public static ReadOnlySpan<byte> Serialize<T>(in T model)
+    public static ReadOnlySpan<byte> Serialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(in T model)
     {
         throw new NotSupportedException("This method should be intercepted.");
     }
 
-    public static ReadOnlySpan<byte> Serialize<T, TSerializer>(in T value)
+    public static ReadOnlySpan<byte> Serialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TSerializer>(in T value)
         where TSerializer : ISerializer<T>, new()
     {
         if (value == null)
@@ -36,5 +36,18 @@ public static partial class SerializePacker
         recursiveReader.DeserializeCircular();
 
         return value;
+    }
+
+    public static T? Clone<T>(in T value)
+    {
+        throw new NotSupportedException("This method should be intercepted.");
+    }
+
+    public static T? Clone<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T, TSerializer, TDeserializer>(in T value)
+        where TSerializer : ISerializer<T>, new()
+        where TDeserializer : IDeserializer<T>, new()   
+    {
+        var buffer = Serialize<T, TSerializer>(in value);
+        return Deserialize<T, TDeserializer>(buffer);
     }
 }
