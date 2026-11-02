@@ -1,24 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net10.0</TargetFrameworks>
-    <OutputType>Exe</OutputType>
+	<PropertyGroup>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<OutputType>Exe</OutputType>
 
-	  <IsPackable>false</IsPackable>
+		<IsPackable>false</IsPackable>
 
-	  <PublishAot>true</PublishAot>
-	  <IsBenchmarksProject />
+		<PublishAot>true</PublishAot>
+		<IsBenchmarksProject />
 
-	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-  </PropertyGroup>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" />
-    <PackageReference Include="MemoryPack" />
-    <PackageReference Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BenchmarkDotNet" />
+		<PackageReference Include="MemoryPack" />
+		<PackageReference Include="Microsoft.VisualStudio.DiagnosticsHub.BenchmarkDotNetDiagnosers" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Sources\Nivaes.Serializer\Nivaes.Serializer.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<InterceptorsNamespaces>$(InterceptorsNamespaces);Nivaes.Serializer.SourceGenerator</InterceptorsNamespaces>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Sources\Nivaes.Serializer.SourceGenerator\Nivaes.Serializer.SourceGenerator.csproj">
+			<PrivateAssets>all</PrivateAssets>
+			<OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<ExcludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</ExcludeAssets>
+		</ProjectReference>
+
+		<ProjectReference Include="..\..\Sources\Nivaes.Serializer\Nivaes.Serializer.csproj" />
+	</ItemGroup>
 </Project>
