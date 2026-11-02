@@ -24,6 +24,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Include="Images\icon.png" Pack="true" PackagePath="\" />
+		<None Include="Docs\Readme.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Nivaes.Serializer.SourceGenerator\Nivaes.Serializer.SourceGenerator.csproj">
 			<OutputItemType>Analyzer</OutputItemType>
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
