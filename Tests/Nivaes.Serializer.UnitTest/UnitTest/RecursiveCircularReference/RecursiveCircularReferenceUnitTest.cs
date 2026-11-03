@@ -38,8 +38,8 @@ public class RecursiveCircularReferenceUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelTestDeserializer>(ReferenceReference1!);
-            var reference2 = reader.Read<ReferenceModel, ReferenceModel, ReferenceModelTestDeserializer>(ReferenceReference2!);
+            var reference1 = reader.ReadReference<ReferenceModel, ReferenceModel, ReferenceModelTestDeserializer>(ReferenceReference1!);
+            var reference2 = reader.ReadReference<ReferenceModel, ReferenceModel, ReferenceModelTestDeserializer>(ReferenceReference2!);
 
             _value = new ReferenceModel
             {

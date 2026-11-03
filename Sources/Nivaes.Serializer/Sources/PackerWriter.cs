@@ -299,7 +299,9 @@ public ref partial struct PackerWriter
 
         _position += value.Length;
     }
+    #endregion
 
+    #region Reference writers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write<T, TSerializer>(in T? value)
         where TSerializer : ISerializer<T>, new()
@@ -314,9 +316,43 @@ public ref partial struct PackerWriter
 
         Write(id);
     }
-    #endregion
 
-    #region Colection writers
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Write<T, TSerializer>(IEnumerable<T>? value)
+         where TSerializer : ISerializer<T>, new()
+    {
+        //if (value is null)
+        //{
+        //    Write(-1);
+        //    return;
+        //}
 
+        //Write(value.Length);
+
+        //Ensure(value.Length);
+
+        //value.AsSpan().CopyTo(_span[_position..]);
+
+        //_position += value.Length;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Write<T, TSerializer>(T[]? value)
+         where TSerializer : ISerializer<T>, new()
+    {
+        //if (value is null)
+        //{
+        //    Write(-1);
+        //    return;
+        //}
+
+        //Write(value.Length);
+
+        //Ensure(value.Length);
+
+        //value.AsSpan().CopyTo(_span[_position..]);
+
+        //_position += value.Length;
+    }
     #endregion
 }

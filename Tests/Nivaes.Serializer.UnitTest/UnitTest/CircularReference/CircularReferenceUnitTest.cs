@@ -38,8 +38,8 @@ public class CircularReferenceUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference1 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializerTest>(ReferenceReference1!);
-            var reference2 = reader.Read<RootModel, ReferenceModel, ReferenceModelDeserializerTest>(ReferenceReference2!);
+            var reference1 = reader.ReadReference<RootModel, ReferenceModel, ReferenceModelDeserializerTest>(ReferenceReference1!);
+            var reference2 = reader.ReadReference<RootModel, ReferenceModel, ReferenceModelDeserializerTest>(ReferenceReference2!);
 
             _value = new RootModel
             {
@@ -93,7 +93,7 @@ public class CircularReferenceUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var rootReference = reader.Read<ReferenceModel, RootModel, RootModelTestDeserializer>(ReferenceReference1!);
+            var rootReference = reader.ReadReference<ReferenceModel, RootModel, RootModelTestDeserializer>(ReferenceReference1!);
 
             _value = new ReferenceModel
             {

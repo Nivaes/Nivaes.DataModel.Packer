@@ -250,7 +250,7 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             var referenceType = GetTypeName(type);
             var deserializerName = GetDeserializerName(type);
 
-            return $"reader.Read<{rootType}, {referenceType}, {deserializerName}>(Reference{property.Name}!)";
+            return $"reader.ReadReference<{rootType}, {referenceType}, {deserializerName}>(Reference{property.Name}!)";
         }
 
         if (type.TypeKind == TypeKind.Enum)

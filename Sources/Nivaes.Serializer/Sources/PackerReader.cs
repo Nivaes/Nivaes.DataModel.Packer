@@ -196,9 +196,11 @@ public ref struct PackerReader
 
         return ReadSpan(length);
     }
+    #endregion
 
+    #region Reference readers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TReference? Read<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
+    public TReference? ReadReference<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
         where TSerializer : IDeserializer<TReference>, new()
     {
         int idObject = ReadInt32();
@@ -207,6 +209,33 @@ public ref struct PackerReader
             return default(TReference);
 
         return _recursiveReader.Read<TReference, TSerializer>(idObject, deserialiceReference);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public TReference[]? ReadArray<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
+        where TSerializer : IDeserializer<TReference>, new()
+    {
+        //int idObject = ReadInt32();
+
+        //if (idObject == -1)
+        //    return default(TReference);
+
+        //return _recursiveReader.Read<TReference, TSerializer>(idObject, deserialiceReference);
+
+        return null;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IEnumerable<TReference>? ReadEnumerable<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
+        where TSerializer : IDeserializer<TReference>, new()
+    {
+        //int idObject = ReadInt32();
+
+        //if (idObject == -1)
+        //    return default(TReference);
+
+        //return _recursiveReader.Read<TReference, TSerializer>(idObject, deserialiceReference);
+        return null;
     }
     #endregion
 }

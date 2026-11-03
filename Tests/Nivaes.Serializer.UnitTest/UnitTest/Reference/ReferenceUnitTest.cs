@@ -32,7 +32,7 @@ public class ReferenceUnitTest
         {
             var string1 = reader.ReadString();
             var string2 = reader.ReadString();
-            var reference = reader.Read<RootModel, ReferenceModel, ReferenceModelTestDeserializer>()!;
+            var reference = reader.ReadReference<RootModel, ReferenceModel, ReferenceModelTestDeserializer>()!;
 
             var value = new RootModel
             {
