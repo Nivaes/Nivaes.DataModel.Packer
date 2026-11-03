@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Running;
 using Nivaes.Serializer.Benchmark.SimplePack;
 
 namespace Nivaes.Serializer.Benchmark;
