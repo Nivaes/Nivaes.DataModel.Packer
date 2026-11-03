@@ -1,4 +1,5 @@
 ﻿using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 
 namespace Nivaes.Serializer;
 
@@ -33,6 +34,7 @@ internal ref struct RecursiveReader
         _referenceReaders = new List<ReferenceReader>(_initPositions.Length);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int[] GetOffsets(ReadOnlySpan<byte> buffer)
     {
         var result = new int[buffer.Length / 4];
@@ -56,6 +58,7 @@ internal ref struct RecursiveReader
         return result[..count];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private TReference? ReadItem<TReference, TReferenceDeserializer>(int idObject, TReferenceDeserializer deserializer)
        where TReferenceDeserializer : IDeserializer<TReference>, new()
     {
@@ -71,6 +74,7 @@ internal ref struct RecursiveReader
         return (TReference?)_references[idObject].Item;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TReference? Read<TReference, TReferenceDeserializer>(int idObject, Action<object>? deserialiceReference)
         where TReferenceDeserializer : IDeserializer<TReference>, new()
     {
@@ -91,6 +95,7 @@ internal ref struct RecursiveReader
         return value;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DeserializeCircular()
     {
         foreach (var reference in _referenceReaders)

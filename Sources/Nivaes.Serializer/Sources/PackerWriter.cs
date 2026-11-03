@@ -1,4 +1,5 @@
 ﻿using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace Nivaes.Serializer;
 
 public ref partial struct PackerWriter
 {
-    private const int InitialCapacity = 1024;
+    private const int InitialCapacity = 2048;
     private byte[] _buffer;
     private Span<byte> _span;
     private int _position;
@@ -42,16 +43,19 @@ public ref partial struct PackerWriter
         _entries = new Entry[EntriesCapacity];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly byte[] ToArray()
     {
         return _span[.._position].ToArray();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly Span<byte> ToSpan()
     {
         return _span[.._position];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Ensure(int size)
     {
         if ((uint)(_position + size) <= (uint)_span.Length)
@@ -60,6 +64,7 @@ public ref partial struct PackerWriter
         Grow(size);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Grow(int size)
     {
         int required = _position + size;
@@ -77,11 +82,13 @@ public ref partial struct PackerWriter
         _span = newBuffer;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void ReserveSizeInt32()
     {
         _position += 4;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void WriteSize()
     {
         var size = _position - _firstPosition;
@@ -93,6 +100,7 @@ public ref partial struct PackerWriter
     }
 
     #region Writers
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(byte value)
     {
         Ensure(1);

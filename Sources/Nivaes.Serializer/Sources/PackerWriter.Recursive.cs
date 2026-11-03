@@ -4,6 +4,7 @@ namespace Nivaes.Serializer;
 
 public ref partial struct PackerWriter
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int Add<T>(T item, in ISerializer<T> serializer)
     {
         var hash = RuntimeHelpers.GetHashCode(item);
@@ -29,6 +30,7 @@ public ref partial struct PackerWriter
         return index;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Exist(int hash, out int index)
     {
         for (int i = 0; i < _count; i++)
@@ -43,6 +45,7 @@ public ref partial struct PackerWriter
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Grow()
     {
         int newSize = _entries.Length == 0
@@ -52,11 +55,13 @@ public ref partial struct PackerWriter
         Array.Resize(ref _entries, newSize);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Serialize<T>(scoped in object item, scoped in object serializer, ref PackerWriter writer)
     {
         ((ISerializer<T>)serializer).Serialize((T)item, ref writer);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> WriteRoot<T>(in T? value, scoped in ISerializer<T> serializer)
     {
         _ = Add<T>(value!, serializer);
@@ -66,6 +71,7 @@ public ref partial struct PackerWriter
         return ToSpan();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SerializePending()
     {
         while (_serializeCount < _count)
