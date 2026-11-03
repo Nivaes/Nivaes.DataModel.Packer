@@ -1,4 +1,5 @@
 ﻿using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -20,6 +21,7 @@ public ref struct PackerReader
     }
 
     #region Reads
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ReadOnlySpan<byte> ReadSpan(int size)
     {
         if ((uint)(_position + size) > (uint)_spanBuffer.Length)
@@ -33,16 +35,19 @@ public ref struct PackerReader
         return result;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte ReadByte()
     {
         return ReadSpan(1)[0];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool ReadBoolean()
     {
         return ReadByte() != 0;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public short ReadInt16()
     {
         var span = ReadSpan(2);
@@ -50,6 +55,7 @@ public ref struct PackerReader
         return BinaryPrimitives.ReadInt16LittleEndian(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ushort ReadUInt16()
     {
         var span = ReadSpan(2);
@@ -57,6 +63,7 @@ public ref struct PackerReader
         return BinaryPrimitives.ReadUInt16LittleEndian(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int ReadInt32()
     {
         var span = ReadSpan(4);
@@ -64,6 +71,7 @@ public ref struct PackerReader
         return BinaryPrimitives.ReadInt32LittleEndian(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public uint ReadUInt32()
     {
         var span = ReadSpan(4);
@@ -71,6 +79,7 @@ public ref struct PackerReader
         return BinaryPrimitives.ReadUInt32LittleEndian(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public long ReadInt64()
     {
         var span = ReadSpan(8);
@@ -78,6 +87,7 @@ public ref struct PackerReader
         return BinaryPrimitives.ReadInt64LittleEndian(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong ReadUInt64()
     {
         var span = ReadSpan(8);
@@ -85,16 +95,19 @@ public ref struct PackerReader
         return BinaryPrimitives.ReadUInt64LittleEndian(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float ReadSingle()
     {
         return BitConverter.Int32BitsToSingle(ReadInt32());
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public double ReadDouble()
     {
         return BitConverter.Int64BitsToDouble(ReadInt64());
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public decimal ReadDecimal()
     {
         Span<int> bits = stackalloc int[4];
@@ -108,6 +121,7 @@ public ref struct PackerReader
         return new decimal(bits);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Guid ReadGuid()
     {
         var span = ReadSpan(16);
@@ -115,6 +129,7 @@ public ref struct PackerReader
         return new Guid(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public DateTime ReadDateTime()
     {
         long ticks = ReadInt64();
@@ -123,6 +138,7 @@ public ref struct PackerReader
         return new DateTime(ticks, kind);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public DateTimeOffset ReadDateTimeOffset()
     {
         long ticks = ReadInt64();
@@ -133,6 +149,7 @@ public ref struct PackerReader
             TimeSpan.FromMinutes(offsetMinutes));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ReadString()
     {
         int byteCount = ReadInt32();
@@ -147,6 +164,7 @@ public ref struct PackerReader
         return Encoding.UTF8.GetString(span);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[]? ReadBytes()
     {
         int length = ReadInt32();
@@ -161,6 +179,7 @@ public ref struct PackerReader
         return result;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> ReadBytesSpan()
     {
         int length = ReadInt32();
@@ -171,6 +190,7 @@ public ref struct PackerReader
         return ReadSpan(length);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TReference? Read<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
         where TSerializer : IDeserializer<TReference>, new()
     {

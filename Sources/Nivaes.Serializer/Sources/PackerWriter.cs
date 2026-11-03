@@ -108,11 +108,13 @@ public ref partial struct PackerWriter
         _span[_position++] = value;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(bool value)
     {
         Write(value ? (byte)1 : (byte)0);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(short value)
     {
         Ensure(2);
@@ -124,6 +126,7 @@ public ref partial struct PackerWriter
         _position += 2;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(ushort value)
     {
         Ensure(2);
@@ -135,6 +138,7 @@ public ref partial struct PackerWriter
         _position += 2;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(int value)
     {
         Ensure(4);
@@ -146,6 +150,7 @@ public ref partial struct PackerWriter
         _position += 4;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(uint value)
     {
         Ensure(4);
@@ -157,6 +162,7 @@ public ref partial struct PackerWriter
         _position += 4;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(long value)
     {
         Ensure(8);
@@ -168,6 +174,7 @@ public ref partial struct PackerWriter
         _position += 8;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(ulong value)
     {
         Ensure(8);
@@ -179,16 +186,19 @@ public ref partial struct PackerWriter
         _position += 8;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(float value)
     {
         Write(BitConverter.SingleToInt32Bits(value));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(double value)
     {
         Write(BitConverter.DoubleToInt64Bits(value));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(decimal value)
     {
         Ensure(16);
@@ -203,6 +213,7 @@ public ref partial struct PackerWriter
         _position += 16;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(Guid value)
     {
         Ensure(16);
@@ -212,18 +223,21 @@ public ref partial struct PackerWriter
         _position += 16;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(DateTime value)
     {
         Write(value.Ticks);
         Write((byte)value.Kind);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(DateTimeOffset value)
     {
         Write(value.Ticks);
         Write((short)value.Offset.TotalMinutes);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(string? value)
     {
         if (value is null)
@@ -250,6 +264,7 @@ public ref partial struct PackerWriter
         _position += written;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(byte[]? value)
     {
         if (value is null)
@@ -267,6 +282,7 @@ public ref partial struct PackerWriter
         _position += value.Length;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(ReadOnlySpan<byte> value)
     {
         Write(value.Length);
@@ -278,6 +294,7 @@ public ref partial struct PackerWriter
         _position += value.Length;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write<T, TSerializer>(in T? value)
         where TSerializer : ISerializer<T>, new()
     {
