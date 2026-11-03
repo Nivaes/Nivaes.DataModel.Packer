@@ -14,6 +14,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<IsPackable>true</IsPackable>
 		<PackageId>Nivaes.Serializer</PackageId>
 		<Title>Nivaes Serializer</Title>
 
@@ -37,6 +38,15 @@
 			<ExcludeAssets>runtime; build; native; contentfiles; buildtransitive</ExcludeAssets>
 		</ProjectReference>
 	</ItemGroup>
+
+	<Target Name="IncludeSourceGenerator" BeforeTargets="_GetPackageFiles">
+		<ItemGroup>
+			<None Include="$(MSBuildThisFileDirectory)..\Nivaes.Serializer.SourceGenerator\bin\$(Configuration)\netstandard2.0\Nivaes.Serializer.SourceGenerator.dll"
+				  Pack="true"
+				  PackagePath="analyzers/dotnet/cs/"
+				  Visible="false" />
+		</ItemGroup>
+	</Target>
 
 	<ItemGroup>
 		<PackageReference Update="SonarAnalyzer.CSharp">

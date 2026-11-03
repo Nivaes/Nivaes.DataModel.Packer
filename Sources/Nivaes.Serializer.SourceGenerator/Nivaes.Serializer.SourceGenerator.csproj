@@ -13,9 +13,11 @@
 
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+
+		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
-	<PropertyGroup>
+	<!--<PropertyGroup>
 		<PackageId>Nivaes.Serializer.SourceGenerator</PackageId>
 		<Title>Nivaes Serializer SourceGenerator</Title>
 		<Product>Nivaes Serializer SourceGenerator</Product>
@@ -24,7 +26,7 @@
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<DevelopmentDependency>true</DevelopmentDependency>
 		<PackageReadmeFile>Readme.md</PackageReadmeFile>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<ItemGroup>
 		<None Include="Images\icon.png" Pack="true" PackagePath="\" />
