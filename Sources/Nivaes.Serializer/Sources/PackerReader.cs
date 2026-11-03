@@ -107,6 +107,13 @@ public ref struct PackerReader
         return BitConverter.Int64BitsToDouble(ReadInt64());
     }
 
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Half ReadHalf()
+    {
+        return BitConverter.UInt16BitsToHalf(ReadUInt16());
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public decimal ReadDecimal()
     {

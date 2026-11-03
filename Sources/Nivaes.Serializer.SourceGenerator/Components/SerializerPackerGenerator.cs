@@ -277,6 +277,9 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             return "ReadBytes";
         }
 
+        if (type.ToDisplayString() == "System.Half")
+            return "ReadHalf";
+
         if (type.ToDisplayString() == "System.DateTime")
             return "ReadDateTime";
 
@@ -330,6 +333,7 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
         var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         if (typeName is
             "global::System.Guid" or
+            "global::System.Half" or
             "global::System.DateTime" or
             "global::System.DateTimeOffset")
             return true;

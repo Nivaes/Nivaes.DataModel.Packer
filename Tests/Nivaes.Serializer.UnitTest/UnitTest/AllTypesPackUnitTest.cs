@@ -10,11 +10,10 @@ public class AllTypesPackUnitTest
 
     }
 
-    [SerializePacker]
     public class AllTypesModel
     {
         public required Guid Guid { get; set; }
-
+      
         public required byte Byte1 { get; set; }
         public required byte Byte2 { get; set; }
         public required bool Bool1 { get; set; }
@@ -45,6 +44,9 @@ public class AllTypesPackUnitTest
 
         public required double Double1 { get; set; }
         public required double Double2 { get; set; }
+
+        public required Half Half1 { get; set; }
+        public required Half Half2 { get; set; }
 
         public required decimal Decimal1 { get; set; }
         public required decimal Decimal2 { get; set; }
@@ -96,6 +98,9 @@ public class AllTypesPackUnitTest
             writer.Write(item.Double1);
             writer.Write(item.Double2);
 
+            writer.Write(item.Half1);
+            writer.Write(item.Half2);
+
             writer.Write(item.DateTime1);
             writer.Write(item.DateTime2);
 
@@ -146,6 +151,9 @@ public class AllTypesPackUnitTest
 
                 Double1 = reader.ReadDouble(),
                 Double2 = reader.ReadDouble(),
+
+                Half1 = reader.ReadHalf(),
+                Half2 = reader.ReadHalf(),
 
                 DateTime1 = reader.ReadDateTime(),
                 DateTime2 = reader.ReadDateTime(),
@@ -200,6 +208,9 @@ public class AllTypesPackUnitTest
             Double1 = 29332.3993949323D,
             Double2 = -23922.3939299294D,
 
+            Half1 = (Half)9323.4333292F,
+            Half2 = (Half) (-322.394593393F),
+
             DateTime1 = DateTime.Now,
             DateTime2 = DateTime.Now.AddSeconds(-2939844),
 
@@ -253,6 +264,9 @@ public class AllTypesPackUnitTest
         copyModel.Double1.ShouldBe(model.Double1);
         copyModel.Double2.ShouldBe(model.Double2);
 
+        copyModel.Half1.ShouldBe(model.Half1);
+        copyModel.Half2.ShouldBe(model.Half2);
+
         copyModel.DateTime1.ShouldBe(model.DateTime1);
         copyModel.DateTime2.ShouldBe(model.DateTime2);
 
@@ -301,6 +315,9 @@ public class AllTypesPackUnitTest
 
             Double1 = double.MinValue,
             Double2 = double.MaxValue,
+
+            Half1 = Half.MaxValue,
+            Half2 = Half.MinValue,
 
             DateTime1 = DateTime.MinValue,
             DateTime2 = DateTime.MaxValue,
@@ -351,6 +368,9 @@ public class AllTypesPackUnitTest
 
         copyModel.Decimal1.ShouldBe(model.Decimal1);
         copyModel.Decimal2.ShouldBe(model.Decimal2);
+
+        copyModel.Half1.ShouldBe(model.Half1);
+        copyModel.Half2.ShouldBe(model.Half2);
 
         copyModel.Double1.ShouldBe(model.Double1);
         copyModel.Double2.ShouldBe(model.Double2);
@@ -405,6 +425,9 @@ public class AllTypesPackUnitTest
 
         copyModel.Double1.ShouldBe(model.Double1);
         copyModel.Double2.ShouldBe(model.Double2);
+
+        copyModel.Half1.ShouldBe(model.Half1);
+        copyModel.Half2.ShouldBe(model.Half2);
 
         copyModel.DateTime1.ShouldBe(model.DateTime1);
         copyModel.DateTime2.ShouldBe(model.DateTime2);

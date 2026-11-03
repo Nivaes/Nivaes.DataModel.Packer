@@ -214,6 +214,12 @@ public ref partial struct PackerWriter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Write(Half value)
+    {
+        Write(BitConverter.HalfToUInt16Bits(value));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(Guid value)
     {
         Ensure(16);
@@ -308,5 +314,9 @@ public ref partial struct PackerWriter
 
         Write(id);
     }
+    #endregion
+
+    #region Colection writers
+
     #endregion
 }
