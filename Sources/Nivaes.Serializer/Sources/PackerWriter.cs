@@ -306,20 +306,7 @@ public ref partial struct PackerWriter
         memory.Span.CopyTo(_span[_position..]);
 
         _position += memory.Length;
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Write(ReadOnlySpan<byte> value)
-    {
-        Write(value.Length);
-
-        Ensure(value.Length);
-
-        value.CopyTo(_span[_position..]);
-
-        _position += value.Length;
-    }
+    }    
     #endregion
 
     #region Reference writers
