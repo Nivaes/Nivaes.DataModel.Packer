@@ -1,4 +1,6 @@
-﻿namespace Nivaes.Serializer.UnitTest;
+﻿using System.Security.Cryptography;
+
+namespace Nivaes.Serializer.UnitTest;
 
 public class AllTypesPackGeneratorUnitTest
 {
@@ -22,6 +24,9 @@ public class AllTypesPackGeneratorUnitTest
 
         public required byte[] Bytes1 { get; set; }
         public required byte[] Bytes2 { get; set; }
+
+        public required Memory<byte> MemoryByte1 { get; set; }
+        public required Memory<byte> MemoryByte2 { get; set; }
 
         public required short Short1 { get; set; }
         public required short Short2 { get; set; }
@@ -51,6 +56,7 @@ public class AllTypesPackGeneratorUnitTest
 
         public required decimal Decimal1 { get; set; }
         public required decimal Decimal2 { get; set; }
+      
 
         public required DateTime DateTime1 { get; set; }
         public required DateTime DateTime2 { get; set; }
@@ -71,6 +77,9 @@ public class AllTypesPackGeneratorUnitTest
 
             Bytes1 = [223, 232, 12, 32, 33, 01, 22, 36, 93],
             Bytes2 = [032, 9, 43, 241, 23, 53, 55],
+
+            MemoryByte1 = new Memory<byte>([23, 11,022, 32, 190, 241, 42]),
+            MemoryByte2 = new Memory<byte>([55, 93, 201, 192, 193, 233]),
 
             Bool1 = true,
             Bool2 = false,
@@ -128,6 +137,9 @@ public class AllTypesPackGeneratorUnitTest
         copyModel.Bytes1.ShouldBe(model.Bytes1);
         copyModel.Bytes2.ShouldBe(model.Bytes2);
 
+        copyModel.MemoryByte1.ShouldBe(model.MemoryByte1);
+        copyModel.MemoryByte2.ShouldBe(model.MemoryByte2);
+
         copyModel.Bool1.ShouldBe(model.Bool1);
         copyModel.Bool2.ShouldBe(model.Bool2);
 
@@ -177,8 +189,11 @@ public class AllTypesPackGeneratorUnitTest
             Byte1 = Byte.MinValue,
             Byte2 = Byte.MaxValue,
 
-            Bytes1 = [32, 23, 32, 63, 3, 126, 122],
-            Bytes2 = [3, 2, 56, 33, 22, 52, 0, 255, 0, 255],
+            Bytes1 = RandomNumberGenerator.GetBytes(100),
+            Bytes2 = RandomNumberGenerator.GetBytes(100),
+
+            MemoryByte1 = new Memory<byte>(RandomNumberGenerator.GetBytes(100)),
+            MemoryByte2 = new Memory<byte>(RandomNumberGenerator.GetBytes(100)),
 
             Bool1 = false,
             Bool2 = true,
@@ -236,6 +251,9 @@ public class AllTypesPackGeneratorUnitTest
         copyModel.Bytes1.ShouldBe(model.Bytes1);
         copyModel.Bytes2.ShouldBe(model.Bytes2);
 
+        copyModel.MemoryByte1.ShouldBe(model.MemoryByte1);
+        copyModel.MemoryByte2.ShouldBe(model.MemoryByte2);
+
         copyModel.Bool1.ShouldBe(model.Bool1);
         copyModel.Bool2.ShouldBe(model.Bool2);
 
@@ -289,6 +307,9 @@ public class AllTypesPackGeneratorUnitTest
 
         copyModel.Bytes1.ShouldBe(model.Bytes1);
         copyModel.Bytes2.ShouldBe(model.Bytes2);
+
+        copyModel.MemoryByte1.ShouldBe(model.MemoryByte1);
+        copyModel.MemoryByte2.ShouldBe(model.MemoryByte2);
 
         copyModel.Bool1.ShouldBe(model.Bool1);
         copyModel.Bool2.ShouldBe(model.Bool2);

@@ -27,7 +27,6 @@ public class CreateSerialize
 
         var compilation = CreateCompilation(syntaxTree);
 
-        // Act
         IIncrementalGenerator generator = new SerializerPackerGenerator();
 
         GeneratorDriver driver = CSharpGeneratorDriver.Create(
@@ -64,51 +63,64 @@ public class CreateSerialize
                 Console.WriteLine(generated.SourceText.ToString());
             }
         }
+    }
 
-        //var syntaxTree = CSharpSyntaxTree.ParseText(
-        //    source,
-        //    new CSharpParseOptions(LanguageVersion.Preview));
+    [Fact]
+    public async Task CreateMemoryTypeTest()
+    {
+        string source = @"
+        using System;
+        using Nivaes.Serializer;
 
-        //var compilation = CreateCompilation(syntaxTree);
+        [SerializePacker]
+        public class SimpleModel 
+        {
+            public required Memory<byte> Memory { get; set; }
+        }
+        ";
 
-        //// Act
-        //IIncrementalGenerator generator = new SerializePackerGenerator();
+        var syntaxTree = CSharpSyntaxTree.ParseText(
+            source,
+            new CSharpParseOptions(LanguageVersion.CSharp14));
 
-        //GeneratorDriver driver = CSharpGeneratorDriver.Create(
-        //    generator.AsSourceGenerator());
+        var compilation = CreateCompilation(syntaxTree);
 
-        //driver = driver.RunGeneratorsAndUpdateCompilation(
-        //    compilation,
-        //    out var outputCompilation,
-        //    out var diagnostics);
+        IIncrementalGenerator generator = new SerializerPackerGenerator();
 
-        //// Assert
-        //var runResult = driver.GetRunResult();
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+            generator.AsSourceGenerator());
 
-        //Assert.Empty(runResult.Diagnostics);
+        driver = driver.RunGeneratorsAndUpdateCompilation(
+            compilation,
+            out var outputCompilation,
+            out var diagnostics);
 
-        //Assert.NotEmpty(runResult.Results);
+        // Assert
+        var runResult = driver.GetRunResult();
 
-        //var generatedSources = runResult.Results
-        //    .SelectMany(x => x.GeneratedSources)
-        //    .ToArray();
+        Assert.Empty(runResult.Diagnostics);
 
-        //Assert.Equal(2, generatedSources.Length);
+        Assert.NotEmpty(runResult.Results);
 
-        //Assert.Contains(
-        //    generatedSources,
-        //    x => x.HintName.Contains("RootModelSerializer"));
+        var generatedSources = runResult.Results
+            .SelectMany(x => x.GeneratedSources)
+            .ToArray();
 
-        //Assert.Contains(
-        //    generatedSources,
-        //    x => x.HintName.Contains("RootModelDeserializer"));
+        // Comprobar que el código generado compila.
+        var errors = outputCompilation.GetDiagnostics()
+            .Where(x => x.Severity == DiagnosticSeverity.Error)
+            .ToArray();
 
-        //// Comprobar que el código generado compila.
-        //var errors = outputCompilation.GetDiagnostics()
-        //    .Where(x => x.Severity == DiagnosticSeverity.Error)
-        //    .ToArray();
+        errors.ShouldBeEmpty();
 
-        //Assert.Empty(errors);
+        foreach (var result in runResult.Results)
+        {
+            foreach (var generated in result.GeneratedSources)
+            {
+                Console.WriteLine($"===== {generated.HintName} =====");
+                Console.WriteLine(generated.SourceText.ToString());
+            }
+        }
     }
 
     private static CSharpCompilation CreateCompilation(

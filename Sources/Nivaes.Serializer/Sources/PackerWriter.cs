@@ -289,6 +289,27 @@ public ref partial struct PackerWriter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Write(Memory<byte>? value)
+    {
+        if (value is null)
+        {
+            Write(-1);
+            return;
+        }
+
+        var memory = value.Value;
+
+        Write(memory.Length);
+
+        Ensure(memory.Length);
+
+        memory.Span.CopyTo(_span[_position..]);
+
+        _position += memory.Length;
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write(ReadOnlySpan<byte> value)
     {
         Write(value.Length);

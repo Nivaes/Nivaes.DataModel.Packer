@@ -187,14 +187,18 @@ public ref struct PackerReader
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ReadOnlySpan<byte> ReadBytesSpan()
+    public Memory<byte> ReadMemory()
     {
         int length = ReadInt32();
 
         if (length < 0)
-            return ReadOnlySpan<byte>.Empty;
+            return null;
 
-        return ReadSpan(length);
+        var result = GC.AllocateUninitializedArray<byte>(length);
+
+        ReadSpan(length).CopyTo(result);
+
+        return result.AsMemory();
     }
     #endregion
 

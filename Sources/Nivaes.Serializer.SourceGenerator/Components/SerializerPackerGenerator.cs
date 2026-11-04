@@ -277,13 +277,18 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             return "ReadBytes";
         }
 
-        if (type.ToDisplayString() == "System.Half")
+        var displayType = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        if (displayType == "global::System.Memory<byte>")
+            return "ReadMemory";
+
+        if (displayType == "global::System.Half")
             return "ReadHalf";
 
-        if (type.ToDisplayString() == "System.DateTime")
+        if (displayType == "global::System.DateTime")
             return "ReadDateTime";
 
-        if (type.ToDisplayString() == "System.DateTimeOffset")
+        if (displayType == "global::System.DateTimeOffset")
             return "ReadDateTimeOffset";
 
         return type.SpecialType switch
@@ -334,6 +339,7 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
         if (typeName is
             "global::System.Guid" or
             "global::System.Half" or
+            "global::System.Memory<byte>" or
             "global::System.DateTime" or
             "global::System.DateTimeOffset")
             return true;
