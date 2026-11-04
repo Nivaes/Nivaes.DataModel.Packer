@@ -9,6 +9,10 @@
 		<PublishAot>true</PublishAot>
 		<IsBenchmarksProject />
 
+		<DebugType>embedded</DebugType>
+		<OptimizationPreference>Speed</OptimizationPreference>
+		<!--<IlcInstructionSet>x64</IlcInstructionSet>-->
+
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	</PropertyGroup>
 

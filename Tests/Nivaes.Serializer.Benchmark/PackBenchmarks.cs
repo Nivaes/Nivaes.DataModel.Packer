@@ -1,17 +1,18 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Diagnostics;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using MemoryPack;
 
 namespace Nivaes.Serializer.Benchmark.SimplePack;
 
-[MemoryDiagnoser]
+//[MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 //[SimpleJob(RunStrategy.Throughput)]
-[SimpleJob(launchCount: 1, warmupCount: 0, iterationCount: 1)]
+//[SimpleJob(launchCount: 1, warmupCount: 0, iterationCount: 1)]
 public class PackBenchmarks
 {
     //[Params(100, 1_000, 10_000, 100_000, 1_000_000)]
-    [Params(100, 1_000)]
+    [Params(100)]
     public int Length;
 
     private string _text1 = null!;
@@ -37,7 +38,7 @@ public class PackBenchmarks
 
         _packSerialize = PrepareNivaesSerialize();
         _memoryPackSerialize = PrepareMemoryPackSerialize();
-        
+
         _packReferenceSerialize = PrepareNivaesReferenceSerialize();
         _memoryPackReferenceSerialize = PrepareReferenceMemoryPackSerialize();
 
@@ -59,15 +60,17 @@ public class PackBenchmarks
     }
 
     [Benchmark]
-    public void NivaesSerialize()
+    public byte[]? NivaesSerialize()
     {
-        var model = PrepareNivaesSerialize();
+        //Debugger.Launch();
+
+        return PrepareNivaesSerialize();
     }
 
     [Benchmark]
-    public void NivaesDeserialize()
+    public SimpleNivaesSerializeModel? NivaesDeserialize()
     {
-        var copyModel = SerializePacker.Deserialize<SimpleNivaesSerializeModel>(_packSerialize);
+        return SerializePacker.Deserialize<SimpleNivaesSerializeModel>(_packSerialize);
     }
 
     private byte[] PrepareMemoryPackSerialize()
@@ -83,15 +86,15 @@ public class PackBenchmarks
     }
 
     [Benchmark]
-    public void MemoryPackSerialize()
+    public byte[]? MemoryPackSerialize()
     {
-        var model = PrepareMemoryPackSerialize();
+        return PrepareMemoryPackSerialize();
     }
 
     [Benchmark]
-    public void MemoryPackDeserialize()
+    public SimpleMemoryPackModel? MemoryPackDeserialize()
     {
-        var copyModel = MemoryPackSerializer.Deserialize<SimpleMemoryPackModel>(_memoryPackSerialize);
+        return MemoryPackSerializer.Deserialize<SimpleMemoryPackModel>(_memoryPackSerialize);
     }
     #endregion
 
@@ -114,15 +117,15 @@ public class PackBenchmarks
     }
 
     [Benchmark]
-    public void NivaesReferenceSerialize()
+    public byte[]? NivaesReferenceSerialize()
     {
-        var model = PrepareNivaesReferenceSerialize();
+        return PrepareNivaesReferenceSerialize();
     }
 
     [Benchmark]
-    public void NivaesReferenceDeserialize()
+    public RootPackerModel? NivaesReferenceDeserialize()
     {
-        var copyModel = SerializePacker.Deserialize<RootPackerModel>(_packReferenceSerialize);
+        return SerializePacker.Deserialize<RootPackerModel>(_packReferenceSerialize);
     }
 
     private byte[] PrepareReferenceMemoryPackSerialize()
@@ -140,17 +143,17 @@ public class PackBenchmarks
 
         return MemoryPackSerializer.Serialize(model);
     }
-    
-    [Benchmark]
-    public void MemoryPackReferenceSerialize()
-    {
-        var model = PrepareReferenceMemoryPackSerialize();
-    } 
 
     [Benchmark]
-    public void MemoryPackReferenceDeserialize()
+    public byte[]? MemoryPackReferenceSerialize()
     {
-        var copyModel = MemoryPackSerializer.Deserialize<RootMemoryPackModel>(_memoryPackReferenceSerialize);
+        return PrepareReferenceMemoryPackSerialize();
+    }
+
+    [Benchmark]
+    public RootMemoryPackModel? MemoryPackReferenceDeserialize()
+    {
+        return MemoryPackSerializer.Deserialize<RootMemoryPackModel>(_memoryPackReferenceSerialize);
     }
     #endregion
 
@@ -175,15 +178,15 @@ public class PackBenchmarks
     }
 
     [Benchmark]
-    public void NivaesCircularReferenceSerialize()
+    public byte[]? NivaesCircularReferenceSerialize()
     {
-        var model = PrepareNivaesCircularReferenceSerialize();
+        return PrepareNivaesCircularReferenceSerialize();
     }
 
     [Benchmark]
-    public void NivaesCircularReferenceDeserialize()
+    public CircularRootPackerModel? NivaesCircularReferenceDeserialize()
     {
-        var copyModel = SerializePacker.Deserialize<CircularRootPackerModel>(_packCircularReferenceSerialize);
+        return SerializePacker.Deserialize<CircularRootPackerModel>(_packCircularReferenceSerialize);
     }
 
     private byte[] PrepareCircularReferenceMemoryPackSerialize()
@@ -205,15 +208,15 @@ public class PackBenchmarks
     }
 
     [Benchmark]
-    public void MemoryPackCircularReferenceSerialize()
+    public byte[]? MemoryPackCircularReferenceSerialize()
     {
-        var model = PrepareCircularReferenceMemoryPackSerialize();
+        return PrepareCircularReferenceMemoryPackSerialize();
     }
 
     [Benchmark]
-    public void MemoryPackCircularReferenceDeserialize()
+    public CircularRootMemoryPackModel? MemoryPackCircularReferenceDeserialize()
     {
-        var copyModel = MemoryPackSerializer.Deserialize<CircularRootMemoryPackModel>(_memoryPackCircularReferenceSerialize);
+        return MemoryPackSerializer.Deserialize<CircularRootMemoryPackModel>(_memoryPackCircularReferenceSerialize);
     }
     #endregion
 }
