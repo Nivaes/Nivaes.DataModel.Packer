@@ -12,7 +12,7 @@ namespace Nivaes.Serializer.Benchmark.SimplePack;
 public class PackBenchmarks
 {
     //[Params(100, 1_000, 10_000, 100_000, 1_000_000)]
-    [Params(100)]
+    [Params(100, 10_000)]
     public int Length;
 
     private string _text1 = null!;
@@ -20,13 +20,13 @@ public class PackBenchmarks
     private string _text3 = null!;
     private string _text4 = null!;
 
-    private byte[]? _packSerialize;
+    private byte[]? _nivaesPackSerialize;
     private byte[]? _memoryPackSerialize;
-    private byte[]? _packReferenceSerialize;
+    private byte[]? _nivaesPackReferenceSerialize;
     private byte[]? _memoryPackReferenceSerialize;
 
-    private byte[]? _packCircularReferenceSerialize;
-    private byte[]? _memoryPackCircularReferenceSerialize;
+    private byte[]? _nivaesPackCircularReferenceSerialize;
+    //private byte[]? _memoryPackCircularReferenceSerialize;
 
     [GlobalSetup]
     public void Setup()
@@ -36,14 +36,14 @@ public class PackBenchmarks
         _text3 = TextHelper.Create(Length);
         _text4 = TextHelper.Create(Length);
 
-        _packSerialize = PrepareNivaesSerialize();
+        _nivaesPackSerialize = PrepareNivaesSerialize();
         _memoryPackSerialize = PrepareMemoryPackSerialize();
 
-        _packReferenceSerialize = PrepareNivaesReferenceSerialize();
+        _nivaesPackReferenceSerialize = PrepareNivaesReferenceSerialize();
         _memoryPackReferenceSerialize = PrepareReferenceMemoryPackSerialize();
 
-        _packCircularReferenceSerialize = PrepareNivaesCircularReferenceSerialize();
-        _memoryPackCircularReferenceSerialize = PrepareCircularReferenceMemoryPackSerialize();
+        _nivaesPackCircularReferenceSerialize = PrepareNivaesCircularReferenceSerialize();
+        //_memoryPackCircularReferenceSerialize = PrepareCircularReferenceMemoryPackSerialize();
     }
 
     #region Serializer
@@ -70,7 +70,7 @@ public class PackBenchmarks
     [Benchmark]
     public SimpleNivaesSerializeModel? NivaesDeserialize()
     {
-        return SerializePacker.Deserialize<SimpleNivaesSerializeModel>(_packSerialize);
+        return SerializePacker.Deserialize<SimpleNivaesSerializeModel>(_nivaesPackSerialize);
     }
 
     private byte[] PrepareMemoryPackSerialize()
@@ -125,7 +125,7 @@ public class PackBenchmarks
     [Benchmark]
     public RootPackerModel? NivaesReferenceDeserialize()
     {
-        return SerializePacker.Deserialize<RootPackerModel>(_packReferenceSerialize);
+        return SerializePacker.Deserialize<RootPackerModel>(_nivaesPackReferenceSerialize);
     }
 
     private byte[] PrepareReferenceMemoryPackSerialize()
@@ -186,37 +186,37 @@ public class PackBenchmarks
     [Benchmark]
     public CircularRootPackerModel? NivaesCircularReferenceDeserialize()
     {
-        return SerializePacker.Deserialize<CircularRootPackerModel>(_packCircularReferenceSerialize);
+        return SerializePacker.Deserialize<CircularRootPackerModel>(_nivaesPackCircularReferenceSerialize);
     }
 
-    private byte[] PrepareCircularReferenceMemoryPackSerialize()
-    {
-        var model = new CircularRootMemoryPackModel
-        {
-            String1 = _text1,
-            String2 = _text2,
-            Reference = new CircularReferenceMemoryPackModel
-            {
-                String1 = _text3,
-                String2 = _text4,
-            }
-        };
+    //private byte[] PrepareCircularReferenceMemoryPackSerialize()
+    //{
+    //    var model = new CircularRootMemoryPackModel
+    //    {
+    //        String1 = _text1,
+    //        String2 = _text2,
+    //        Reference = new CircularReferenceMemoryPackModel
+    //        {
+    //            String1 = _text3,
+    //            String2 = _text4,
+    //        }
+    //    };
 
-        model.Reference.Reference = model;
+    //    model.Reference.Reference = model;
 
-        return MemoryPackSerializer.Serialize(model);
-    }
+    //    return MemoryPackSerializer.Serialize(model);
+    //}
 
-    [Benchmark]
-    public byte[]? MemoryPackCircularReferenceSerialize()
-    {
-        return PrepareCircularReferenceMemoryPackSerialize();
-    }
+    //[Benchmark]
+    //public byte[]? MemoryPackCircularReferenceSerialize()
+    //{
+    //    return PrepareCircularReferenceMemoryPackSerialize();
+    //}
 
-    [Benchmark]
-    public CircularRootMemoryPackModel? MemoryPackCircularReferenceDeserialize()
-    {
-        return MemoryPackSerializer.Deserialize<CircularRootMemoryPackModel>(_memoryPackCircularReferenceSerialize);
-    }
+    //[Benchmark]
+    //public CircularRootMemoryPackModel? MemoryPackCircularReferenceDeserialize()
+    //{
+    //    return MemoryPackSerializer.Deserialize<CircularRootMemoryPackModel>(_memoryPackCircularReferenceSerialize);
+    //}
     #endregion
 }
