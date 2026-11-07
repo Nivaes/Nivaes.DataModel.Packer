@@ -219,27 +219,49 @@ public ref struct PackerReader
     public TReference[]? ReadArray<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
         where TSerializer : IDeserializer<TReference>, new()
     {
-        //int idObject = ReadInt32();
+        int size = ReadInt32();
 
-        //if (idObject == -1)
-        //    return default(TReference);
+        if (size == -1)
+            return default(TReference[]);
 
-        //return _recursiveReader.Read<TReference, TSerializer>(idObject, deserialiceReference);
+        if (size < -1)
+            throw new InvalidOperationException("Invalid enumerable size.");
 
-        return null;
+        if (size == 0)
+            return [];
+
+        var items = new TReference[size];
+        for (int i = 0; i < size; i++)
+        {
+            items[i] = ReadReference<T, TReference, TSerializer>(deserialiceReference)!;
+        }
+
+        return items.ToArray();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable<TReference>? ReadEnumerable<T, TReference, TSerializer>(Action<object>? deserialiceReference = null)
         where TSerializer : IDeserializer<TReference>, new()
     {
-        //int idObject = ReadInt32();
+        int size = ReadInt32();
 
-        //if (idObject == -1)
-        //    return default(TReference);
+        if (size == -1)
+            return default(TReference[]);
 
-        //return _recursiveReader.Read<TReference, TSerializer>(idObject, deserialiceReference);
-        return null;
+        if (size < -1)
+            throw new InvalidOperationException("Invalid enumerable size.");
+
+        if (size == 0)
+            return [];
+
+        var items = new TReference[size];
+        for (int i = 0; i < size; i++)
+        {
+            //var item = _recursiveReader.Read<TReference, TSerializer>(ReadInt32(), deserialiceReference);
+            items[i] = ReadReference<T, TReference, TSerializer>(deserialiceReference)!;
+        }
+
+        return items.ToArray();
     }
     #endregion
 }

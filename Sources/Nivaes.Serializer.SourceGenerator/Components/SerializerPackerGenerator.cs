@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -14,10 +15,7 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
     {
         var classes = context.SyntaxProvider.ForAttributeWithMetadataName(
             fullyQualifiedMetadataName: AttributeMetadataName,
-
-            predicate: static (node, _) =>
-                node is ClassDeclarationSyntax,
-
+            predicate: static (node, _) => node is ClassDeclarationSyntax,
             transform: static (context, cancellationToken) =>
                 (INamedTypeSymbol)context.TargetSymbol
         );
@@ -34,8 +32,6 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
         SourceProductionContext context,
         INamedTypeSymbol symbol)
     {
-        //System.Diagnostics.Debugger.Launch();
-
         // Esta versión no contempla clases genéricas ni anidadas.
         if (symbol.IsGenericType)
             return;
@@ -103,7 +99,9 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
 
         AppendNamespaceStart(sb, symbol);
 
-        sb.AppendLine($"{accessibility} sealed class {serializerName} : ISerializer<{typeName}>");
+        sb.AppendLine(
+            $"{accessibility} sealed class {serializerName} : ISerializer<{typeName}>");
+
         sb.AppendLine("{");
 
         sb.AppendLine($"    void ISerializer<{typeName}>.Serialize(");
@@ -113,28 +111,10 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
 
         foreach (var property in properties)
         {
-            var propertyType = property.Type;
+            var expression = GetWriteExpression(property);
 
-            if (IsSerializedClass(propertyType))
-            {
-                var referenceType = GetTypeName(propertyType);
-                var referenceSerializer = GetSerializerName(propertyType);
-
-                sb.AppendLine(
-                    $"        writer.Write<{referenceType}, {referenceSerializer}>(model.{property.Name});");
-            }
-            else if (propertyType.TypeKind == TypeKind.Enum)
-            {
-                var enumType = (INamedTypeSymbol)propertyType;
-                var underlyingType = GetTypeName(enumType.EnumUnderlyingType!);
-
-                sb.AppendLine(
-                    $"        writer.Write(({underlyingType})model.{property.Name});");
-            }
-            else
-            {
-                sb.AppendLine($"        writer.Write(model.{property.Name});");
-            }
+            sb.AppendLine(
+                $"        {expression}");
         }
 
         sb.AppendLine("    }");
@@ -166,7 +146,9 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
 
         AppendNamespaceStart(sb, symbol);
 
-        sb.AppendLine($"{accessibility} sealed class {deserializerName} : IDeserializer<{typeName}>");
+        sb.AppendLine(
+            $"{accessibility} sealed class {deserializerName} : IDeserializer<{typeName}>");
+
         sb.AppendLine("{");
 
         sb.AppendLine($"    private {typeName}? _value;");
@@ -211,10 +193,10 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
         // Generar setters para las referencias diferidas.
         foreach (var property in properties)
         {
-            if (!IsSerializedClass(property.Type))
+            if (!HasSerializedReferences(property.Type))
                 continue;
 
-            var referenceType = GetTypeName(property.Type);
+            var propertyType = GetTypeName(property.Type);
 
             sb.AppendLine();
 
@@ -224,7 +206,7 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             sb.AppendLine("    {");
 
             sb.AppendLine(
-                $"        _value!.{property.Name} = ({referenceType})reference;");
+                $"        _value!.{property.Name} = ({propertyType})reference;");
 
             sb.AppendLine("    }");
         }
@@ -237,6 +219,77 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
     }
 
     // ---------------------------------------------------------
+    // PROPERTY WRITE EXPRESSIONS
+    // ---------------------------------------------------------
+
+    private static string GetWriteExpression(IPropertySymbol property)
+    {
+        var type = property.Type;
+        var value = $"model.{property.Name}";
+
+        // byte[] tiene tratamiento especial.
+        if (IsByteArray(type))
+            return $"writer.Write({value});";
+
+        // Arrays.
+        if (type is IArrayTypeSymbol arrayType)
+        {
+            var elementType = arrayType.ElementType;
+
+            if (IsSerializedClass(elementType))
+            {
+                var elementTypeName = GetTypeName(elementType);
+                var serializerName = GetSerializerName(elementType);
+
+                return
+                    $"writer.Write<{elementTypeName}, {serializerName}>({value});";
+            }
+
+            return
+                $"writer.Write<{GetTypeName(elementType)}>({value});";
+        }
+
+        // IEnumerable<T>, List<T>, ICollection<T>, etc.
+        if (IsEnumerableType(type, out var enumerableElement))
+        {
+            if (IsSerializedClass(enumerableElement))
+            {
+                var elementTypeName = GetTypeName(enumerableElement);
+                var serializerName = GetSerializerName(enumerableElement);
+
+                return
+                    $"writer.Write<{elementTypeName}, {serializerName}>({value});";
+            }
+
+            return
+                $"writer.Write<{GetTypeName(enumerableElement)}>({value});";
+        }
+
+        // Clases serializadas.
+        if (IsSerializedClass(type))
+        {
+            var referenceType = GetTypeName(type);
+            var referenceSerializer = GetSerializerName(type);
+
+            return
+                $"writer.Write<{referenceType}, {referenceSerializer}>({value});";
+        }
+
+        // Enumeraciones.
+        if (type.TypeKind == TypeKind.Enum)
+        {
+            var enumType = (INamedTypeSymbol)type;
+            var underlyingType = GetTypeName(enumType.EnumUnderlyingType!);
+
+            return
+                $"writer.Write(({underlyingType}){value});";
+        }
+
+        // Tipos simples.
+        return $"writer.Write({value});";
+    }
+
+    // ---------------------------------------------------------
     // PROPERTY READ EXPRESSIONS
     // ---------------------------------------------------------
 
@@ -244,40 +297,85 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
     {
         var type = property.Type;
 
+        // byte[] tiene tratamiento especial.
+        if (IsByteArray(type))
+            return "reader.ReadBytes()";
+
+        // Arrays.
+        if (type is IArrayTypeSymbol arrayType)
+        {
+            var elementType = arrayType.ElementType;
+
+            if (IsSerializedClass(elementType))
+            {
+                var rootType = GetTypeName(property.ContainingType);
+                var referenceType = GetTypeName(elementType);
+                var deserializerName = GetDeserializerName(elementType);
+
+                return
+                    $"reader.ReadArray<{rootType}, {referenceType}, {deserializerName}>(Reference{property.Name}!)";
+            }
+
+            return
+                $"reader.ReadArray<{GetTypeName(elementType)}>()";
+        }
+
+        // IEnumerable<T>, List<T>, ICollection<T>, etc.
+        if (IsEnumerableType(type, out var enumerableElement))
+        {
+            if (IsSerializedClass(enumerableElement))
+            {
+                var rootType = GetTypeName(property.ContainingType);
+                var referenceType = GetTypeName(enumerableElement);
+                var deserializerName = GetDeserializerName(enumerableElement);
+
+                return
+                    $"reader.ReadEnumerable<{rootType}, {referenceType}, {deserializerName}>(Reference{property.Name}!)";
+            }
+
+            return
+                $"reader.ReadEnumerable<{GetTypeName(enumerableElement)}>()";
+        }
+
+        // Referencias a clases serializadas.
         if (IsSerializedClass(type))
         {
             var rootType = GetTypeName(property.ContainingType);
             var referenceType = GetTypeName(type);
             var deserializerName = GetDeserializerName(type);
 
-            return $"reader.ReadReference<{rootType}, {referenceType}, {deserializerName}>(Reference{property.Name}!)";
+            return
+                $"reader.ReadReference<{rootType}, {referenceType}, {deserializerName}>(Reference{property.Name}!)";
         }
 
+        // Enumeraciones.
         if (type.TypeKind == TypeKind.Enum)
         {
             var enumType = (INamedTypeSymbol)type;
             var underlyingType = enumType.EnumUnderlyingType!;
 
-            return $"({GetTypeName(type)})reader.{GetReadMethod(underlyingType)}()";
+            return
+                $"({GetTypeName(type)})reader.{GetReadMethod(underlyingType)}()";
         }
 
+        // Tipos simples.
         return $"reader.{GetReadMethod(type)}()";
     }
 
+    // ---------------------------------------------------------
+    // READ METHOD
+    // ---------------------------------------------------------
+
     private static string GetReadMethod(ITypeSymbol type)
     {
-        //System.Diagnostics.Debugger.Launch();
-
         if (type.ToDisplayString() == "System.Guid")
             return "ReadGuid";
 
-        if (type is IArrayTypeSymbol arrayType &&
-            arrayType.ElementType.SpecialType == SpecialType.System_Byte)
-        {
+        if (IsByteArray(type))
             return "ReadBytes";
-        }
 
-        var displayType = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        var displayType = type.ToDisplayString(
+            SymbolDisplayFormat.FullyQualifiedFormat);
 
         if (displayType == "global::System.Memory<byte>")
             return "ReadMemory";
@@ -306,6 +404,7 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             SpecialType.System_Single => "ReadSingle",
             SpecialType.System_Double => "ReadDouble",
             SpecialType.System_Decimal => "ReadDecimal",
+
             _ => throw new NotSupportedException(
                 $"Unsupported SpecialType: {type}")
         };
@@ -335,7 +434,21 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             SpecialType.System_Decimal)
             return true;
 
-        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        // byte[]
+        if (IsByteArray(type))
+            return true;
+
+        // Arrays: T[]
+        if (type is IArrayTypeSymbol arrayType)
+            return IsSupported(arrayType.ElementType);
+
+        // IEnumerable<T>, List<T>, ICollection<T>, etc.
+        if (IsEnumerableType(type, out var elementType))
+            return IsSupported(elementType);
+
+        var typeName = type.ToDisplayString(
+            SymbolDisplayFormat.FullyQualifiedFormat);
+
         if (typeName is
             "global::System.Guid" or
             "global::System.Half" or
@@ -344,15 +457,59 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             "global::System.DateTimeOffset")
             return true;
 
-        // byte[]
-        if (type is IArrayTypeSymbol arrayType &&
-            arrayType.ElementType.SpecialType == SpecialType.System_Byte)
-            return true;
-
         if (type.TypeKind == TypeKind.Enum)
             return true;
 
         return IsSerializedClass(type);
+    }
+
+    private static bool IsByteArray(ITypeSymbol type)
+    {
+        return type is IArrayTypeSymbol arrayType &&
+               arrayType.ElementType.SpecialType == SpecialType.System_Byte;
+    }
+
+    private static bool IsEnumerableType(
+        ITypeSymbol type,
+        out ITypeSymbol elementType)
+    {
+        elementType = null!;
+
+        // No considerar string como IEnumerable<char>.
+        if (type.SpecialType == SpecialType.System_String)
+            return false;
+
+        if (type is not INamedTypeSymbol namedType)
+            return false;
+
+        return ImplementsIEnumerable(namedType, out elementType);
+    }
+
+    private static bool ImplementsIEnumerable(
+        INamedTypeSymbol type,
+        out ITypeSymbol elementType)
+    {
+        var enumerableInterface = type.AllInterfaces
+            .FirstOrDefault(i =>
+                i.OriginalDefinition.SpecialType ==
+                SpecialType.System_Collections_Generic_IEnumerable_T);
+
+        if (enumerableInterface is not null)
+        {
+            elementType = enumerableInterface.TypeArguments[0];
+            return true;
+        }
+
+        // También contempla el propio tipo IEnumerable<T>.
+        if (type.OriginalDefinition.SpecialType ==
+            SpecialType.System_Collections_Generic_IEnumerable_T)
+        {
+            elementType = type.TypeArguments[0];
+            return true;
+        }
+
+        elementType = null!;
+        return false;
     }
 
     private static bool IsSerializedClass(ITypeSymbol type)
@@ -370,6 +527,22 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
             attribute.AttributeClass?.ToDisplayString() ==
             AttributeMetadataName);
     }
+
+    private static bool HasSerializedReferences(ITypeSymbol type)
+    {
+        if (IsSerializedClass(type))
+            return true;
+
+        if (type is IArrayTypeSymbol arrayType)
+            return IsSerializedClass(arrayType.ElementType);
+
+        return IsEnumerableType(type, out var elementType) &&
+               IsSerializedClass(elementType);
+    }
+
+    // ---------------------------------------------------------
+    // SYMBOL NAME HELPERS
+    // ---------------------------------------------------------
 
     private static string GetTypeName(ITypeSymbol symbol)
     {
@@ -412,12 +585,16 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
     private static string GetHintPrefix(INamedTypeSymbol symbol)
     {
         return symbol.ToDisplayString(
-            SymbolDisplayFormat.FullyQualifiedFormat)
+                SymbolDisplayFormat.FullyQualifiedFormat)
             .Replace("global::", "")
             .Replace(".", "_")
             .Replace("<", "_")
             .Replace(">", "_");
     }
+
+    // ---------------------------------------------------------
+    // NAMESPACE HELPERS
+    // ---------------------------------------------------------
 
     private static void AppendNamespaceStart(
         StringBuilder sb,
@@ -427,6 +604,7 @@ public sealed class SerializerPackerGenerator : IIncrementalGenerator
         {
             sb.AppendLine(
                 $"namespace {symbol.ContainingNamespace.ToDisplayString()};");
+
             sb.AppendLine();
         }
     }

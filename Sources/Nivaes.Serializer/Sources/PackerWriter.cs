@@ -329,38 +329,36 @@ public ref partial struct PackerWriter
     public void Write<T, TSerializer>(IEnumerable<T>? value)
          where TSerializer : ISerializer<T>, new()
     {
-        //if (value is null)
-        //{
-        //    Write(-1);
-        //    return;
-        //}
+        if (value is null)
+        {
+            Write(-1);
+            return;
+        }
 
-        //Write(value.Length);
+        Write(value.Count());
 
-        //Ensure(value.Length);
-
-        //value.AsSpan().CopyTo(_span[_position..]);
-
-        //_position += value.Length;
+        foreach (var item in value)
+        {
+            Write<T, TSerializer>(item);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Write<T, TSerializer>(T[]? value)
          where TSerializer : ISerializer<T>, new()
     {
-        //if (value is null)
-        //{
-        //    Write(-1);
-        //    return;
-        //}
+        if (value is null)
+        {
+            Write(-1);
+            return;
+        }
 
-        //Write(value.Length);
+        Write(value.Length);
 
-        //Ensure(value.Length);
-
-        //value.AsSpan().CopyTo(_span[_position..]);
-
-        //_position += value.Length;
+        foreach(var item in value)
+        {
+            Write<T, TSerializer>(item);
+        }
     }
     #endregion
 }

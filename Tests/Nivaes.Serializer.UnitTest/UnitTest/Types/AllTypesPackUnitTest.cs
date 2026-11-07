@@ -1,4 +1,4 @@
-﻿namespace Nivaes.Serializer.UnitTest;
+﻿namespace Nivaes.Serializer.UnitTest.UnitTest;
 
 public class AllTypesPackUnitTest
 {
